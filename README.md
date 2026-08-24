@@ -58,8 +58,14 @@ public/            そのまま配信するファイル
 
 ## お知らせの更新
 
-microCMS の管理画面から投稿する。Webhook で Cloudflare Pages のデプロイが走り、
-数十秒でサイトに反映される。設定手順は `docs/microcms-setup.md`。
+**チャットから投稿できます。** 内容を伝えると GitHub Actions が microCMS に登録し、
+Webhook 経由でサイトに反映されます。手順は `docs/news-post.md`。
+
+GitHub の Actions タブ →「お知らせを投稿」から自分で実行することもできます。
+
+microCMS の管理画面から直接書いても構わない。どちらの場合も Webhook で
+Cloudflare Pages のデプロイが走り、1〜2分でサイトに反映される。
+CMS側の設定手順は `docs/microcms-setup.md`。
 
 登壇の報告もここに投稿する。カテゴリ「登壇」で絞れば実績アーカイブとして読める。
 

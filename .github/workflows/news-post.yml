@@ -1,0 +1,71 @@
+# お知らせを1件、microCMS に登録するワークフロー。
+#
+# GitHub の Actions タブ →「お知らせを投稿」→ Run workflow から実行する。
+# Claude との会話からも同じものを起動できる。
+#
+# 事前に必要なもの
+#   Settings → Secrets and variables → Actions → Secrets
+#     MICROCMS_WRITE_API_KEY … microCMS で news の PUT を許可したAPIキー
+name: お知らせを投稿
+
+on:
+  workflow_dispatch:
+    inputs:
+      title:
+        description: 'タイトル（例：日経メッセに登壇しました。）'
+        required: true
+      category:
+        description: 'カテゴリ'
+        required: true
+        type: choice
+        options: ['登壇', 'メディア', 'イベント', 'リリース']
+        default: '登壇'
+      body:
+        description: '本文。空行を入れるとそこで段落が分かれます'
+        required: true
+      publishedDate:
+        description: '掲載日 YYYY-MM-DD（空なら今日）'
+        required: false
+      excerpt:
+        description: '抜粋（空なら本文の書き出しから作ります）'
+        required: false
+      eventName:
+        description: 'イベント名（登壇のとき。任意）'
+        required: false
+      externalUrl:
+        description: '外部リンク（入れると一覧から直接その記事に飛びます）'
+        required: false
+      contentId:
+        description: '記事ID＝URLの末尾（空なら日付から自動）'
+        required: false
+      status:
+        description: 'そのまま公開するか、下書きで置くか'
+        type: choice
+        options: ['公開', '下書き']
+        default: '公開'
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: microCMS に登録する
+        # 入力は env で渡す。run: に直接埋めると、本文の記号でシェルが誤動作する。
+        env:
+          MICROCMS_SERVICE_DOMAIN: ozaken
+          MICROCMS_WRITE_API_KEY: ${{ secrets.MICROCMS_WRITE_API_KEY }}
+          IN_TITLE: ${{ inputs.title }}
+          IN_CATEGORY: ${{ inputs.category }}
+          IN_BODY: ${{ inputs.body }}
+          IN_DATE: ${{ inputs.publishedDate }}
+          IN_EXCERPT: ${{ inputs.excerpt }}
+          IN_EVENT: ${{ inputs.eventName }}
+          IN_URL: ${{ inputs.externalUrl }}
+          IN_ID: ${{ inputs.contentId }}
+          IN_STATUS: ${{ inputs.status }}
+        run: node scripts/news-post.mjs
