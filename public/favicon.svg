@@ -1,5 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="12" fill="#1f3864"/>
-  <circle cx="32" cy="32" r="17" fill="none" stroke="#ffffff" stroke-width="4"/>
-  <circle cx="32" cy="32" r="5" fill="#d8e4f0"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="小澤健祐">
+  <rect width="64" height="64" rx="10" fill="#0A0D13"/>
+  <rect x="12" y="12" width="40" height="40" rx="3" fill="#B23A2B"/>
+  <text x="32" y="33" fill="#ffffff" font-size="30" text-anchor="middle" dominant-baseline="central"
+        font-family="'Shippori Mincho B1','Hiragino Mincho ProN','Yu Mincho',serif">健</text>
 </svg>
