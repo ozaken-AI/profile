@@ -86,19 +86,32 @@ function toIso(raw) {
   return `${y}-${mo.padStart(2, '0')}-${d.padStart(2, '0')}T03:00:00.000Z`;
 }
 
-/** microCMS のコンテンツIDに使える文字は英数字と - _ のみ。 */
+/**
+ * microCMS のコンテンツIDに直す。
+ * 大文字が混じっていると弾かれるので小文字に寄せ、
+ * 先頭は英字、3文字以上になるようにそろえる。
+ */
 function toId(slug) {
-  const id = String(slug).replace(/[^A-Za-z0-9_-]/g, '-').replace(/^-+|-+$/g, '');
+  let id = String(slug)
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]/g, '-')
+    .replace(/-{2,}/g, '-')
+    .replace(/^[-_]+|[-_]+$/g, '');
   if (!id) throw new Error(`IDに変換できません: ${slug}`);
+  if (!/^[a-z]/.test(id)) id = `n${id}`;
+  if (id.length < 3) id = `${id}-1`;
   return id;
 }
 
 const { posts } = JSON.parse(await readFile(SRC, 'utf8'));
 
+// 小文字にそろえると `AIdiver1` と `aidiver1` のように衝突するものが出る。
+// 後から出てきたほうに連番を足して逃がす。
 const seen = new Set();
 const records = posts.map((p) => {
-  const id = toId(p.slug);
-  if (seen.has(id)) throw new Error(`IDが重複しています: ${id}`);
+  const base = toId(p.slug);
+  let id = base;
+  for (let n = 2; seen.has(id); n++) id = `${base}-${n}`;
   seen.add(id);
 
   const links = (p.external_links ?? []).filter((u) => /^https?:\/\//.test(u) && !SHARE_HOSTS.test(u));
