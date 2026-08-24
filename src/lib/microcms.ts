@@ -10,8 +10,8 @@ export type NewsCategory = '登壇' | 'メディア' | 'イベント' | 'リリ�
 export type NewsItem = {
   id: string;
   title: string;
-  /** microCMS のセレクトは単一選択でも配列で返る */
-  category: NewsCategory[];
+  /** セレクトは単一選択でも配列で返る。テキストフィールドにした場合は文字列 */
+  category: NewsCategory[] | string;
   publishedDate: string;
   excerpt?: string;
   thumbnail?: { url: string; width: number; height: number };
@@ -43,8 +43,15 @@ export function formatDate(raw: string): string {
   return m ? `${m[1]}.${m[2]}.${m[3]}` : String(raw ?? '');
 }
 
+/**
+ * カテゴリの表示名。
+ * セレクトフィールドは単一選択でも配列で返るが、
+ * テキストフィールドに変えた場合は文字列で返る。どちらでも読めるようにしておく。
+ */
 export function categoryOf(item: NewsItem): string {
-  return item.category?.[0] ?? 'お知らせ';
+  const c = item.category;
+  const value = Array.isArray(c) ? c[0] : c;
+  return String(value ?? '').trim() || 'お知らせ';
 }
 
 export type Thumb = {
