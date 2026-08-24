@@ -14,8 +14,9 @@ export const SITE = {
 
 /** 関与している組織。ヒーロー下のティッカーに流す。 */
 export const AFFILIATIONS = [
-  'AICX協会', 'Cynthialy', 'Visionary Engine', 'AI HYVE', 'Cinematorico',
-  '日本HP', 'NTTデータグループ', '船橋市', '経済産業省',
+  'AICX協会', 'シンシアリー', 'Cinematorico', '生成AI活用普及協会',
+  '日本HP', 'NTTデータグループ', 'Lightblue', 'THA',
+  '船橋市', '経済産業省',
   'NewsPicks', 'AI DIVE', 'AINOW', 'AI Agent Day',
 ] as const;
 
@@ -38,11 +39,12 @@ export const ROLES = [
   { org: '一般社団法人AICX協会', title: '代表理事（設立）' },
   { org: '一般社団法人生成AI活用普及協会', title: '常任協議員' },
   { org: '経済産業省「AX時代のスキルに関するワーキンググループ」', title: '委員' },
-  { org: '株式会社Cynthialy', title: '取締役CCO' },
-  { org: '株式会社Visionary Engine', title: '取締役' },
-  { org: '株式会社AI HYVE', title: '取締役' },
+  { org: 'シンシアリー株式会社', title: '取締役CCO' },
   { org: '株式会社Cinematorico', title: 'COO（2022年創業）' },
-  { org: '日本HP／NTTデータグループ／Lightblue／THA', title: 'アドバイザー' },
+  { org: '株式会社日本HP', title: 'アドバイザー' },
+  { org: '株式会社Lightblue', title: 'アドバイザー' },
+  { org: '株式会社NTTデータグループ', title: 'アドバイザー' },
+  { org: '株式会社THA', title: 'AI戦略顧問' },
   { org: '千葉県船橋市', title: '生成AIアドバイザー' },
   { org: 'NewsPicks「AI DIVE」', title: 'メインMC' },
   { org: 'NewsPicks', title: 'プロピッカー' },
@@ -106,24 +108,128 @@ export const TOPICS = [
     forWhom: 'AI推進室・業務部門の実務担当者' },
 ] as const;
 
-/** 経歴。年表として出す。 */
-export const TIMELINE = [
-  { period: '協会', h: '一般社団法人AICX協会を設立、代表理事',
-    p: '国内最大級のAIエージェントカンファレンス「AI Agent Day」を主催。国内初のAIエージェント実装人材の資格制度（AIエージェント・ストラテジスト／アーキテクト）の創設を牽引している。' },
-  { period: '公職', h: '経済産業省のワーキンググループ委員',
-    p: '「AX時代のスキルに関するワーキンググループ」委員として、国のAI政策に参画。一般社団法人生成AI活用普及協会の常任協議員も務める。千葉県船橋市の生成AIアドバイザーとして行政のDX推進にも携わる。' },
-  { period: '経営', h: '複数のAI企業の経営',
-    p: 'Cynthialy 取締役CCO、Visionary Engine 取締役、AI HYVE 取締役。日本HP、NTTデータグループ、Lightblue、THA など複数社のアドバイザーも務める。' },
-  { period: '発信', h: '執筆・メディア・人材育成',
-    p: '『生成AI導入の教科書』『AIエージェントの教科書』を刊行。1,500本以上のAI関連記事を執筆。NewsPicksのAI番組「AI DIVE」メインMC、NewsPicksプロピッカー、Udemyベストセラー講師。' },
-  { period: 'AI領域以外', h: '2022年 Cinematorico を創業、COO',
-    p: 'PR・映像制作・フリーカメラマン・日本大学文理学部次世代社会研究センターのプロボノなど、多彩な経験を基盤に活動を展開している。' },
+/**
+ * 登壇実績。お知らせに残っている登壇報告から抜き出したもの。
+ * 網羅ではなく、依頼を検討する人が規模感をつかめる範囲に絞っている。
+ * 全件は /news/ の「登壇」で読める。
+ */
+export const SPEAKING_TRACK = [
+  {
+    label: 'カンファレンス・展示会',
+    items: [
+      'AI・人工知能EXPO（特別講演／10周年記念特別講演）',
+      '日経メッセ プレミアム・カンファレンス',
+      'DX総合EXPO 東京',
+      'Google Cloud「Agentic AI Summit」',
+      'IVS（KYOTO ／ 2025）',
+      'Startup JAPAN',
+      'AI Agent Day（主催）',
+      '東京AI祭',
+      'AI博覧会',
+      '生成AI Forum 東京',
+      'Generative AI Business Day',
+      'コンテンツ東京',
+      'オートモーティブ ワールド',
+      'バックオフィスDXPO ／ バックオフィス World',
+      'マーケティングWeek',
+      'UpdataNOW',
+      'HR Tech Vision',
+      'メンテナンス・レジリエンス TOKYO',
+      'コールセンター／CRM デモ＆コンファレンス',
+      'Japan Blockchain Week Summit（AI Edition）',
+      '東北AI維新CONFERENCE',
+      'World Forum Tokyo',
+      '慶應義塾「生成AIラボ」カンファレンス',
+      '東京青年会議所 例会（基調講演）',
+      'JASIPA 協業フェア（基調講演）',
+    ],
+  },
+  {
+    label: '企業・行政',
+    items: [
+      '日本HP「HP Future of Work AI Conference」',
+      'Dell Technologies 主催カンファレンス（基調講演）',
+      'dynabook「dynabook Ready AI Tour」',
+      'ソフトバンク',
+      'Google（オフィス開催の企業向けカンファレンス）',
+      'エクサウィザーズ',
+      'ANDPAD',
+      'INTLOOP「Ventures MIX」',
+      'Thinkings',
+      'ランサーズ',
+      'ディップ',
+      'Lightblue',
+      'タマディック',
+      'Karakuri Tech Conference',
+      '千葉県船橋市（職員向け）',
+      '鹿児島県商工会議所青年部連合会',
+    ],
+  },
+] as const;
+
+/**
+ * メディア出演・掲載。こちらもお知らせから抜き出した抜粋。
+ * 全件は /news/ の「メディア」で読める。
+ */
+export const MEDIA_TRACK = [
+  {
+    label: 'テレビ・ラジオ',
+    items: [
+      'ABEMA Prime（報道リアリティーショー）',
+      'BS-TBS「報道1930」',
+      '日本テレビ「午前0時の森」',
+      '日経CNBC「昼エクスプレス」',
+      'テレ東AIアカデミー',
+      '千葉テレビ',
+      'J-WAVE「TOKYO MORNING RADIO」',
+      'ニッポン放送「NEXT-RAD」',
+      'Voicy「ながら日経」',
+    ],
+  },
+  {
+    label: '新聞・雑誌',
+    items: [
+      '日本経済新聞（朝刊・対談）',
+      '読売新聞',
+      '日経MJ',
+      '日刊工業新聞',
+      '千葉日報',
+      '教育家庭新聞',
+      '東洋経済オンライン',
+      'ダイヤモンド・オンライン',
+      'プレジデントオンライン',
+      'DIME',
+      '宣伝会議',
+      'THE21',
+      '家電批評',
+      'スポーツニッポン',
+    ],
+  },
+  {
+    label: 'ウェブ・番組',
+    items: [
+      'NewsPicks「The UPDATE」「New Session」「1on1 DEEP」',
+      'NewsPicks「AI DIVE」（メインMC）',
+      'ITmedia ビジネスオンライン',
+      'マイナビニュース',
+      'CINRA',
+      'ログミー',
+      'J-CAST',
+      'GetNavi web',
+      'トラベルボイス',
+      'HRプロ',
+      'Schoo',
+      'ReHacQ',
+      'ホリエモンチャンネル ／ 新R25',
+      'AIdiver',
+    ],
+  },
 ] as const;
 
 /** プレスキット用のプロフィール文。長短2種。本人確認済みの正式版。 */
 export const BIO = {
   short: '小澤健祐（おざけん）／一般社団法人AICX協会 代表理事。「人間とAIが共存する社会をつくる」をビジョンに掲げ、年間300回以上の登壇と1,500本以上のAI関連記事の執筆を行う。著書に『生成AI導入の教科書』『AIエージェントの教科書』。経済産業省のワーキンググループ委員。',
-  long: '「人間とAIが共存する社会をつくる」をビジョンに掲げ、AI分野で幅広く活動。書籍『生成AI導入の教科書』『AIエージェントの教科書』の刊行や、1500本以上のAI関連記事の執筆を通じて、AIの可能性と実践的活用法を発信し続けてきた。年間登壇は300回以上。\n\n一般社団法人AICX協会を設立し、代表理事として、国内最大級のAIエージェントカンファレンス「AI Agent Day」の主催や、国内初のAIエージェント実装人材資格制度（AIエージェント・ストラテジスト／アーキテクト）の創設を牽引。一般社団法人生成AI活用普及協会常任協議員を務めるほか、経済産業省「AX時代のスキルに関するワーキンググループ」委員として国のAI政策にも参画。Cynthialy取締役CCO、Visionary Engine取締役、AI HYVE取締役など複数のAI企業の経営にも関わる。日本HP、NTTデータグループ、Lightblue、THAなど複数社のアドバイザーも務める。\n\nNewsPicksのAI番組「AI DIVE」メインMC、NewsPicksプロピッカー、Udemyベストセラー講師として情報発信・人材育成にも注力。千葉県船橋市生成AIアドバイザーとして行政のDX推進にも携わる。\n\nAI領域以外では、2022年にCinematoricoを創業しCOOに就任。PR・映像制作・フリーカメラマン・日本大学文理学部次世代社会研究センタープロボノなど、多彩な経験を基盤に活動を展開している。',
+  long: '「人間とAIが共存する社会をつくる」をビジョンに掲げ、AI分野で幅広く活動。書籍『生成AI導入の教科書』『AIエージェントの教科書』の刊行や、1500本以上のAI関連記事の執筆を通じて、AIの可能性と実践的活用法を発信し続けてきた。年間登壇は300回以上。\n\n一般社団法人AICX協会を設立し、代表理事として、国内最大級のAIエージェントカンファレンス「AI Agent Day」の主催や、国内初のAIエージェント実装人材資格制度（AIエージェント・ストラテジスト／アーキテクト）の創設を牽引。一般社団法人生成AI活用普及協会常任協議員を務めるほか、経済産業省「AX時代のスキルに関するワーキンググループ」委員として国のAI政策にも参画。シンシアリー株式会社の取締役CCOとしてAI企業の経営にも関わる。日本HP、Lightblue、NTTデータグループ、THAなど複数社のアドバイザーも務める。\n\nNewsPicksのAI番組「AI DIVE」メインMC、NewsPicksプロピッカー、Udemyベストセラー講師として情報発信・人材育成にも注力。千葉県船橋市生成AIアドバイザーとして行政のDX推進にも携わる。\n\nAI領域以外では、2022年にCinematoricoを創業しCOOに就任。PR・映像制作・フリーカメラマン・日本大学文理学部次世代社会研究センタープロボノなど、多彩な経験を基盤に活動を展開している。',
 } as const;
 
 /** プロフィール本文。本人の文章。トップと /about/ の両方で使う。 */

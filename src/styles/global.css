@@ -338,6 +338,29 @@ section{position:relative}
   .news-arrow{display:none}
 }
 
+/* ---------- 実績（登壇・メディア） ---------- */
+.track{display:grid;gap:0;margin-top:2.6rem}
+.track-g{
+  display:grid;grid-template-columns:180px minmax(0,1fr);gap:1.5rem;align-items:start;
+  padding-block:1.6rem;border-top:1px solid var(--rule);
+}
+.track-k{font-family:var(--f-mincho);font-size:.95rem;font-weight:500;color:var(--fg-mid);line-height:1.6}
+.track-l{display:flex;flex-wrap:wrap;gap:.5rem;list-style:none}
+.track-l li{
+  font-size:.82rem;line-height:1.5;color:var(--fg-mid);
+  border:1px solid var(--rule);border-radius:2px;padding:.38rem .72rem;
+}
+.track-note{margin-top:1.6rem;font-size:.82rem;color:var(--fg-mute)}
+@media(max-width:720px){
+  .track-g{grid-template-columns:1fr;gap:.85rem;padding-block:1.3rem}
+  .track-l li{font-size:.78rem;padding:.32rem .6rem}
+}
+/* 紙の面に置いたとき */
+.band--paper .track-g{border-top-color:var(--paper-rule)}
+.band--paper .track-k{color:var(--paper-mute)}
+.band--paper .track-l li{color:var(--paper-fg);border-color:var(--paper-rule)}
+.band--paper .track-note{color:var(--paper-mute)}
+
 .more{
   display:inline-flex;align-items:center;gap:.8rem;margin-top:2.2rem;
   font-family:var(--f-en);font-size:11.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
@@ -683,19 +706,6 @@ footer{border-top:1px solid var(--rule-2);padding-block:2.5rem;font-size:.78rem;
 .form-foot{font-size:.8rem;color:var(--fg-mute);line-height:1.9;margin-top:1.4rem;max-width:44em}
 .form-foot a{border-bottom:1px solid var(--rule)}
 
-/* ---------- 経歴の年表 ---------- */
-.tl{margin-top:2.75rem;border-top:1px solid var(--rule)}
-.tl-item{
-  display:grid;grid-template-columns:120px 1fr;gap:1.6rem;
-  padding-block:1.6rem;border-bottom:1px solid var(--rule);align-items:start;
-}
-@media(max-width:640px){.tl-item{grid-template-columns:1fr;gap:.4rem}}
-.tl-period{
-  font-family:var(--f-en);font-size:.76rem;font-weight:700;letter-spacing:.12em;
-  color:var(--fg-mute);padding-top:.35rem;
-}
-.tl-h{font-family:var(--f-mincho);font-size:1.08rem;font-weight:500;line-height:1.6;color:var(--fg)}
-.tl-p{font-size:.9rem;line-height:2;color:var(--fg-mute);margin-top:.6rem;max-width:44em}
 
 /* ---------- プレスキット ---------- */
 .bio{display:grid;gap:1.25rem;margin-top:2.5rem}

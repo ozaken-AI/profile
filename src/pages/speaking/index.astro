@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
-import { SITE, MENU, STEPS, FAQ, TOPICS } from '../../lib/site';
+import { SITE, MENU, STEPS, FAQ, TOPICS, SPEAKING_TRACK } from '../../lib/site';
 import speakingStanding from '../../assets/photos/speaking-standing.jpg';
 import speakingSeated from '../../assets/photos/speaking-seated.jpg';
 import speakingCloseup from '../../assets/photos/speaking-closeup.jpg';
@@ -78,6 +78,25 @@ const description =
       ))}
     </div>
   </div>
+</section>
+
+<section class="band wrap" id="track" data-rail="登壇実績">
+  <p class="label rv">Track record</p>
+  <h2 class="h2 rv rv-d1">これまでの登壇</h2>
+  <p class="lede rv rv-d2">
+    展示会の特別講演から、社内向けの研修まで。規模の目安として、名前を出せるものを挙げています。
+  </p>
+  <div class="track rv rv-d2">
+    {SPEAKING_TRACK.map((g) => (
+      <div class="track-g">
+        <h3 class="track-k">{g.label}</h3>
+        <ul class="track-l">{g.items.map((i) => <li>{i}</li>)}</ul>
+      </div>
+    ))}
+  </div>
+  <p class="track-note rv rv-d2">
+    一回ごとの報告は<a href="/news/" style="border-bottom:1px solid var(--rule)">お知らせ</a>に残しています。ここに出しているのはその一部です。
+  </p>
 </section>
 
 <section class="band wrap" data-rail="依頼の流れ">

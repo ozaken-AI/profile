@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
-import { SITE, ROLES, NUMBERS, TIMELINE, PROFILE } from '../lib/site';
+import { SITE, ROLES, NUMBERS, MEDIA_TRACK, PROFILE } from '../lib/site';
 import portrait from '../assets/photos/portrait.jpg';
 import panel from '../assets/photos/panel.jpg';
 
@@ -14,7 +14,7 @@ const description =
 <section class="phead wrap" data-rail="プロフィール">
   <div class="phead-glow" aria-hidden="true"></div>
   <p class="label rv">About</p>
-  <h1 class="phead-h1 rv rv-d1">肩書きは複数あるが、<br />やっていることは一つしかない</h1>
+  <h1 class="phead-h1 rv rv-d1">技術と経営のあいだで、<br />翻訳をしています</h1>
 </section>
 
 <section class="band band--paper" data-rail="人物">
@@ -51,20 +51,20 @@ const description =
   </div>
 </section>
 
-<section class="band wrap" data-rail="経歴">
-  <p class="label rv">Career</p>
-  <h2 class="h2 rv rv-d1">いま関わっていること</h2>
-  <div class="tl rv rv-d2">
-    {TIMELINE.map((t) => (
-      <article class="tl-item">
-        <p class="tl-period">{t.period}</p>
-        <div>
-          <h3 class="tl-h">{t.h}</h3>
-          <p class="tl-p">{t.p}</p>
-        </div>
-      </article>
+<section class="band wrap" data-rail="メディア">
+  <p class="label rv">Media</p>
+  <h2 class="h2 rv rv-d1">メディア出演・掲載</h2>
+  <div class="track rv rv-d2">
+    {MEDIA_TRACK.map((g) => (
+      <div class="track-g">
+        <h3 class="track-k">{g.label}</h3>
+        <ul class="track-l">{g.items.map((i) => <li>{i}</li>)}</ul>
+      </div>
     ))}
   </div>
+  <p class="track-note rv rv-d2">
+    出演・掲載のたびに<a href="/news/" style="border-bottom:1px solid var(--rule)">お知らせ</a>に記録しています。ここに出しているのはその一部です。
+  </p>
 </section>
 
 <section class="band band--paper" data-rail="役職">
@@ -77,6 +77,7 @@ const description =
       ))}
     </div>
     <p class="lede rv rv-d2">
+      登壇実績は<a href="/speaking/" style="border-bottom:1px solid var(--paper-rule)">講演依頼のページ</a>に、
       告知ページ用のプロフィール文と顔写真は<a href="/press/" style="border-bottom:1px solid var(--paper-rule)">プレスキット</a>にまとめてあります。
     </p>
   </div>
