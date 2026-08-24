@@ -81,8 +81,49 @@
 
 ## 5. 公開したら自動でサイトに反映されるようにする
 
-microCMS の「API設定」→「Webhook」で Cloudflare Pages のデプロイフックを登録します。
-**Cloudflare 側の URL が必要なので、この手順はこちらで一緒にやります。** 先に 1〜4 だけ済ませてください。
+**サイトは microCMS を「ビルドのときだけ」読みます。** CMSで公開ボタンを押しても、
+再デプロイするまで公開ページは変わりません。これを自動でやるのが以下の設定です。
+
+### 5-1. Cloudflare でデプロイフックを作る
+
+Cloudflare ダッシュボード → **Workers & Pages** → `profile` → **Settings** →
+**Build** の中の **Deploy hooks** → **Add deploy hook**
+
+- Deploy hook name：`microcms`
+- Branch to build：`claude/ozaken-portfolio-site-a0aggr`
+  （本番として設定しているブランチ。Production branch と同じものを選ぶ）
+
+作ると `https://api.cloudflare.com/client/v4/pages/webhooks/deploy_hooks/xxxxxxxx`
+のような URL が出るのでコピーします。
+
+**この URL を知っている人は誰でもビルドを走らせられます。** 人に見せないでください。
+
+### 5-2. microCMS の Webhook に登録する
+
+microCMS → **お知らせ（news）** → **API設定** → **Webhook** → **追加**
+
+- 種類：**カスタム通知**
+- URL：5-1でコピーしたもの
+- 通知タイミング：**コンテンツの公開・更新・公開終了・削除** にチェック
+
+（下書き保存では動かないようにしておくと、余計なビルドが走りません）
+
+### 5-3. 確認する
+
+microCMS で適当な記事を1つ公開してみて、
+
+1. Cloudflare の **Deployments** に新しいビルドが積まれる
+2. 1〜2分で `https://ozaken.ai/news/` に反映される
+
+ここまで来れば完了です。以降は microCMS で公開ボタンを押すだけで反映されます。
+
+### 反映されないとき
+
+- **ビルドが始まらない** … Webhook の URL を確認。microCMS の Webhook 画面に
+  実行ログが残るので、そこにエラーが出ていないか見る
+- **ビルドは走るがお知らせが空** … Cloudflare の環境変数
+  `MICROCMS_SERVICE_DOMAIN` と `MICROCMS_API_KEY` が Production に入っているか。
+  取得に失敗してもビルドは通る作りなので、記事だけ空になります
 
 ---
 
