@@ -15,7 +15,8 @@ interface Props {
 const { title, description, ogImage, railInitial = '現在地' } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const isTop = Astro.url.pathname === '/';
-const og = ogImage ?? new URL('/ogp.png', Astro.site).href;
+// 相対パスで渡されても絶対URLにする。第1引数が絶対URLならベースは無視される。
+const og = new URL(ogImage ?? '/ogp.png', Astro.site).href;
 ---
 <!DOCTYPE html>
 <html lang="ja">
@@ -64,7 +65,9 @@ const og = ogImage ?? new URL('/ogp.png', Astro.site).href;
     es.forEach((e) => {
       if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); }
     });
-  }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    // お知らせ一覧のように画面より背の高い要素は交差比が0.12に届かない。
+    // しきい値は0にして、下端の余白で「少し入ったら」を作る。
+  }, { threshold: 0, rootMargin: '0px 0px -12% 0px' });
   document.querySelectorAll('.rv').forEach((el) => io.observe(el));
 
   const hero = document.querySelector('.hero');
@@ -104,9 +107,11 @@ const og = ogImage ?? new URL('/ogp.png', Astro.site).href;
   const marked = Array.from(document.querySelectorAll<HTMLElement>('[data-rail]'));
   if (railNow && marked.length) {
     railNow.style.transition = 'opacity .18s ease';
+    // 画面の中央あたりを横切っているものを現在地とみなす。
+    // 交差比で判定すると、背の高いセクションが一生ひっかからない。
     const ioR = new IntersectionObserver((es) => {
       es.forEach((e) => {
-        if (e.isIntersecting && e.intersectionRatio > 0.18) {
+        if (e.isIntersecting) {
           const label = (e.target as HTMLElement).dataset.rail!;
           if (railNow.textContent !== label) {
             railNow.style.opacity = '0';
@@ -114,7 +119,7 @@ const og = ogImage ?? new URL('/ogp.png', Astro.site).href;
           }
         }
       });
-    }, { threshold: [0.18, 0.5] });
+    }, { threshold: 0, rootMargin: '-45% 0px -50% 0px' });
     marked.forEach((el) => ioR.observe(el));
   }
 </script>

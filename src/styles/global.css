@@ -283,13 +283,44 @@ section{position:relative}
 .num-n{font-size:.79rem;color:var(--fg-mute);margin-top:.3rem;line-height:1.75}
 
 /* ---------- NEWS ---------- */
+/* カテゴリの絞り込み */
+.log-toolbar{
+  display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;
+}
+.chip{
+  font-family:var(--f-gothic);font-size:.8rem;line-height:1;letter-spacing:.04em;
+  color:var(--fg-mid);background:transparent;border:1px solid var(--rule);border-radius:999px;
+  padding:.55rem 1.05rem;cursor:pointer;
+  transition:color .3s ease,border-color .3s ease,background .3s ease;
+}
+.chip:hover{color:var(--fg);border-color:#3C4A66}
+.chip[aria-pressed="true"]{background:var(--fg);border-color:var(--fg);color:var(--ink)}
+.log-count{
+  margin-left:auto;font-family:var(--f-en);font-size:.72rem;font-weight:600;letter-spacing:.1em;
+  color:var(--fg-mute);font-variant-numeric:tabular-nums;
+}
+@media(max-width:520px){
+  .chip{font-size:.75rem;padding:.45rem .85rem}
+  .log-count{margin-left:0;width:100%}
+}
+
 .news-list{display:grid;gap:0;margin-top:2.5rem;border-top:1px solid var(--rule)}
 .news-row{
-  display:grid;grid-template-columns:104px auto minmax(0,1fr) auto;gap:1.4rem;align-items:baseline;
-  padding-block:1.35rem;border-bottom:1px solid var(--rule);
+  display:grid;grid-template-columns:132px 104px auto minmax(0,1fr) auto;gap:1.4rem;align-items:center;
+  padding-block:1.1rem;border-bottom:1px solid var(--rule);
   transition:background .35s ease,padding-inline .35s ease;
 }
 .news-row:hover{background:var(--ink-2);padding-inline:1rem}
+/* サムネイル。無い記事でも枠は残して、日付以降の位置を揃える */
+.news-thumb{
+  display:block;aspect-ratio:16/10;border-radius:2px;overflow:hidden;
+  background:var(--ink-2);border:1px solid var(--rule);
+}
+.news-thumb img{
+  width:100%;height:100%;object-fit:cover;display:block;
+  opacity:.82;transition:opacity .35s ease,transform .6s ease;
+}
+.news-row:hover .news-thumb img{opacity:1;transform:scale(1.04)}
 .news-date{font-family:var(--f-en);font-size:.82rem;font-weight:600;color:var(--fg-mute);font-variant-numeric:tabular-nums}
 .news-cat{
   font-family:var(--f-en);font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
@@ -299,9 +330,11 @@ section{position:relative}
 .news-arrow{font-family:var(--f-en);font-size:.9rem;color:var(--fg-mute);transition:transform .35s ease,color .35s ease}
 .news-row:hover .news-arrow{transform:translateX(5px);color:var(--fg)}
 @media(max-width:720px){
-  .news-row{grid-template-columns:1fr auto;gap:.35rem 1rem}
-  .news-cat{grid-row:1;grid-column:2}
-  .news-ttl{grid-column:1/-1}
+  .news-row{grid-template-columns:76px minmax(0,1fr) auto;gap:.3rem .9rem;align-items:center}
+  .news-thumb{grid-row:1/3;grid-column:1;align-self:start;margin-top:.15rem}
+  .news-date{grid-row:1;grid-column:2}
+  .news-cat{grid-row:1;grid-column:3}
+  .news-ttl{grid-row:2;grid-column:2/-1;font-size:.97rem}
   .news-arrow{display:none}
 }
 
@@ -475,7 +508,17 @@ footer{border-top:1px solid var(--rule-2);padding-block:2.5rem;font-size:.78rem;
 }
 .site-nav a:hover{color:var(--fg);border-bottom-color:var(--rule)}
 .site-nav a[aria-current="page"]{color:var(--fg);border-bottom-color:var(--seal)}
-@media(max-width:640px){.site-nav a{font-size:.76rem}}
+/* 5項目あるので狭い画面では折り返さず、はみ出すぶんだけ横に流す。
+   折り返すとヘッダーが2段になって、下のコンテンツに重なる。 */
+@media(max-width:640px){
+  .site-head{gap:.9rem;padding-inline:1rem}
+  .site-nav{
+    flex-wrap:nowrap;overflow-x:auto;gap:.75rem;justify-content:flex-start;
+    scrollbar-width:none;-webkit-overflow-scrolling:touch;
+  }
+  .site-nav::-webkit-scrollbar{display:none}
+  .site-nav a{font-size:.74rem}
+}
 
 .site-foot{background:var(--ink);border-top:1px solid var(--rule-2);padding-block:clamp(2.5rem,5vw,4rem)}
 .foot-grid{

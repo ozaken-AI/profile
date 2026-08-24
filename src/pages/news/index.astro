@@ -3,7 +3,7 @@ import Base from '../../layouts/Base.astro';
 import NewsList from '../../components/NewsList.astro';
 import { getNews, categoryOf } from '../../lib/microcms';
 
-const all = await getNews(200);
+const all = await getNews();
 const CATS = ['登壇', 'メディア', 'イベント', 'リリース'] as const;
 const present = CATS.filter((c) => all.some((n) => categoryOf(n) === c));
 

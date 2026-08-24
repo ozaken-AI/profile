@@ -5,6 +5,8 @@
  * キーを入れる前でもビルドが通り、お知らせだけが空の状態でサイトが出る。
  */
 
+import THUMB_SIZES from '../data/news-thumbs.json';
+
 export type NewsCategory = '登壇' | 'メディア' | 'イベント' | 'リリース';
 
 export type NewsItem = {
@@ -15,6 +17,12 @@ export type NewsItem = {
   publishedDate: string;
   excerpt?: string;
   thumbnail?: { url: string; width: number; height: number };
+  /**
+   * 旧サイトから取り込んだ記事のサムネイル。`/news/<スラッグ>.webp` を入れる。
+   * microCMS のメディアフィールドには外部URLを登録できないため、
+   * 取り込み分だけこのテキストフィールドを使う。新規投稿は thumbnail 側でよい。
+   */
+  thumbnailUrl?: string;
   body?: string;
   externalUrl?: string;
   eventName?: string;
@@ -47,11 +55,53 @@ export function categoryOf(item: NewsItem): string {
   return item.category?.[0] ?? 'お知らせ';
 }
 
+export type Thumb = {
+  src: string;
+  srcset?: string;
+  width?: number;
+  height?: number;
+};
+
+/**
+ * 記事のサムネイル。microCMS のメディアがあればそれを、
+ * 無ければ取り込み分の静的ファイル（/news/<スラッグ>.webp）を使う。
+ * どちらも無ければ null。
+ */
+export function thumbOf(item: NewsItem): Thumb | null {
+  const media = item.thumbnail;
+  if (media?.url) {
+    return {
+      src: `${media.url}?fm=webp&w=1200`,
+      srcset: [400, 800, 1200].map((w) => `${media.url}?fm=webp&w=${w} ${w}w`).join(', '),
+      width: media.width,
+      height: media.height,
+    };
+  }
+
+  const path = item.thumbnailUrl?.trim();
+  if (!path) return null;
+
+  const slug = path.replace(/^.*\//, '').replace(/\.webp$/, '');
+  const size = (THUMB_SIZES as Record<string, [number, number]>)[slug];
+  // 幅560pxの軽い版を同じ場所に置いてある。一覧では基本こちらが選ばれる。
+  const small = path.replace(/\.webp$/, '-sm.webp');
+  return {
+    src: path,
+    srcset: `${small} 560w, ${path} ${size?.[0] ?? 1200}w`,
+    width: size?.[0],
+    height: size?.[1],
+  };
+}
+
 type ListResponse = { contents: NewsItem[]; totalCount: number };
 
-async function fetchList(limit: number): Promise<ListResponse> {
+/** microCMS の list API が1回で返せる上限。 */
+const PAGE = 100;
+
+async function fetchPage(limit: number, offset: number): Promise<ListResponse> {
   const url = new URL(`https://${DOMAIN}.microcms.io/api/v1/news`);
   url.searchParams.set('limit', String(limit));
+  url.searchParams.set('offset', String(offset));
   // 掲載日の新しい順。過去分をあとから登録しても並びが崩れない。
   url.searchParams.set('orders', '-publishedDate');
 
@@ -62,18 +112,30 @@ async function fetchList(limit: number): Promise<ListResponse> {
   return (await res.json()) as ListResponse;
 }
 
+/** 100件ずつ切り出されるので、必要な数がそろうまでめくる。 */
+async function fetchList(limit: number): Promise<NewsItem[]> {
+  const items: NewsItem[] = [];
+  let total = Infinity;
+  while (items.length < limit && items.length < total) {
+    const page = await fetchPage(Math.min(PAGE, limit - items.length), items.length);
+    total = page.totalCount;
+    if (!page.contents?.length) break;
+    items.push(...page.contents);
+  }
+  return items;
+}
+
 /**
  * お知らせを取得する。
  * 未設定・通信失敗のときは空配列を返し、ビルドは止めない。
  */
-export async function getNews(limit = 100): Promise<NewsItem[]> {
+export async function getNews(limit = 500): Promise<NewsItem[]> {
   if (!cmsConfigured) {
     console.warn('[microcms] 環境変数が未設定のため、お知らせは空で書き出します');
     return [];
   }
   try {
-    const { contents } = await fetchList(limit);
-    return contents ?? [];
+    return await fetchList(limit);
   } catch (e) {
     console.error('[microcms] 取得に失敗しました:', e instanceof Error ? e.message : e);
     return [];

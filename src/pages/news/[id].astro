@@ -1,9 +1,9 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { getNews, formatDate, categoryOf, type NewsItem } from '../../lib/microcms';
+import { getNews, formatDate, categoryOf, thumbOf, type NewsItem } from '../../lib/microcms';
 
 export async function getStaticPaths() {
-  const items = await getNews(200);
+  const items = await getNews();
   // CMSが未設定・到達不能なら空。ページは生成されないがビルドは通る。
   return items.map((item) => ({ params: { id: item.id }, props: { item } }));
 }
@@ -12,6 +12,9 @@ interface Props { item: NewsItem; }
 const { item } = Astro.props;
 
 const cat = categoryOf(item);
+const thumb = thumbOf(item);
+// OGPはjpgのほうが確実に展開される。取り込み分（webpの静的ファイル）は既定画像に任せる。
+const ogImage = item.thumbnail?.url ? `${item.thumbnail.url}?fm=jpg&w=1200` : undefined;
 const meta = [
   item.eventName && { k: 'イベント', v: item.eventName },
   item.audience && { k: '対象', v: item.audience },
@@ -19,12 +22,17 @@ const meta = [
   item.location && { k: '場所', v: item.location },
 ].filter(Boolean) as { k: string; v: string }[];
 
+// 抜粋は本文の書き出しから作ってあることが多い。詳細ページで同じ文が二度続かないようにする。
+const lead = item.excerpt?.trim() ?? '';
+const bodyHead = (item.body ?? '').replace(/<[^>]*>/g, '').replace(/&amp;/g, '&').slice(0, 60);
+const showLead = lead.length > 0 && !bodyHead.startsWith(lead.slice(0, 24));
+
 const title = `${item.title} | 小澤健祐（おざけん）`;
 const description =
-  item.excerpt?.trim() ||
+  lead ||
   `${formatDate(item.publishedDate)}｜${cat}。${item.eventName ?? ''} 小澤健祐（おざけん）のお知らせ。`;
 ---
-<Base {title} {description} ogImage={item.thumbnail?.url} railInitial={cat}>
+<Base {title} {description} {...(ogImage ? { ogImage } : {})} railInitial={cat}>
 
 <article class="post" data-rail={cat}>
   <div class="wrap">
@@ -34,16 +42,16 @@ const description =
         <time datetime={item.publishedDate}>{formatDate(item.publishedDate)}</time>
       </p>
       <h1 class="post-h1">{item.title}</h1>
-      {item.excerpt && <p class="post-excerpt">{item.excerpt}</p>}
+      {showLead && <p class="post-excerpt">{lead}</p>}
     </div>
 
-    {item.thumbnail && (
+    {thumb && (
       <figure class="post-thumb rv rv-d1">
         <img
-          src={`${item.thumbnail.url}?fm=webp&w=1600`}
-          srcset={`${item.thumbnail.url}?fm=webp&w=800 800w, ${item.thumbnail.url}?fm=webp&w=1600 1600w`}
+          src={thumb.src}
+          srcset={thumb.srcset}
           sizes="(max-width:900px) 100vw, 900px"
-          width={item.thumbnail.width} height={item.thumbnail.height}
+          width={thumb.width} height={thumb.height}
           alt="" loading="eager" decoding="async"
         />
       </figure>
