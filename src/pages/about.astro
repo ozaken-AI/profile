@@ -14,7 +14,7 @@ const description =
 <section class="phead wrap" data-rail="プロフィール">
   <div class="phead-glow" aria-hidden="true"></div>
   <p class="label rv">About</p>
-  <h1 class="phead-h1 rv rv-d1">技術と経営のあいだで、<br />翻訳をしています</h1>
+  <h1 class="phead-h1 rv rv-d1">目指してきたのは、<br />分断をこえること</h1>
 </section>
 
 <section class="band band--paper" data-rail="人物">
@@ -24,8 +24,8 @@ const description =
       <div class="profile-body rv rv-d1">
         {PROFILE.map((t) => <p>{t}</p>)}
         <div class="shots">
-          <Image src={portrait} alt="小澤健祐" width={1200} widths={[420, 840, 1200]} quality={82} sizes="(max-width:600px) 100vw, 30vw" class="shot shot--tall" />
-          <Image src={panel} alt="対談に登壇する小澤健祐" width={1600} widths={[600, 1200, 1600]} quality={82} sizes="(max-width:600px) 100vw, 42vw" class="shot shot--wide" />
+          <Image src={portrait} alt="小澤健祐" width={1600} widths={[420, 840, 1200, 1600]} quality={84} sizes="(max-width:600px) 100vw, 30vw" class="shot shot--tall" />
+          <Image src={panel} alt="対談に登壇する小澤健祐" width={2200} widths={[600, 1200, 1600, 2200]} quality={84} sizes="(max-width:600px) 100vw, 42vw" class="shot shot--wide" />
         </div>
       </div>
     </div>
@@ -76,6 +76,7 @@ const description =
         <div class="credit"><b>{r.org}</b><span>{r.title}</span></div>
       ))}
     </div>
+    <p class="credits-etc">など</p>
     <p class="lede rv rv-d2">
       登壇実績は<a href="/speaking/" style="border-bottom:1px solid var(--paper-rule)">講演依頼のページ</a>に、
       告知ページ用のプロフィール文と顔写真は<a href="/press/" style="border-bottom:1px solid var(--paper-rule)">プレスキット</a>にまとめてあります。

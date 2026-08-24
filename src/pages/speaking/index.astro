@@ -24,7 +24,7 @@ const description =
 </section>
 
 <figure class="stage" data-rail="登壇の現場">
-  <Image src={speakingCloseup} alt="生成AIについて講演する小澤健祐" width={3200} widths={[1000, 1600, 2400, 3200]} quality={82} sizes="100vw" loading="eager" class="stage-img" />
+  <Image src={speakingCloseup} alt="生成AIについて講演する小澤健祐" width={4000} widths={[1200, 1800, 2600, 3400, 4000]} quality={84} sizes="100vw" loading="eager" class="stage-img" />
   <figcaption class="stage-cap">
     <div class="stage-cap-inner">
       <p>その日、その場の人たちに向けて話す。</p>
@@ -35,14 +35,15 @@ const description =
 
 <section class="band wrap" data-rail="依頼の形">
   <p class="label rv">Formats</p>
-  <h2 class="h2 rv rv-d1">4つの形から選べます。</h2>
+  <h2 class="h2 rv rv-d1">講演・研修・伴走支援・<br />アドバイザリーの4つです。</h2>
   <p class="lede rv rv-d2">どれに当てはまるか分からない場合も、目的だけ伝えてもらえればこちらから提案します。</p>
 
   <div class="menu rv rv-d2">
     {MENU.map((m) => (
       <div class="menu-item">
         <span class="menu-idx">{m.idx}</span>
-        <h3 class="menu-h">{m.title}</h3>
+        <h3 class="menu-h">{m.kind}</h3>
+        <p class="menu-sub">{m.title}</p>
         <p class="menu-spec">{m.spec}</p>
         <p class="menu-p">{m.body}</p>
         <p class="menu-for">向いている場：<b>{m.forWhom}</b></p>
@@ -51,8 +52,8 @@ const description =
   </div>
 
   <div class="pair rv rv-d3">
-    <Image src={speakingStanding} alt="基調講演で登壇する小澤健祐" width={1600} widths={[560, 1120, 1600]} quality={82} sizes="(max-width:600px) 100vw, 46vw" class="shotbox" />
-    <Image src={speakingSeated} alt="パネルディスカッションに登壇する小澤健祐" width={1600} widths={[560, 1120, 1600]} quality={82} sizes="(max-width:600px) 100vw, 46vw" class="shotbox" />
+    <Image src={speakingStanding} alt="基調講演で登壇する小澤健祐" width={2000} widths={[560, 1120, 1600, 2000]} quality={84} sizes="(max-width:600px) 100vw, 46vw" class="shotbox" />
+    <Image src={speakingSeated} alt="パネルディスカッションに登壇する小澤健祐" width={2000} widths={[560, 1120, 1600, 2000]} quality={84} sizes="(max-width:600px) 100vw, 46vw" class="shotbox" />
   </div>
 </section>
 
@@ -82,9 +83,9 @@ const description =
 
 <section class="band wrap" id="track" data-rail="登壇実績">
   <p class="label rv">Track record</p>
-  <h2 class="h2 rv rv-d1">これまでの登壇</h2>
+  <h2 class="h2 rv rv-d1">これまでの登壇・支援</h2>
   <p class="lede rv rv-d2">
-    展示会の特別講演から、社内向けの研修まで。規模の目安として、名前を出せるものを挙げています。
+    展示会の特別講演から、社内向けの研修、顧問として関わっている先まで。規模の目安として、名前を出せるものを挙げています。
   </p>
   <div class="track rv rv-d2">
     {SPEAKING_TRACK.map((g) => (

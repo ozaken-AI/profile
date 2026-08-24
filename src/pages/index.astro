@@ -56,12 +56,12 @@ const description =
 <figure class="stage" id="s-stage" data-rail="現場">
   <Image
     src={heroStage} alt="登壇する小澤健祐"
-    width={3200} widths={[1000, 1600, 2400, 3200]} quality={82}
+    width={4000} widths={[1200, 1800, 2600, 3400, 4000]} quality={84}
     sizes="100vw" loading="eager" fetchpriority="high" class="stage-img"
   />
   <figcaption class="stage-cap">
     <div class="stage-cap-inner">
-      <p>この日も、どこかで話している。</p>
+      <p>今日も、どこかで話している。</p>
       <span>Speaking · 300+ times a year</span>
     </div>
   </figcaption>
@@ -74,7 +74,7 @@ const description =
   <div class="nums-wrap">
     <Image
       src={venue} alt="" aria-hidden="true"
-      width={2800} widths={[1200, 2000, 2800]} quality={78} sizes="100vw" loading="lazy" class="nums-img"
+      width={4000} widths={[1200, 2000, 2800, 4000]} quality={78} sizes="100vw" loading="lazy" class="nums-img"
     />
     <div class="nums">
       {NUMBERS.map((n) => (
@@ -107,13 +107,13 @@ const description =
   <div class="wrap">
     <p class="label rv">Profile</p>
     <div class="profile-grid">
-      <p class="profile-vert rv">技術と経営のあいだで、<br />翻訳をしています</p>
+      <p class="profile-vert rv">目指してきたのは、<br />分断をこえること</p>
       <div class="profile-body rv rv-d1">
         {PROFILE.map((t) => <p>{t}</p>)}
 
         <div class="shots">
-          <Image src={portrait} alt="小澤健祐" width={1200} widths={[420, 840, 1200]} quality={82} sizes="(max-width:600px) 100vw, 30vw" class="shot shot--tall" />
-          <Image src={portraitFull} alt="登壇する小澤健祐" width={1600} widths={[600, 1200, 1600]} quality={82} sizes="(max-width:600px) 100vw, 42vw" class="shot shot--wide" />
+          <Image src={portrait} alt="小澤健祐" width={1600} widths={[420, 840, 1200, 1600]} quality={84} sizes="(max-width:600px) 100vw, 30vw" class="shot shot--tall" />
+          <Image src={portraitFull} alt="登壇する小澤健祐" width={2200} widths={[600, 1200, 1600, 2200]} quality={84} sizes="(max-width:600px) 100vw, 42vw" class="shot shot--wide" />
         </div>
 
         <div class="credits">
@@ -121,6 +121,7 @@ const description =
             <div class="credit"><b>{r.org}</b><span>{r.title}</span></div>
           ))}
         </div>
+        <p class="credits-etc">など</p>
         <a class="more" href="/about/">詳しい経歴 <span>→</span></a>
       </div>
     </div>
@@ -137,7 +138,8 @@ const description =
     {MENU.map((m) => (
       <div class="menu-item">
         <span class="menu-idx">{m.idx}</span>
-        <h3 class="menu-h">{m.title}</h3>
+        <h3 class="menu-h">{m.kind}</h3>
+        <p class="menu-sub">{m.title}</p>
         <p class="menu-spec">{m.spec}</p>
         <p class="menu-p">{m.body}</p>
         <p class="menu-for">向いている場：<b>{m.forWhom}</b></p>
@@ -146,8 +148,8 @@ const description =
   </div>
 
   <div class="pair rv rv-d3">
-    <Image src={speakingStanding} alt="基調講演で登壇する小澤健祐" width={1600} widths={[560, 1120, 1600]} quality={82} sizes="(max-width:600px) 100vw, 46vw" class="shotbox" />
-    <Image src={speakingSeated} alt="パネルディスカッションに登壇する小澤健祐" width={1600} widths={[560, 1120, 1600]} quality={82} sizes="(max-width:600px) 100vw, 46vw" class="shotbox" />
+    <Image src={speakingStanding} alt="基調講演で登壇する小澤健祐" width={2000} widths={[560, 1120, 1600, 2000]} quality={84} sizes="(max-width:600px) 100vw, 46vw" class="shotbox" />
+    <Image src={speakingSeated} alt="パネルディスカッションに登壇する小澤健祐" width={2000} widths={[560, 1120, 1600, 2000]} quality={84} sizes="(max-width:600px) 100vw, 46vw" class="shotbox" />
   </div>
 
   <p class="track-note rv rv-d3" style="margin-top:2.2rem">
@@ -177,12 +179,6 @@ const description =
     <div class="res-go" aria-hidden="true">→</div>
   </a>
 
-  <div class="roles rv rv-d2" style="margin-top:2.75rem">
-    <div class="role"><p class="role-k">著書</p><p class="role-org">生成AI導入の教科書</p><p class="role-t">Book</p></div>
-    <div class="role"><p class="role-k">著書</p><p class="role-org">AIエージェントの教科書</p><p class="role-t">Book</p></div>
-    <div class="role"><p class="role-k">メディア</p><p class="role-org">NewsPicks</p><p class="role-t">Pro Picker</p></div>
-    <div class="role"><p class="role-k">番組</p><p class="role-org">AI DIVE</p><p class="role-t">Main MC</p></div>
-  </div>
 </section>
 
 <!-- ============ PROCESS + FAQ（紙の面） ============ -->

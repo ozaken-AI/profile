@@ -251,7 +251,8 @@ section{position:relative}
 .pair{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:2.5rem}
 .pair .shotbox{aspect-ratio:16/10}
 .shotbox{
-  width:100%;aspect-ratio:16/10;object-fit:cover;display:block;
+  /* height を書かないと img の height 属性がそのまま効いて aspect-ratio が無視される */
+  width:100%;height:auto;aspect-ratio:16/10;object-fit:cover;display:block;
   border:1px solid var(--rule);border-radius:2px;
 }
 @media(max-width:600px){.pair{grid-template-columns:1fr}}
@@ -392,6 +393,8 @@ section{position:relative}
 .credit{display:grid;grid-template-columns:1fr auto;gap:1rem;padding-block:.75rem;border-bottom:1px solid var(--paper-rule);font-size:.85rem}
 .credit span{color:var(--paper-mute)}
 .credit b{font-weight:500;font-family:var(--f-mincho);font-size:.93rem}
+.credits-etc{font-family:var(--f-mincho);font-size:.9rem;color:var(--fg-mute);margin-top:.9rem}
+.band--paper .credits-etc{color:var(--paper-mute)}
 @media(max-width:760px){.profile-grid{grid-template-columns:1fr}.profile-vert{writing-mode:horizontal-tb;border-left:0;padding-left:0;border-bottom:1px solid var(--paper-rule);padding-bottom:1.2rem;max-height:none}}
 
 /* ---------- SPEAKING（依頼メニュー） ---------- */
@@ -399,7 +402,8 @@ section{position:relative}
 .menu-item{background:var(--ink);padding:clamp(1.75rem,3vw,2.4rem);display:flex;flex-direction:column;gap:.9rem;transition:background .4s ease}
 .menu-item:hover{background:var(--ink-2)}
 .menu-idx{font-family:var(--f-en);font-size:10.5px;font-weight:700;letter-spacing:.2em;color:var(--fg-mute)}
-.menu-h{font-family:var(--f-mincho);font-size:1.22rem;font-weight:500;line-height:1.5}
+.menu-h{font-family:var(--f-mincho);font-size:1.62rem;font-weight:500;line-height:1.4;letter-spacing:.04em}
+.menu-sub{font-family:var(--f-mincho);font-size:.95rem;color:var(--fg-mid);line-height:1.6;margin-top:-.35rem}
 .menu-spec{font-family:var(--f-en);font-size:.8rem;color:var(--fg-mid);letter-spacing:.04em;font-variant-numeric:tabular-nums}
 .menu-p{font-size:.86rem;color:var(--fg-mute);line-height:1.95}
 .menu-for{margin-top:auto;padding-top:1rem;border-top:1px solid var(--rule-2);font-size:.78rem;color:var(--fg-mute)}
@@ -453,11 +457,6 @@ section{position:relative}
 @media(max-width:640px){.res{grid-template-columns:1fr}.res-go{justify-self:start}}
 
 /* ---------- ROLES ---------- */
-.roles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1px;background:var(--rule-2);margin-top:2.75rem;border:1px solid var(--rule-2)}
-.role{background:var(--ink);padding:1.5rem 1.4rem}
-.role-org{font-family:var(--f-mincho);font-size:1rem;line-height:1.5}
-.role-t{font-family:var(--f-en);font-size:.76rem;letter-spacing:.14em;text-transform:uppercase;color:var(--fg-mute);margin-top:.5rem}
-.role-k{font-size:.72rem;color:var(--fg-mute);opacity:.65;margin-bottom:.45rem}
 
 /* ---------- PROCESS ---------- */
 .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1px;background:var(--paper-rule);margin-top:3rem;border:1px solid var(--paper-rule)}
