@@ -15,6 +15,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 const SRC = new URL('../docs/legacy/cms_content_20260824.json', import.meta.url);
 const OUT_JSON = new URL('../docs/legacy/news-import.json', import.meta.url);
 const OUT_CSV = new URL('../docs/legacy/news-import.csv', import.meta.url);
+const SCHEMA = new URL('../docs/microcms-news-schema.json', import.meta.url);
 
 /** シェアボタンのリンク。本文の関連リンクには出さない。 */
 const SHARE_HOSTS = /^https?:\/\/(www\.)?(twitter\.com|x\.com|facebook\.com|linkedin\.com|line\.me)\//;
@@ -117,9 +118,14 @@ records.sort((a, b) => b.publishedDate.localeCompare(a.publishedDate));
 
 await writeFile(OUT_JSON, JSON.stringify(records, null, 2) + '\n');
 
-/* --- CSV --- */
-const COLUMNS = ['id', 'title', 'category', 'publishedDate', 'excerpt', 'body'];
-const cell = (v) => `"${String(Array.isArray(v) ? v[0] : v).replace(/"/g, '""')}"`;
+/* --- CSV ---
+ * microCMS のインポートは「スキーマの全フィールド＋コンテンツID」がそろっていないと
+ * 列数の不一致で弾かれる。使わない欄も空で並べるため、列はスキーマ定義から組み立てる。
+ */
+const schema = JSON.parse(await readFile(SCHEMA, 'utf8'));
+const COLUMNS = ['id', ...schema.apiFields.map((f) => f.fieldId)];
+
+const cell = (v) => `"${String(Array.isArray(v) ? v[0] : (v ?? '')).replace(/"/g, '""')}"`;
 const csv =
   '﻿' + // Excel で開いたときに文字化けしないよう BOM を付ける
   [COLUMNS.join(','), ...records.map((r) => COLUMNS.map((c) => cell(r[c])).join(','))].join('\r\n') +
@@ -129,4 +135,5 @@ await writeFile(OUT_CSV, csv);
 const counts = {};
 for (const r of records) counts[r.category[0]] = (counts[r.category[0]] ?? 0) + 1;
 console.log(`${records.length}件を書き出しました`);
+console.log(`CSVの列（${COLUMNS.length}）: ${COLUMNS.join(', ')}`);
 console.log(counts);

@@ -34,11 +34,27 @@
 CSV はこのリポジトリの `docs/legacy/` にあります。
 GitHub の画面から **Download raw file** で落とせます。
 
-### `id` の列でエラーが出たら
+### 「列数が違う」と出たら
 
-1行目の先頭の `id,` と、各行の1つめの値を消してから読み込んでください。
-記事のURLが `/news/DAIB1/` のような読める形ではなく microCMS の自動IDになりますが、
-それ以外は同じものが入ります。
+> The number of columns in the CSV data differs from the number of fields in the API schema
+
+microCMS のインポートは、**スキーマの全フィールド＋コンテンツID が1列ずつそろっている**
+必要があります。使わない欄も空のまま並べなければ弾かれます。
+
+このCSVは `docs/microcms-news-schema.json` から列を組み立てているので、
+**microCMS 側のフィールドがこのリポジトリのスキーマと同じなら通ります。**
+
+```
+id, title, category, publishedDate, excerpt, thumbnail,
+body, externalUrl, eventName, audience, scale, location   ← 12列
+```
+
+それでも列数が違うと言われる場合は、microCMS 側にこのリポジトリに無いフィールドが
+残っています。**とくに `thumbnailUrl`** ── 以前この欄を足す手順を案内しましたが、
+一覧のサムネイルをやめたので不要になりました。microCMS のスキーマから削除してください。
+
+削除したくない場合は、`docs/microcms-news-schema.json` にそのフィールドを書き足して
+`node scripts/news-build-import.mjs` を実行し直すと、列がそろったCSVが出ます。
 
 ### 一度に読み込める件数の上限に当たったら
 
