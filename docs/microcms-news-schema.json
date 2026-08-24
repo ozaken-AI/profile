@@ -1,0 +1,113 @@
+{
+  "apiFields": [
+    {
+      "idValue": "tzjgqLMaS_",
+      "fieldId": "title",
+      "name": "タイトル",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "idValue": "9yBmqxR7ia",
+      "fieldId": "category",
+      "name": "カテゴリ",
+      "kind": "select",
+      "required": true,
+      "selectItems": [
+        {
+          "id": "TQkZVJvMRl",
+          "value": "登壇"
+        },
+        {
+          "id": "pvIrVw7fiM",
+          "value": "メディア"
+        },
+        {
+          "id": "IsK2rWbIeI",
+          "value": "イベント"
+        },
+        {
+          "id": "1ygZKJrTWD",
+          "value": "リリース"
+        }
+      ],
+      "multipleSelect": false
+    },
+    {
+      "idValue": "Wim4cFw1kT",
+      "fieldId": "publishedDate",
+      "name": "掲載日",
+      "kind": "date",
+      "required": true
+    },
+    {
+      "idValue": "-xxeW3DV-8",
+      "fieldId": "excerpt",
+      "name": "抜粋",
+      "kind": "textArea"
+    },
+    {
+      "idValue": "Q1NH2X3A-g",
+      "fieldId": "thumbnail",
+      "name": "サムネイル",
+      "kind": "media"
+    },
+    {
+      "idValue": "mEMKfTc_49",
+      "fieldId": "body",
+      "name": "本文",
+      "kind": "richEditorV2",
+      "richEditorV2Options": [
+        "headerTwo",
+        "headerThree",
+        "headerFour",
+        "paragraph",
+        "bold",
+        "italic",
+        "underline",
+        "strike",
+        "link",
+        "blockquote",
+        "bulletList",
+        "orderedList",
+        "horizontalRule",
+        "codeBlock",
+        "code",
+        "image",
+        "table",
+        "clean"
+      ]
+    },
+    {
+      "idValue": "SjU1eJfANy",
+      "fieldId": "externalUrl",
+      "name": "外部リンク",
+      "kind": "text"
+    },
+    {
+      "idValue": "ah7evdKm3N",
+      "fieldId": "eventName",
+      "name": "イベント名",
+      "kind": "text"
+    },
+    {
+      "idValue": "xFkQ9MYEvG",
+      "fieldId": "audience",
+      "name": "対象者",
+      "kind": "text"
+    },
+    {
+      "idValue": "f_5oDEJ_7M",
+      "fieldId": "scale",
+      "name": "規模",
+      "kind": "text"
+    },
+    {
+      "idValue": "pHBZ_uv9OO",
+      "fieldId": "location",
+      "name": "場所",
+      "kind": "text"
+    }
+  ],
+  "customFields": []
+}
