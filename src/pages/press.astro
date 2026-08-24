@@ -73,10 +73,11 @@ const photos = [
   <div class="press-grid rv rv-d2">
     {photos.map((p) => (
       <a class="press-item" href={p.file} download>
-        <Image src={p.img} alt={p.alt} width={1200} widths={[400, 800, 1200]} quality={82} sizes="(max-width:700px) 100vw, 32vw" class="press-img" />
+        <Image src={p.img} alt={p.alt} width={1000} widths={[300, 600, 1000]} quality={82} sizes="(max-width:420px) 46vw, (max-width:700px) 45vw, 30vw" class="press-img" />
         <div class="press-meta">
           <span class="press-label">{p.label}</span>
           <span class="press-spec">{p.spec}</span>
+          <span class="press-dl">Download <span aria-hidden="true">↓</span></span>
         </div>
       </a>
     ))}

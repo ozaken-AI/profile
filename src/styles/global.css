@@ -672,10 +672,25 @@ footer{border-top:1px solid var(--rule-2);padding-block:2.5rem;font-size:.78rem;
 .copy:hover{background:var(--paper-fg);color:var(--paper)}
 .copy.is-done{background:var(--seal);border-color:var(--seal);color:#fff}
 
-.press-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1.25rem;margin-top:2.5rem}
+/* 配布する写真そのものを見せる場所なので、トリミングせず元の比率で並べる */
+.press-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+  gap:1rem;margin-top:2.5rem;align-items:start;
+}
+@media(max-width:420px){.press-grid{grid-template-columns:repeat(2,1fr)}}
 .press-item{display:block;border:1px solid var(--rule);border-radius:3px;overflow:hidden;background:var(--ink-2);transition:border-color .35s ease}
 .press-item:hover{border-color:#3C4A66}
-.press-img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
-.press-meta{display:flex;align-items:baseline;justify-content:space-between;gap:.8rem;padding:.85rem 1rem}
-.press-label{font-family:var(--f-mincho);font-size:.95rem;color:var(--fg)}
-.press-spec{font-family:var(--f-en);font-size:.72rem;color:var(--fg-mute);letter-spacing:.04em}
+.press-img{width:100%;height:auto;display:block}
+/* 横並びだと狭い画面で折り返すため、常に縦に積む */
+.press-meta{display:flex;flex-direction:column;gap:.15rem;padding:.8rem .9rem}
+.press-label{font-family:var(--f-mincho);font-size:.92rem;color:var(--fg);line-height:1.4}
+.press-spec{
+  font-family:var(--f-en);font-size:.7rem;color:var(--fg-mute);
+  letter-spacing:.04em;font-variant-numeric:tabular-nums;
+}
+.press-dl{
+  font-family:var(--f-en);font-size:.66rem;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--fg-mute);margin-top:.35rem;
+  display:flex;align-items:center;gap:.3rem;
+}
+.press-item:hover .press-dl{color:var(--fg)}
