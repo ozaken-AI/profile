@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
-import { SITE, ROLES, NUMBERS, TIMELINE } from '../lib/site';
+import { SITE, ROLES, NUMBERS, TIMELINE, PROFILE } from '../lib/site';
 import portrait from '../assets/photos/portrait.jpg';
 import panel from '../assets/photos/panel.jpg';
 
@@ -15,20 +15,14 @@ const description =
   <div class="phead-glow" aria-hidden="true"></div>
   <p class="label rv">About</p>
   <h1 class="phead-h1 rv rv-d1">肩書きは複数あるが、<br />やっていることは一つしかない</h1>
-  <p class="phead-lede rv rv-d2">
-    技術のことばを、経営の意思決定に翻訳する。経営のことばを、現場の手順に翻訳する。
-    私がやっているのは、この2方向の翻訳だけです。
-  </p>
 </section>
 
 <section class="band band--paper" data-rail="人物">
   <div class="wrap">
     <div class="profile-grid">
-      <p class="profile-vert rv">語る側から、<br />動かす側へ</p>
+      <p class="profile-vert rv">分断のどちら側にも、<br />足を置いておきたい</p>
       <div class="profile-body rv rv-d1">
-        <p>出発点は、AI専門メディア「AINOW」の編集長でした。国内のAI活用事例を一次情報で追い続けるなかで、うまくいかない導入には共通の構造があると気づきます。それを自分で解くために、語る側から動かす側へ軸足を移しました。</p>
-        <p>いまは協会で業界の共通言語づくりに取り組みながら、事業会社の経営で実装の現実に向き合い、行政や大企業には外から助言する立場で関わっています。<b>この3つを行き来していること</b>が、話す内容の土台になっています。</p>
-        <p>もうひとつ、和辻哲郎・九鬼周造・柳田國男といった日本の思想を手がかりに、AIと文化の接続を考えてきました。「なぜ日本の組織ではAI導入が進まないのか」を、能力ではなく<b>文化構造の側から</b>考える切り口です。技術の話とは別の角度からお話しできることの一つだと思っています。</p>
+        {PROFILE.map((t) => <p>{t}</p>)}
         <div class="shots">
           <Image src={portrait} alt="小澤健祐" width={1200} widths={[420, 840, 1200]} quality={82} sizes="(max-width:600px) 100vw, 30vw" class="shot shot--tall" />
           <Image src={panel} alt="対談に登壇する小澤健祐" width={1600} widths={[600, 1200, 1600]} quality={82} sizes="(max-width:600px) 100vw, 42vw" class="shot shot--wide" />
