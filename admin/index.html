@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>登壇レポート入力 | ozaken.ai</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Shippori+Mincho+B1:wght@400;500;600&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:#1a1a2e; --navy:#1f3864; --navy-deep:#141d35; --azure:#2e5496;
+  --azure-pale:#d8e4f0; --paper:#f8f7f4; --white:#fff; --red:#e23744;
+  --red-bright:#ff5d6a; --muted:#6b7a99;
+  --font-ja-sans:'Zen Kaku Gothic New',sans-serif;
+  --font-ja-serif:'Shippori Mincho B1',serif;
+  --font-en:'Hanken Grotesk',sans-serif;
+  --radius:10px; --radius-sm:6px;
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:var(--font-ja-sans); background:var(--paper); color:var(--ink); font-size:15px; line-height:1.8; }
+.wrap { max-width:1040px; margin:0 auto; padding:0 1.25rem 5rem; }
+
+header { background:var(--navy); color:#fff; padding:2.5rem 1.25rem 2rem; }
+header .inner { max-width:1040px; margin:0 auto; }
+.eyebrow { display:inline-block; font-family:var(--font-en); font-size:11px; font-weight:700;
+  letter-spacing:.12em; text-transform:uppercase; background:rgba(255,255,255,.15);
+  padding:3px 10px; border-radius:4px; margin-bottom:.9rem; }
+h1 { font-family:var(--font-ja-serif); font-size:1.6rem; font-weight:500; line-height:1.4; }
+header p { font-size:.88rem; color:rgba(255,255,255,.75); margin-top:.6rem; }
+
+.panel { background:var(--white); border-radius:var(--radius); box-shadow:0 2px 10px rgba(26,26,46,.08);
+  padding:1.6rem 1.7rem; margin-top:1.5rem; }
+.panel > h2 { font-family:var(--font-ja-serif); font-size:1.12rem; font-weight:500;
+  padding-bottom:.5rem; border-bottom:1px solid var(--azure-pale); margin-bottom:1.1rem; }
+.hint { font-size:.8rem; color:var(--muted); line-height:1.85; }
+
+.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:.9rem 1.1rem; }
+.field { display:flex; flex-direction:column; gap:.3rem; }
+.field.wide { grid-column:1/-1; }
+label { font-family:var(--font-en); font-size:11px; font-weight:700; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--azure); }
+label span { font-family:var(--font-ja-sans); font-size:11.5px; letter-spacing:0;
+  text-transform:none; color:var(--muted); font-weight:400; margin-left:.4rem; }
+input, select, textarea {
+  font-family:var(--font-ja-sans); font-size:.92rem; color:var(--ink);
+  border:1px solid rgba(46,84,150,.28); border-radius:var(--radius-sm);
+  padding:.55rem .7rem; background:#fff; width:100%;
+}
+input:focus, select:focus, textarea:focus { outline:2px solid var(--azure-pale); border-color:var(--azure); }
+textarea { resize:vertical; min-height:76px; line-height:1.75; }
+.req { color:var(--red); }
+
+.actions { display:flex; flex-wrap:wrap; gap:.6rem; margin-top:1.2rem; align-items:center; }
+button {
+  font-family:var(--font-ja-sans); font-size:.86rem; font-weight:700; cursor:pointer;
+  border-radius:var(--radius-sm); padding:.55rem 1.15rem; border:1px solid var(--azure);
+  background:var(--azure); color:#fff; transition:opacity .18s ease;
+}
+button:hover { opacity:.85; }
+button.ghost { background:transparent; color:var(--azure); }
+button.danger { background:transparent; color:var(--red); border-color:rgba(226,55,68,.45); }
+button.small { font-size:.76rem; padding:.3rem .7rem; }
+.status { font-size:.8rem; color:var(--muted); }
+.status.ok { color:var(--azure); font-weight:700; }
+.status.err { color:var(--red); font-weight:700; }
+
+.rows { display:grid; gap:.6rem; margin-top:.4rem; }
+.row { border:1px solid rgba(46,84,150,.18); border-left:3px solid var(--azure);
+  border-radius:var(--radius-sm); padding:.75rem .95rem; background:#fbfcfe;
+  display:grid; grid-template-columns:88px 1fr auto; gap:.2rem .9rem; align-items:start; }
+.row-date { font-family:var(--font-en); font-size:.8rem; font-weight:700; color:var(--azure);
+  grid-column:1; grid-row:1; }
+.row-body { grid-column:2; grid-row:1; }
+.row-title { font-family:var(--font-ja-serif); font-size:.98rem; line-height:1.55; }
+.row-meta { font-size:.78rem; color:var(--muted); grid-column:2; grid-row:2; }
+.row-ops { display:flex; gap:.35rem; grid-column:3; grid-row:1/3; align-self:start; }
+.row.is-editing { background:#fff8f8; border-left-color:var(--red); }
+.empty { font-size:.86rem; color:var(--muted); padding:1.2rem; text-align:center;
+  border:1px dashed rgba(46,84,150,.3); border-radius:var(--radius-sm); }
+
+pre#out { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.78rem; line-height:1.6;
+  background:var(--navy-deep); color:#e8eef8; border-radius:var(--radius-sm);
+  padding:1rem 1.1rem; overflow:auto; max-height:340px; white-space:pre; }
+ol.steps { margin:.4rem 0 0 1.2rem; font-size:.85rem; line-height:1.95; color:var(--ink); }
+ol.steps code { background:rgba(46,84,150,.09); border-radius:3px; padding:1px 5px; font-size:.9em; }
+@media (max-width:640px) {
+  .row { grid-template-columns:1fr; }
+  .row-date, .row-body, .row-meta, .row-ops { grid-column:1; grid-row:auto; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="inner">
+    <span class="eyebrow">ozaken.ai — Admin</span>
+    <h1>登壇レポート入力</h1>
+    <p>フォームで登壇レポートを追加・編集し、生成された JSON を <code>data/talks.json</code> に貼り付けて commit すると、サイトに反映されます。このページ自体はデータを保存しません。</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section class="panel">
+    <h2>1. 現在のデータを読み込む</h2>
+    <div class="actions">
+      <button type="button" id="load-current">data/talks.json を読み込む</button>
+      <button type="button" class="ghost" id="load-sample">サンプルを読み込む</button>
+      <button type="button" class="ghost" id="load-clip">貼り付けて読み込む</button>
+      <span class="status" id="load-status"></span>
+    </div>
+    <p class="hint" style="margin-top:.8rem">
+      ローカルで <code>file://</code> のまま開くと読み込みに失敗します。リポジトリのルートで
+      <code>python3 -m http.server 8000</code> を実行し、<code>http://localhost:8000/admin/</code> から開いてください。
+    </p>
+  </section>
+
+  <section class="panel">
+    <h2>2. レポートを入力する</h2>
+    <div class="grid">
+      <div class="field">
+        <label for="f-date">Date <span>必須・YYYY-MM-DD</span></label>
+        <input type="date" id="f-date">
+      </div>
+      <div class="field">
+        <label for="f-type">Type <span>形式</span></label>
+        <select id="f-type">
+          <option value="keynote">基調講演</option>
+          <option value="seminar" selected>セミナー・講演</option>
+          <option value="workshop">研修・ワークショップ</option>
+          <option value="panel">パネル・対談</option>
+          <option value="moderator">モデレーター</option>
+          <option value="media">メディア出演</option>
+          <option value="other">その他</option>
+        </select>
+      </div>
+      <div class="field wide">
+        <label for="f-title">Title <span>必須・セッションタイトル</span></label>
+        <input type="text" id="f-title" placeholder="AIエージェントは、仕事の主語を変える">
+      </div>
+      <div class="field">
+        <label for="f-event">Event <span>イベント名</span></label>
+        <input type="text" id="f-event" placeholder="◯◯サミット 2026">
+      </div>
+      <div class="field">
+        <label for="f-organizer">Organizer <span>主催</span></label>
+        <input type="text" id="f-organizer" placeholder="株式会社◯◯">
+      </div>
+      <div class="field">
+        <label for="f-audience">Audience <span>対象</span></label>
+        <input type="text" id="f-audience" placeholder="経営層・事業部長">
+      </div>
+      <div class="field">
+        <label for="f-scale">Scale <span>規模</span></label>
+        <input type="text" id="f-scale" placeholder="約420名">
+      </div>
+      <div class="field">
+        <label for="f-location">Location <span>場所</span></label>
+        <input type="text" id="f-location" placeholder="東京・大手町 / オンライン">
+      </div>
+      <div class="field">
+        <label for="f-url">URL <span>告知・レポート記事</span></label>
+        <input type="url" id="f-url" placeholder="https://">
+      </div>
+      <div class="field wide">
+        <label for="f-report">Report <span>一言レポート（2〜3行）</span></label>
+        <textarea id="f-report" placeholder="どんな話をして、参加者の反応がどうだったかを一言で。"></textarea>
+      </div>
+      <div class="field wide">
+        <label for="f-tags">Tags <span>カンマ区切り</span></label>
+        <input type="text" id="f-tags" placeholder="AIエージェント, 経営戦略, 製造業">
+      </div>
+    </div>
+    <div class="actions">
+      <button type="button" id="save">この内容で追加する</button>
+      <button type="button" class="ghost" id="reset">入力をクリア</button>
+      <span class="status" id="form-status"></span>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>3. 一覧を確認する <span id="count" style="font-family:var(--font-en);font-size:.8rem;color:var(--muted)"></span></h2>
+    <div class="rows" id="rows"></div>
+  </section>
+
+  <section class="panel">
+    <h2>4. JSON を書き出す</h2>
+    <div class="actions" style="margin-top:0;margin-bottom:1rem">
+      <button type="button" id="copy">クリップボードにコピー</button>
+      <button type="button" class="ghost" id="download">talks.json をダウンロード</button>
+      <span class="status" id="out-status"></span>
+    </div>
+    <pre id="out"></pre>
+    <ol class="steps">
+      <li>上の JSON を全文コピーする</li>
+      <li>GitHub でリポジトリの <code>data/talks.json</code> を開き、鉛筆アイコンで編集する</li>
+      <li>中身を全部消して貼り付け、commit する</li>
+      <li>Cloudflare Pages が自動でデプロイし、数十秒で <code>ozaken.ai</code> に反映される</li>
+    </ol>
+  </section>
+
+</div>
+
+<script>
+'use strict';
+
+var TYPE_LABELS = {
+  keynote:'基調講演', seminar:'セミナー・講演', workshop:'研修・ワークショップ',
+  panel:'パネル・対談', moderator:'モデレーター', media:'メディア出演', other:'その他'
+};
+var FIELDS = ['date','type','title','event','organizer','audience','scale','location','url','report'];
+
+var talks = [];
+var editingIndex = -1;
+
+function $(id) { return document.getElementById(id); }
+function val(id) { return $(id).value.trim(); }
+function setStatus(id, msg, kind) {
+  var n = $(id);
+  n.textContent = msg;
+  n.className = 'status' + (kind ? ' ' + kind : '');
+}
+
+function sortDesc() {
+  talks.sort(function (a, b) { return String(b.date||'').localeCompare(String(a.date||'')); });
+}
+
+function todayISO() {
+  var d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+function buildJSON() {
+  return JSON.stringify({
+    updated: todayISO(),
+    note: '登壇レポートのデータ。1件 = 1オブジェクト。date で自動ソートされる。フィールドの説明は README.md を参照。',
+    talks: talks
+  }, null, 2);
+}
+
+function renderOut() {
+  $('out').textContent = buildJSON();
+  $('count').textContent = talks.length ? '（' + talks.length + '件）' : '';
+}
+
+function el(tag, cls, text) {
+  var n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text != null) n.textContent = text;
+  return n;
+}
+
+function renderRows() {
+  var box = $('rows');
+  box.textContent = '';
+  if (!talks.length) {
+    box.appendChild(el('div','empty','まだレポートがありません。上のフォームから追加してください。'));
+    renderOut();
+    return;
+  }
+  talks.forEach(function (t, i) {
+    var row = el('div', 'row' + (i === editingIndex ? ' is-editing' : ''));
+    row.appendChild(el('div','row-date', t.date || '—'));
+
+    var mid = el('div', 'row-body');
+    mid.appendChild(el('div','row-title', t.title || '(タイトル未設定)'));
+    row.appendChild(mid);
+
+    var ops = el('div','row-ops');
+    var edit = el('button', 'small ghost', '編集');
+    edit.type = 'button';
+    edit.addEventListener('click', function () { loadIntoForm(i); });
+    var del = el('button', 'small danger', '削除');
+    del.type = 'button';
+    del.addEventListener('click', function () {
+      if (!window.confirm('この1件を削除しますか？\n' + (t.title || ''))) return;
+      talks.splice(i, 1);
+      if (editingIndex === i) { editingIndex = -1; clearForm(); }
+      renderRows();
+    });
+    ops.appendChild(edit); ops.appendChild(del);
+    row.appendChild(ops);
+
+    var bits = [TYPE_LABELS[t.type] || t.type];
+    if (t.event) bits.push(t.event);
+    if (t.audience) bits.push('対象：' + t.audience);
+    if (t.scale) bits.push(t.scale);
+    row.appendChild(el('div','row-meta', bits.filter(Boolean).join('　／　')));
+
+    box.appendChild(row);
+  });
+  renderOut();
+}
+
+function clearForm() {
+  FIELDS.forEach(function (f) {
+    if (f === 'type') { $('f-type').value = 'seminar'; return; }
+    $('f-' + f).value = '';
+  });
+  $('f-tags').value = '';
+  editingIndex = -1;
+  $('save').textContent = 'この内容で追加する';
+  setStatus('form-status', '');
+}
+
+function loadIntoForm(i) {
+  var t = talks[i];
+  FIELDS.forEach(function (f) { $('f-' + f).value = t[f] || ''; });
+  $('f-type').value = t.type || 'seminar';
+  $('f-tags').value = Array.isArray(t.tags) ? t.tags.join(', ') : '';
+  editingIndex = i;
+  $('save').textContent = 'この内容で上書きする';
+  setStatus('form-status', '編集中：' + (t.title || ''), 'ok');
+  renderRows();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+$('save').addEventListener('click', function () {
+  if (!val('f-date')) { setStatus('form-status', '日付を入力してください', 'err'); return; }
+  if (!val('f-title')) { setStatus('form-status', 'タイトルを入力してください', 'err'); return; }
+
+  var entry = {};
+  FIELDS.forEach(function (f) { entry[f] = val('f-' + f); });
+  entry.tags = val('f-tags').split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+
+  var msg;
+  if (editingIndex >= 0) {
+    talks[editingIndex] = entry;
+    msg = '上書きしました：' + entry.title;
+  } else {
+    talks.push(entry);
+    msg = '追加しました：' + entry.title;
+  }
+  sortDesc();
+  clearForm();
+  renderRows();
+  $('f-date').value = todayISO();
+  setStatus('form-status', msg, 'ok');
+});
+
+$('reset').addEventListener('click', clearForm);
+
+function adopt(raw, label) {
+  var list = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.talks) ? raw.talks : null);
+  if (!list) throw new Error('talks 配列が見つかりません');
+  talks = list;
+  sortDesc();
+  renderRows();
+  setStatus('load-status', label + ' を読み込みました（' + talks.length + '件）', 'ok');
+}
+
+function loadFrom(path, label) {
+  fetch(path, { cache: 'no-cache' })
+    .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function (raw) { adopt(raw, label); })
+    .catch(function (e) { setStatus('load-status', '読み込み失敗：' + e.message, 'err'); });
+}
+
+$('load-current').addEventListener('click', function () { loadFrom('../data/talks.json', 'talks.json'); });
+$('load-sample').addEventListener('click', function () { loadFrom('../data/talks.sample.json', 'talks.sample.json'); });
+
+$('load-clip').addEventListener('click', function () {
+  var text = window.prompt('talks.json の中身を貼り付けてください');
+  if (!text) return;
+  try {
+    adopt(JSON.parse(text), '貼り付けたデータ');
+  } catch (e) {
+    setStatus('load-status', 'JSON として読めません：' + e.message, 'err');
+  }
+});
+
+$('copy').addEventListener('click', function () {
+  var text = buildJSON();
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text)
+      .then(function () { setStatus('out-status', 'コピーしました', 'ok'); })
+      .catch(function () { setStatus('out-status', 'コピーできませんでした。手動で選択してください', 'err'); });
+  } else {
+    setStatus('out-status', 'この環境では自動コピーできません。手動で選択してください', 'err');
+  }
+});
+
+$('download').addEventListener('click', function () {
+  var blob = new Blob([buildJSON()], { type: 'application/json' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'talks.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  setStatus('out-status', 'ダウンロードしました', 'ok');
+});
+
+$('f-date').value = todayISO();
+renderRows();
+loadFrom('../data/talks.json', 'talks.json');
+</script>
+</body>
+</html>
