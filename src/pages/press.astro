@@ -59,7 +59,7 @@ const photos = [
           <h3>長い版<span>約300字</span></h3>
           <button type="button" class="copy" data-target="bio-long">コピー</button>
         </div>
-        <p id="bio-long">{BIO.long}</p>
+        <p id="bio-long" style="white-space:pre-line">{BIO.long}</p>
       </article>
     </div>
   </div>
@@ -73,7 +73,7 @@ const photos = [
   <div class="press-grid rv rv-d2">
     {photos.map((p) => (
       <a class="press-item" href={p.file} download>
-        <Image src={p.img} alt={p.alt} width={800} widths={[400, 800]} sizes="(max-width:700px) 100vw, 32vw" class="press-img" />
+        <Image src={p.img} alt={p.alt} width={1200} widths={[400, 800, 1200]} quality={82} sizes="(max-width:700px) 100vw, 32vw" class="press-img" />
         <div class="press-meta">
           <span class="press-label">{p.label}</span>
           <span class="press-spec">{p.spec}</span>

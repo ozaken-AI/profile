@@ -56,7 +56,7 @@ const description =
 <figure class="stage" id="s-stage" data-rail="現場">
   <Image
     src={heroStage} alt="登壇する小澤健祐"
-    width={2000} widths={[900, 1400, 2000]}
+    width={3200} widths={[1000, 1600, 2400, 3200]} quality={82}
     sizes="100vw" loading="eager" fetchpriority="high" class="stage-img"
   />
   <figcaption class="stage-cap">
@@ -74,7 +74,7 @@ const description =
   <div class="nums-wrap">
     <Image
       src={venue} alt="" aria-hidden="true"
-      width={1800} widths={[1200, 1800]} sizes="100vw" loading="lazy" class="nums-img"
+      width={2800} widths={[1200, 2000, 2800]} quality={78} sizes="100vw" loading="lazy" class="nums-img"
     />
     <div class="nums">
       {NUMBERS.map((n) => (
@@ -114,8 +114,8 @@ const description =
         <p>もうひとつ、他所ではあまり語られない側面があります。和辻哲郎・九鬼周造・柳田國男といった日本の思想を手がかりに、AIと文化の接続を考えてきた蓄積です。「なぜ日本の組織ではAI導入が進まないのか」を、能力ではなく<b>文化構造の問題</b>として説明できる。それが私の持ち込める、いちばん代えの利かない角度です。</p>
 
         <div class="shots">
-          <Image src={portrait} alt="小澤健祐" width={840} widths={[420, 840]} sizes="(max-width:600px) 100vw, 30vw" class="shot shot--tall" />
-          <Image src={portraitFull} alt="登壇する小澤健祐" width={1200} widths={[600, 1200]} sizes="(max-width:600px) 100vw, 42vw" class="shot shot--wide" />
+          <Image src={portrait} alt="小澤健祐" width={1200} widths={[420, 840, 1200]} quality={82} sizes="(max-width:600px) 100vw, 30vw" class="shot shot--tall" />
+          <Image src={portraitFull} alt="登壇する小澤健祐" width={1600} widths={[600, 1200, 1600]} quality={82} sizes="(max-width:600px) 100vw, 42vw" class="shot shot--wide" />
         </div>
 
         <div class="credits">
@@ -148,8 +148,8 @@ const description =
   </div>
 
   <div class="pair rv rv-d3">
-    <Image src={speakingStanding} alt="基調講演で登壇する小澤健祐" width={1120} widths={[560, 1120]} sizes="(max-width:600px) 100vw, 46vw" class="shotbox" />
-    <Image src={speakingSeated} alt="パネルディスカッションに登壇する小澤健祐" width={1120} widths={[560, 1120]} sizes="(max-width:600px) 100vw, 46vw" class="shotbox" />
+    <Image src={speakingStanding} alt="基調講演で登壇する小澤健祐" width={1600} widths={[560, 1120, 1600]} quality={82} sizes="(max-width:600px) 100vw, 46vw" class="shotbox" />
+    <Image src={speakingSeated} alt="パネルディスカッションに登壇する小澤健祐" width={1600} widths={[560, 1120, 1600]} quality={82} sizes="(max-width:600px) 100vw, 46vw" class="shotbox" />
   </div>
 
   <a class="more" href="/speaking/">講演依頼について <span>→</span></a>
