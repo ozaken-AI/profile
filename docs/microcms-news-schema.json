@@ -53,13 +53,6 @@
       "kind": "media"
     },
     {
-      "idValue": "kR2mNq8Ttz",
-      "fieldId": "thumbnailUrl",
-      "name": "サムネイルURL（旧サイト取り込み用）",
-      "kind": "text",
-      "description": "旧サイトから取り込んだ記事だけに入る /news/<スラッグ>.webp。新規投稿では空のままでよい。"
-    },
-    {
       "idValue": "mEMKfTc_49",
       "fieldId": "body",
       "name": "本文",

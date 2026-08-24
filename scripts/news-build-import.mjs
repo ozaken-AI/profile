@@ -8,8 +8,7 @@
  * 出力  docs/legacy/news-import.json … 管理APIで流し込む用（scripts/news-import.mjs が読む）
  *       docs/legacy/news-import.csv  … 管理画面のインポート機能に読ませる用
  *
- * サムネイルは public/news/<スラッグ>.webp に取り込み済みなので、
- * microCMS のメディアフィールドではなく thumbnailUrl に相対パスを入れる。
+ * サムネイルは持たせない。一覧は日付・カテゴリ・タイトルだけの行で出す。
  */
 import { readFile, writeFile } from 'node:fs/promises';
 
@@ -109,7 +108,6 @@ const records = posts.map((p) => {
     category: [categoryOf(p.title)],
     publishedDate: toIso(p.date),
     excerpt: toExcerpt(p.body),
-    thumbnailUrl: `/news/${id}.webp`,
     body: toHtml(p.body, links),
   };
 });
@@ -120,7 +118,7 @@ records.sort((a, b) => b.publishedDate.localeCompare(a.publishedDate));
 await writeFile(OUT_JSON, JSON.stringify(records, null, 2) + '\n');
 
 /* --- CSV --- */
-const COLUMNS = ['id', 'title', 'category', 'publishedDate', 'excerpt', 'thumbnailUrl', 'body'];
+const COLUMNS = ['id', 'title', 'category', 'publishedDate', 'excerpt', 'body'];
 const cell = (v) => `"${String(Array.isArray(v) ? v[0] : v).replace(/"/g, '""')}"`;
 const csv =
   '﻿' + // Excel で開いたときに文字化けしないよう BOM を付ける

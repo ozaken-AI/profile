@@ -1,22 +1,16 @@
 ---
-import { formatDate, categoryOf, newsHref, isExternal, thumbOf, type NewsItem } from '../lib/microcms';
+import { formatDate, categoryOf, newsHref, isExternal, type NewsItem } from '../lib/microcms';
 
-interface Props {
-  items: NewsItem[];
-  /** 一覧は遅延読み込み。トップの4件だけ先に出したいときは false にする。 */
-  lazy?: boolean;
-}
-const { items, lazy = true } = Astro.props;
-
-const rows = items.map((item) => ({ item, thumb: thumbOf(item) }));
+interface Props { items: NewsItem[]; }
+const { items } = Astro.props;
 ---
-{rows.length === 0 ? (
+{items.length === 0 ? (
   <div class="news-empty">
     <p>お知らせを準備中です。</p>
   </div>
 ) : (
   <div class="news-list">
-    {rows.map(({ item, thumb }) => (
+    {items.map((item) => (
       <a
         class="news-row"
         data-cat={categoryOf(item)}
@@ -24,20 +18,6 @@ const rows = items.map((item) => ({ item, thumb: thumbOf(item) }));
         target={isExternal(item) ? '_blank' : undefined}
         rel={isExternal(item) ? 'noopener noreferrer' : undefined}
       >
-        <span class="news-thumb">
-          {thumb && (
-            <img
-              src={thumb.src}
-              srcset={thumb.srcset}
-              sizes="(max-width:720px) 76px, 132px"
-              width={thumb.width}
-              height={thumb.height}
-              alt=""
-              loading={lazy ? 'lazy' : 'eager'}
-              decoding="async"
-            />
-          )}
-        </span>
         <span class="news-date">{formatDate(item.publishedDate)}</span>
         <span class="news-cat">{categoryOf(item)}</span>
         <h3 class="news-ttl">{item.title}</h3>

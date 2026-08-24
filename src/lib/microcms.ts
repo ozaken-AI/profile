@@ -5,8 +5,6 @@
  * キーを入れる前でもビルドが通り、お知らせだけが空の状態でサイトが出る。
  */
 
-import THUMB_SIZES from '../data/news-thumbs.json';
-
 export type NewsCategory = '登壇' | 'メディア' | 'イベント' | 'リリース';
 
 export type NewsItem = {
@@ -17,12 +15,6 @@ export type NewsItem = {
   publishedDate: string;
   excerpt?: string;
   thumbnail?: { url: string; width: number; height: number };
-  /**
-   * 旧サイトから取り込んだ記事のサムネイル。`/news/<スラッグ>.webp` を入れる。
-   * microCMS のメディアフィールドには外部URLを登録できないため、
-   * 取り込み分だけこのテキストフィールドを使う。新規投稿は thumbnail 側でよい。
-   */
-  thumbnailUrl?: string;
   body?: string;
   externalUrl?: string;
   eventName?: string;
@@ -57,39 +49,23 @@ export function categoryOf(item: NewsItem): string {
 
 export type Thumb = {
   src: string;
-  srcset?: string;
-  width?: number;
-  height?: number;
+  srcset: string;
+  width: number;
+  height: number;
 };
 
 /**
- * 記事のサムネイル。microCMS のメディアがあればそれを、
- * 無ければ取り込み分の静的ファイル（/news/<スラッグ>.webp）を使う。
- * どちらも無ければ null。
+ * 記事の画像。microCMS にアップロードされていれば返す。
+ * 一覧では使わず、詳細ページの冒頭にだけ出す。
  */
 export function thumbOf(item: NewsItem): Thumb | null {
   const media = item.thumbnail;
-  if (media?.url) {
-    return {
-      src: `${media.url}?fm=webp&w=1200`,
-      srcset: [400, 800, 1200].map((w) => `${media.url}?fm=webp&w=${w} ${w}w`).join(', '),
-      width: media.width,
-      height: media.height,
-    };
-  }
-
-  const path = item.thumbnailUrl?.trim();
-  if (!path) return null;
-
-  const slug = path.replace(/^.*\//, '').replace(/\.webp$/, '');
-  const size = (THUMB_SIZES as Record<string, [number, number]>)[slug];
-  // 幅560pxの軽い版を同じ場所に置いてある。一覧では基本こちらが選ばれる。
-  const small = path.replace(/\.webp$/, '-sm.webp');
+  if (!media?.url) return null;
   return {
-    src: path,
-    srcset: `${small} 560w, ${path} ${size?.[0] ?? 1200}w`,
-    width: size?.[0],
-    height: size?.[1],
+    src: `${media.url}?fm=webp&w=1200`,
+    srcset: [400, 800, 1200].map((w) => `${media.url}?fm=webp&w=${w} ${w}w`).join(', '),
+    width: media.width,
+    height: media.height,
   };
 }
 
