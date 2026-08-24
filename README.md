@@ -14,6 +14,7 @@ index.html            サイト本体（CSS・JSすべて内包）
 data/talks.json       登壇レポートのデータ（★ここだけ更新すればサイトに反映される）
 data/talks.sample.json 表示確認用のサンプルデータ
 admin/index.html      登壇レポートの入力フォーム（JSONを生成するだけのツール）
+functions/api/contact.js  お問い合わせフォームの受け口（Cloudflare Pages Function）
 _headers              Cloudflare Pages 用のレスポンスヘッダ設定
 favicon.svg / robots.txt / sitemap.xml
 ```
@@ -103,6 +104,54 @@ python3 -m http.server 8000
 
 以降は `main` への push が自動でデプロイされる。
 
+## お問い合わせフォームの設定
+
+フォームは `POST /api/contact`（`functions/api/contact.js`）が受け、[Resend](https://resend.com) 経由で
+`kensuke.ozawa@aicx.jp` にメールを送る。Pages Functions はリポジトリを置くだけで自動的に有効になるので、
+追加の設定は環境変数だけ。
+
+**未設定でもフォームは壊れない。** バックエンドが未設定・通信失敗のときは、入力内容を件名と本文に
+埋め込んだ状態でメーラーが起動するフォールバックが動く。まず公開して、あとから設定してよい。
+
+### 設定手順
+
+1. [Resend](https://resend.com) に登録し、**Domains** で `aicx.jp`（または `ozaken.ai`）を追加して
+   表示された DNS レコードを登録・検証する
+2. **API Keys** でキーを発行する
+3. Cloudflare Pages → 該当プロジェクト → **Settings** → **Variables and Secrets** で、
+   Production / Preview の両方に次を登録する
+
+   | 変数名 | 値 | 種別 |
+   |---|---|---|
+   | `RESEND_API_KEY` | Resend で発行したキー | Secret（暗号化） |
+   | `CONTACT_TO` | `kensuke.ozawa@aicx.jp` | Text |
+   | `CONTACT_FROM` | `ozaken.ai <no-reply@ozaken.ai>` など、手順1で検証したドメインのアドレス | Text |
+
+4. 再デプロイすると反映される（環境変数の変更は次のデプロイから有効）
+
+`CONTACT_TO` と `CONTACT_FROM` は省略可。省略時はそれぞれ `kensuke.ozawa@aicx.jp` と
+Resend のテスト用アドレスが使われるが、テスト用アドレスは自分宛にしか送れないため本番では必ず設定する。
+
+### 迷惑メール対策
+
+- **ハニーポット** … 画面に出ない入力欄。埋まっていれば送信を破棄する（bot には成功を返す）
+- **時間チェック** … フォーム表示から3秒未満の送信は破棄する
+- **入力の正規化** … 制御文字と改行を落としてから件名に載せるので、ヘッダインジェクションは通らない
+
+これで足りなければ [Cloudflare Turnstile](https://developers.cloudflare.com/turnstile/) を足す。
+無料で、CAPTCHA のようにユーザーに操作させずに済む。
+
+### ローカルで確認する
+
+Pages Functions を動かすには Wrangler が要る。
+
+```bash
+npx wrangler pages dev .
+```
+
+`python3 -m http.server` でも画面の確認はできる。その場合 `/api/contact` が 404 になるため、
+送信するとメーラー起動のフォールバックが動く。
+
 ## 更新するときの注意
 
 - `index.html` の `<style>` と末尾の `<script>` は `ozaken-web-style v5` のデザインシステム。
@@ -115,8 +164,7 @@ python3 -m http.server 8000
 
 初回公開前に以下を実際の値に更新すること。
 
-- **連絡先メールアドレス** — `index.html` の `contact@ozaken.ai`（Section: Summary — Contact）。
-  ドメインでメールを受けない場合は、問い合わせフォームのURLなどに置き換える
+- **Resend の環境変数** — 「お問い合わせフォームの設定」参照。未設定のあいだはメーラー起動で動く
 - **OGP画像** — `index.html` の `og:image` が `https://ozaken.ai/ogp.png` を指している。
   1200×630 の画像をリポジトリのルートに `ogp.png` として置く（未配置ならこの行を削除する）
 - **SNSリンク** — 必要であれば Summary の連絡先リストに行を追加する

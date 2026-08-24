@@ -416,6 +416,58 @@ footer {
 .contact-val a { border-bottom: 1px solid rgba(216,228,240,0.5); }
 .contact-val a:hover { color: var(--azure-pale); }
 .contact-note { font-size: 0.78rem; color: rgba(255,255,255,0.55); }
+
+/* ----- お問い合わせフォーム（ネイビー面） ----- */
+.form { max-width: 660px; margin: 3rem auto 0; }
+.form-head {
+  font-family: var(--font-ja-serif); font-size: 1.08rem; font-weight: 500;
+  padding-bottom: 0.55rem; margin-bottom: 1.4rem;
+  border-bottom: 1px solid rgba(255,255,255,0.18);
+}
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem 1.1rem; }
+.form-field { display: flex; flex-direction: column; gap: 0.35rem; }
+.form-field.wide { grid-column: 1 / -1; }
+.form-field label {
+  font-family: var(--font-en); font-size: 11px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--azure-pale);
+}
+.form-field label .ja {
+  font-family: var(--font-ja-sans); font-size: 11.5px; font-weight: 400;
+  letter-spacing: 0; text-transform: none; color: rgba(255,255,255,0.6); margin-left: 0.4rem;
+}
+.form-field label .req { color: var(--red-bright); margin-left: 0.3rem; }
+.form-field input,
+.form-field select,
+.form-field textarea {
+  font-family: var(--font-ja-sans); font-size: 0.92rem; line-height: 1.7;
+  color: var(--white); background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.22); border-radius: var(--radius-sm);
+  padding: 0.6rem 0.75rem; width: 100%;
+}
+.form-field textarea { resize: vertical; min-height: 130px; }
+.form-field input::placeholder,
+.form-field textarea::placeholder { color: rgba(255,255,255,0.34); }
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+  outline: 2px solid rgba(216,228,240,0.3); border-color: var(--azure-pale);
+}
+.form-field select option { color: var(--ink); background: var(--white); }
+.form-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.form-actions { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; margin-top: 1.6rem; }
+.form-submit {
+  font-family: var(--font-ja-sans); font-size: 0.9rem; font-weight: 700;
+  color: var(--navy); background: var(--white);
+  border: none; border-radius: var(--radius-sm);
+  padding: 0.72rem 1.9rem; cursor: pointer; transition: opacity 0.18s ease;
+}
+.form-submit:hover { opacity: 0.85; }
+.form-submit:disabled { opacity: 0.45; cursor: default; }
+.form-msg { font-size: 0.85rem; line-height: 1.8; color: rgba(255,255,255,0.7); }
+.form-msg.ok  { color: var(--azure-pale); font-weight: 700; }
+.form-msg.err { color: var(--red-bright); font-weight: 700; }
+.form-msg a { border-bottom: 1px solid rgba(255,93,106,0.5); }
+.form-foot { font-size: 0.78rem; color: rgba(255,255,255,0.5); line-height: 1.85; margin-top: 1.2rem; }
 </style>
 </head>
 <body>
@@ -1195,10 +1247,79 @@ footer {
       </div>
       <div class="contact-row">
         <span class="contact-key">Mail</span>
-        <span class="contact-val"><a href="mailto:contact@ozaken.ai">contact@ozaken.ai</a></span>
+        <span class="contact-val"><a href="mailto:kensuke.ozawa@aicx.jp">kensuke.ozawa@aicx.jp</a></span>
         <span class="contact-note">初回は目的・対象者・想定人数・日程をお知らせください</span>
       </div>
+      <div class="contact-row">
+        <span class="contact-key">X</span>
+        <span class="contact-val"><a href="https://x.com/ozaken_AI" target="_blank" rel="noopener noreferrer">@ozaken_AI</a></span>
+        <span class="contact-note">日々のAIの動きはこちらで発信しています</span>
+      </div>
     </div>
+
+    <form class="form" id="contact-form" novalidate>
+      <p class="form-head">フォームからのご相談</p>
+
+      <div class="form-grid">
+        <div class="form-field">
+          <label for="cf-name">Name <span class="ja">お名前</span><span class="req">*</span></label>
+          <input type="text" id="cf-name" name="name" autocomplete="name" required placeholder="小澤 健祐">
+        </div>
+        <div class="form-field">
+          <label for="cf-company">Company <span class="ja">会社・団体名</span></label>
+          <input type="text" id="cf-company" name="company" autocomplete="organization" placeholder="株式会社◯◯">
+        </div>
+        <div class="form-field">
+          <label for="cf-email">Email <span class="ja">メールアドレス</span><span class="req">*</span></label>
+          <input type="email" id="cf-email" name="email" autocomplete="email" required placeholder="you@example.com">
+        </div>
+        <div class="form-field">
+          <label for="cf-tel">Tel <span class="ja">電話番号</span></label>
+          <input type="tel" id="cf-tel" name="tel" autocomplete="tel" placeholder="03-0000-0000">
+        </div>
+
+        <div class="form-field">
+          <label for="cf-kind">Subject <span class="ja">ご依頼の種類</span></label>
+          <select id="cf-kind" name="kind">
+            <option value="講演・登壇">講演・登壇</option>
+            <option value="社内研修・ワークショップ">社内研修・ワークショップ</option>
+            <option value="アドバイザリー・顧問">アドバイザリー・顧問</option>
+            <option value="執筆・監修">執筆・監修</option>
+            <option value="取材・メディア出演">取材・メディア出演</option>
+            <option value="その他・まだ決まっていない">その他・まだ決まっていない</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label for="cf-date">Date <span class="ja">開催希望日・時期</span></label>
+          <input type="text" id="cf-date" name="date" placeholder="2026年11月中旬 / 未定">
+        </div>
+        <div class="form-field wide">
+          <label for="cf-audience">Audience <span class="ja">対象者・想定人数</span></label>
+          <input type="text" id="cf-audience" name="audience" placeholder="経営層・事業部長 / 約120名">
+        </div>
+
+        <div class="form-field wide">
+          <label for="cf-message">Message <span class="ja">ご相談内容</span><span class="req">*</span></label>
+          <textarea id="cf-message" name="message" required placeholder="開催の背景と、終わったあと参加者にどうなっていてほしいかを書いていただけると、初回のご提案が具体的になります。"></textarea>
+        </div>
+      </div>
+
+      <div class="form-hp" aria-hidden="true">
+        <label for="cf-url">この欄は入力しないでください</label>
+        <input type="text" id="cf-url" name="website" tabindex="-1" autocomplete="off">
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="form-submit" id="cf-submit">送信する</button>
+        <p class="form-msg" id="cf-msg" role="status" aria-live="polite"></p>
+      </div>
+
+      <p class="form-foot">
+        いただいた内容は、ご相談への回答以外の目的では利用しません。
+        通常2〜3営業日以内にご返信します。お急ぎの場合は
+        <a href="mailto:kensuke.ozawa@aicx.jp">kensuke.ozawa@aicx.jp</a> まで直接ご連絡ください。
+      </p>
+    </form>
   </div>
 </section>
 
@@ -1426,6 +1547,120 @@ document.querySelectorAll('[data-reveal]').forEach(el => observer.observe(el));
         '登壇レポートを読み込めませんでした。ローカルで確認する場合は、file:// ではなくローカルサーバ経由で開いてください。'));
       if (countEl) countEl.textContent = '';
     });
+})();
+</script>
+
+<script>
+/* ============================================================
+   お問い合わせフォーム
+   /api/contact（Cloudflare Pages Function）に POST する。
+   バックエンド未設定・通信失敗の場合は、入力内容を件名・本文に
+   埋め込んだメーラー起動にフォールバックするので、必ず送れる。
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var MAIL_TO = 'kensuke.ozawa@aicx.jp';
+  var form = document.getElementById('contact-form');
+  if (!form) return;
+
+  var msg    = document.getElementById('cf-msg');
+  var submit = document.getElementById('cf-submit');
+  var openedAt = Date.now();
+
+  var LABELS = {
+    name: 'お名前', company: '会社・団体名', email: 'メールアドレス', tel: '電話番号',
+    kind: 'ご依頼の種類', date: '開催希望日・時期', audience: '対象者・想定人数',
+    message: 'ご相談内容'
+  };
+  var ORDER = ['name', 'company', 'email', 'tel', 'kind', 'date', 'audience', 'message'];
+
+  function setMsg(text, kind) {
+    msg.className = 'form-msg' + (kind ? ' ' + kind : '');
+    msg.textContent = text;
+  }
+
+  function collect() {
+    var data = {};
+    ORDER.forEach(function (k) {
+      var el = form.elements[k];
+      data[k] = el ? el.value.trim() : '';
+    });
+    data.website = form.elements.website ? form.elements.website.value.trim() : '';
+    data.elapsed = Date.now() - openedAt;
+    return data;
+  }
+
+  function invalidField(data) {
+    if (!data.name)    return ['name', 'お名前を入力してください'];
+    if (!data.email)   return ['email', 'メールアドレスを入力してください'];
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(data.email)) return ['email', 'メールアドレスの形式を確認してください'];
+    if (!data.message) return ['message', 'ご相談内容を入力してください'];
+    return null;
+  }
+
+  function mailtoFallback(data, reason) {
+    var lines = ORDER.map(function (k) {
+      return LABELS[k] + '：' + (data[k] || '（未入力）');
+    });
+    var href = 'mailto:' + MAIL_TO
+      + '?subject=' + encodeURIComponent('【お問い合わせ】' + (data.kind || 'ご相談') + '／' + data.name)
+      + '&body=' + encodeURIComponent(lines.join('\n') + '\n');
+
+    setMsg('', null);
+    msg.className = 'form-msg err';
+    msg.appendChild(document.createTextNode(reason + 'メールソフトを開きます。開かない場合は '));
+    var a = document.createElement('a');
+    a.href = href;
+    a.textContent = MAIL_TO;
+    msg.appendChild(a);
+    msg.appendChild(document.createTextNode(' 宛に、入力内容をそのままお送りください。'));
+    window.location.href = href;
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    var data = collect();
+    var bad = invalidField(data);
+    if (bad) {
+      setMsg(bad[1], 'err');
+      var el = form.elements[bad[0]];
+      if (el) el.focus();
+      return;
+    }
+
+    submit.disabled = true;
+    setMsg('送信しています…', null);
+
+    fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    })
+      .then(function (r) {
+        return r.json().then(function (body) { return { status: r.status, body: body }; });
+      })
+      .then(function (res) {
+        if (res.body && res.body.ok) {
+          form.reset();
+          openedAt = Date.now();
+          setMsg('送信しました。2〜3営業日以内にご返信します。', 'ok');
+          return;
+        }
+        if (res.body && res.body.configured === false) {
+          mailtoFallback(data, 'フォーム送信が未設定のため、');
+          return;
+        }
+        setMsg((res.body && res.body.error) || '送信に失敗しました。時間をおいて再度お試しください。', 'err');
+      })
+      .catch(function () {
+        mailtoFallback(data, '送信できませんでした。');
+      })
+      .then(function () {
+        submit.disabled = false;
+      });
+  });
 })();
 </script>
 </body>
