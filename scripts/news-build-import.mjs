@@ -5,8 +5,9 @@
  *   node scripts/news-build-import.mjs
  *
  * 入力  docs/legacy/cms_content_20260824.json
- * 出力  docs/legacy/news-import.json … 管理APIで流し込む用（scripts/news-import.mjs が読む）
- *       docs/legacy/news-import.csv  … 管理画面のインポート機能に読ませる用
+ * 出力  docs/legacy/news-import.json       … 管理APIで流し込む用（scripts/news-import.mjs が読む）
+ *       docs/legacy/news-import.csv        … 管理画面のインポート用（カテゴリは ["登壇"]）
+ *       docs/legacy/news-import-plain.csv  … 同上（カテゴリは 登壇）
  *
  * サムネイルは持たせない。一覧は日付・カテゴリ・タイトルだけの行で出す。
  */
@@ -15,6 +16,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 const SRC = new URL('../docs/legacy/cms_content_20260824.json', import.meta.url);
 const OUT_JSON = new URL('../docs/legacy/news-import.json', import.meta.url);
 const OUT_CSV = new URL('../docs/legacy/news-import.csv', import.meta.url);
+const OUT_CSV_PLAIN = new URL('../docs/legacy/news-import-plain.csv', import.meta.url);
 const SCHEMA = new URL('../docs/microcms-news-schema.json', import.meta.url);
 
 /** シェアボタンのリンク。本文の関連リンクには出さない。 */
@@ -138,12 +140,26 @@ await writeFile(OUT_JSON, JSON.stringify(records, null, 2) + '\n');
 const schema = JSON.parse(await readFile(SCHEMA, 'utf8'));
 const COLUMNS = ['id', ...schema.apiFields.map((f) => f.fieldId)];
 
-const cell = (v) => `"${String(Array.isArray(v) ? v[0] : (v ?? '')).replace(/"/g, '""')}"`;
-const csv =
-  '﻿' + // Excel で開いたときに文字化けしないよう BOM を付ける
-  [COLUMNS.join(','), ...records.map((r) => COLUMNS.map((c) => cell(r[c])).join(','))].join('\r\n') +
-  '\r\n';
-await writeFile(OUT_CSV, csv);
+/**
+ * セレクトフィールドの書き方は microCMS 側の期待が確かめられていない。
+ * 値そのまま（登壇）と、JSONの配列（["登壇"]）の2通りを書き出して、
+ * 通るほうを使えるようにしておく。
+ */
+function buildCsv(selectAsJson) {
+  const cell = (v) => {
+    const raw = Array.isArray(v) ? (selectAsJson ? JSON.stringify(v) : v[0]) : (v ?? '');
+    return `"${String(raw).replace(/"/g, '""')}"`;
+  };
+  // Excel で開いたときに文字化けしないよう BOM を付ける
+  return (
+    '﻿' +
+    [COLUMNS.join(','), ...records.map((r) => COLUMNS.map((c) => cell(r[c])).join(','))].join('\r\n') +
+    '\r\n'
+  );
+}
+
+await writeFile(OUT_CSV, buildCsv(true));
+await writeFile(OUT_CSV_PLAIN, buildCsv(false));
 
 const counts = {};
 for (const r of records) counts[r.category[0]] = (counts[r.category[0]] ?? 0) + 1;
