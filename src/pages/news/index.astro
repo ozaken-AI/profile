@@ -1,0 +1,69 @@
+---
+import Base from '../../layouts/Base.astro';
+import NewsList from '../../components/NewsList.astro';
+import { getNews, categoryOf } from '../../lib/microcms';
+
+const all = await getNews(200);
+const CATS = ['登壇', 'メディア', 'イベント', 'リリース'] as const;
+const present = CATS.filter((c) => all.some((n) => categoryOf(n) === c));
+
+const title = 'お知らせ・登壇レポート | 小澤健祐（おざけん）';
+const description =
+  '生成AI・AIエージェントに関する登壇の報告、メディア掲載、イベント、リリース情報。年間300回を超える登壇のなかから、記録に残しておきたいものを更新しています。';
+---
+<Base {title} {description} railInitial="お知らせ">
+
+<section class="phead wrap" data-rail="お知らせ">
+  <div class="phead-glow" aria-hidden="true"></div>
+  <p class="label rv">News</p>
+  <h1 class="phead-h1 rv rv-d1">動いたことを、<br />その日のうちに。</h1>
+  <p class="phead-lede rv rv-d2">
+    登壇の報告も、メディア掲載も、リリースもここ一本。
+    「登壇」で絞れば、そのまま実績アーカイブとして読めます。
+  </p>
+</section>
+
+<section class="band wrap" style="padding-top:0" data-rail="一覧">
+  {present.length > 1 && (
+    <div class="log-toolbar rv" id="filters" role="group" aria-label="カテゴリで絞り込み">
+      <button type="button" class="chip" data-cat="all" aria-pressed="true">すべて</button>
+      {present.map((c) => (
+        <button type="button" class="chip" data-cat={c} aria-pressed="false">{c}</button>
+      ))}
+      <span class="log-count" id="count" aria-live="polite"></span>
+    </div>
+  )}
+
+  <div class="rv rv-d1" id="listRoot" data-total={all.length}>
+    <NewsList items={all} />
+  </div>
+</section>
+
+<script>
+  /* カテゴリの絞り込み。1ページに全件出しているので、DOMの表示切り替えだけで済む */
+  const bar = document.getElementById('filters');
+  const root = document.getElementById('listRoot');
+  const count = document.getElementById('count');
+  if (bar && root) {
+    const rows = Array.from(root.querySelectorAll<HTMLElement>('.news-row'));
+    const total = rows.length;
+    const render = (cat: string) => {
+      let shown = 0;
+      rows.forEach((r) => {
+        const hit = cat === 'all' || r.dataset.cat === cat;
+        r.hidden = !hit;
+        if (hit) shown++;
+      });
+      if (count) count.textContent = `${shown} / ${total}`;
+    };
+    bar.querySelectorAll<HTMLButtonElement>('.chip').forEach((b) => {
+      b.addEventListener('click', () => {
+        bar.querySelectorAll('.chip').forEach((o) => o.setAttribute('aria-pressed', String(o === b)));
+        render(b.dataset.cat!);
+      });
+    });
+    render('all');
+  }
+</script>
+
+</Base>

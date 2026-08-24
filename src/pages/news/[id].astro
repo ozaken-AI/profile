@@ -1,0 +1,64 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getNews, formatDate, categoryOf, type NewsItem } from '../../lib/microcms';
+
+export async function getStaticPaths() {
+  const items = await getNews(200);
+  // CMSが未設定・到達不能なら空。ページは生成されないがビルドは通る。
+  return items.map((item) => ({ params: { id: item.id }, props: { item } }));
+}
+
+interface Props { item: NewsItem; }
+const { item } = Astro.props;
+
+const cat = categoryOf(item);
+const meta = [
+  item.eventName && { k: 'イベント', v: item.eventName },
+  item.audience && { k: '対象', v: item.audience },
+  item.scale && { k: '規模', v: item.scale },
+  item.location && { k: '場所', v: item.location },
+].filter(Boolean) as { k: string; v: string }[];
+
+const title = `${item.title} | 小澤健祐（おざけん）`;
+const description =
+  item.excerpt?.trim() ||
+  `${formatDate(item.publishedDate)}｜${cat}。${item.eventName ?? ''} 小澤健祐（おざけん）のお知らせ。`;
+---
+<Base {title} {description} ogImage={item.thumbnail?.url} railInitial={cat}>
+
+<article class="post" data-rail={cat}>
+  <div class="wrap">
+    <div class="post-head rv">
+      <p class="post-meta">
+        <span class="news-cat">{cat}</span>
+        <time datetime={item.publishedDate}>{formatDate(item.publishedDate)}</time>
+      </p>
+      <h1 class="post-h1">{item.title}</h1>
+      {item.excerpt && <p class="post-excerpt">{item.excerpt}</p>}
+    </div>
+
+    {item.thumbnail && (
+      <figure class="post-thumb rv rv-d1">
+        <img
+          src={`${item.thumbnail.url}?fm=webp&w=1600`}
+          srcset={`${item.thumbnail.url}?fm=webp&w=800 800w, ${item.thumbnail.url}?fm=webp&w=1600 1600w`}
+          sizes="(max-width:900px) 100vw, 900px"
+          width={item.thumbnail.width} height={item.thumbnail.height}
+          alt="" loading="eager" decoding="async"
+        />
+      </figure>
+    )}
+
+    {meta.length > 0 && (
+      <dl class="post-facts rv rv-d1">
+        {meta.map((m) => (<><dt>{m.k}</dt><dd>{m.v}</dd></>))}
+      </dl>
+    )}
+
+    {item.body && <div class="post-body rv rv-d2" set:html={item.body} />}
+
+    <p class="post-back rv rv-d2"><a class="more" href="/news/">お知らせ一覧に戻る <span>→</span></a></p>
+  </div>
+</article>
+
+</Base>

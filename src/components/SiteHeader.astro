@@ -1,0 +1,22 @@
+---
+const { pathname } = Astro.url;
+const isTop = pathname === '/';
+const nav = [
+  { href: '/speaking/', label: '講演依頼', en: 'Speaking' },
+  { href: '/news/',     label: 'お知らせ', en: 'News' },
+  { href: '/about/',    label: 'プロフィール', en: 'About' },
+  { href: '/press/',    label: '素材',     en: 'Press' },
+  { href: '/contact/',  label: 'お問い合わせ', en: 'Contact' },
+];
+---
+<header class:list={['site-head', { 'site-head--top': isTop }]}>
+  <a class="site-mark" href="/">
+    <span class="site-mark-ja">小澤健祐</span>
+    <span class="site-mark-en">OZAKEN.AI</span>
+  </a>
+  <nav class="site-nav" aria-label="サイト内">
+    {nav.map((n) => (
+      <a href={n.href} aria-current={pathname.startsWith(n.href) ? 'page' : undefined}>{n.label}</a>
+    ))}
+  </nav>
+</header>

@@ -1,0 +1,169 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE } from '../lib/site';
+
+const title = 'お問い合わせ | 小澤健祐（おざけん）';
+const description =
+  '生成AI・AIエージェントの講演、社内研修、アドバイザリー、執筆・監修、取材のご依頼はこちらから。目的・対象者・想定人数・日程をお知らせいただければ、2〜3営業日以内にご返信します。';
+---
+<Base {title} {description} railInitial="お問い合わせ">
+
+<section class="phead wrap" data-rail="お問い合わせ">
+  <div class="phead-glow" aria-hidden="true"></div>
+  <p class="label rv">Contact</p>
+  <h1 class="phead-h1 rv rv-d1">まず、日程だけでも<br />投げてください。</h1>
+  <p class="phead-lede rv rv-d2">
+    目的・対象者・想定人数・日程。この4つがあれば、可否と概算をその場で返します。
+    企画が固まっていない段階のご相談も歓迎です。
+  </p>
+</section>
+
+<section class="band wrap" style="padding-top:0" data-rail="フォーム">
+  <form class="form rv" id="contact-form" novalidate>
+    <div class="form-grid">
+      <div class="form-field">
+        <label for="cf-name">Name <span class="ja">お名前</span><span class="req">*</span></label>
+        <input type="text" id="cf-name" name="name" autocomplete="name" required placeholder="小澤 健祐" />
+      </div>
+      <div class="form-field">
+        <label for="cf-company">Company <span class="ja">会社・団体名</span></label>
+        <input type="text" id="cf-company" name="company" autocomplete="organization" placeholder="株式会社◯◯" />
+      </div>
+      <div class="form-field">
+        <label for="cf-email">Email <span class="ja">メールアドレス</span><span class="req">*</span></label>
+        <input type="email" id="cf-email" name="email" autocomplete="email" required placeholder="you@example.com" />
+      </div>
+      <div class="form-field">
+        <label for="cf-tel">Tel <span class="ja">電話番号</span></label>
+        <input type="tel" id="cf-tel" name="tel" autocomplete="tel" placeholder="03-0000-0000" />
+      </div>
+      <div class="form-field">
+        <label for="cf-kind">Subject <span class="ja">ご依頼の種類</span></label>
+        <select id="cf-kind" name="kind">
+          <option value="講演・登壇">講演・登壇</option>
+          <option value="社内研修・ワークショップ">社内研修・ワークショップ</option>
+          <option value="アドバイザリー・顧問">アドバイザリー・顧問</option>
+          <option value="執筆・監修">執筆・監修</option>
+          <option value="取材・メディア出演">取材・メディア出演</option>
+          <option value="その他・まだ決まっていない">その他・まだ決まっていない</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label for="cf-date">Date <span class="ja">開催希望日・時期</span></label>
+        <input type="text" id="cf-date" name="date" placeholder="2026年11月中旬 / 未定" />
+      </div>
+      <div class="form-field wide">
+        <label for="cf-audience">Audience <span class="ja">対象者・想定人数</span></label>
+        <input type="text" id="cf-audience" name="audience" placeholder="経営層・事業部長 / 約120名" />
+      </div>
+      <div class="form-field wide">
+        <label for="cf-message">Message <span class="ja">ご相談内容</span><span class="req">*</span></label>
+        <textarea id="cf-message" name="message" required placeholder="開催の背景と、終わったあと参加者にどうなっていてほしいかを書いていただけると、初回のご提案が具体的になります。"></textarea>
+      </div>
+    </div>
+
+    <div class="form-hp" aria-hidden="true">
+      <label for="cf-url">この欄は入力しないでください</label>
+      <input type="text" id="cf-url" name="website" tabindex="-1" autocomplete="off" />
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="form-submit" id="cf-submit">送信する</button>
+      <p class="form-msg" id="cf-msg" role="status" aria-live="polite"></p>
+    </div>
+
+    <p class="form-foot">
+      いただいた内容は、ご相談への回答以外の目的では利用しません。通常2〜3営業日以内にご返信します。
+      お急ぎの場合は <a href={`mailto:${SITE.email}`}>{SITE.email}</a> まで直接ご連絡ください。
+      告知ページ用のプロフィール文と顔写真は <a href="/press/">プレスキット</a> にあります。
+    </p>
+  </form>
+</section>
+
+<script>
+  /* 送信。/api/contact が未設定・不達のときは、入力内容を埋めたメーラー起動に切り替える */
+  const MAIL_TO = 'kensuke.ozawa@aicx.jp';
+  const form = document.getElementById('contact-form') as HTMLFormElement | null;
+  if (form) {
+    const msg = document.getElementById('cf-msg')!;
+    const submit = document.getElementById('cf-submit') as HTMLButtonElement;
+    let openedAt = Date.now();
+
+    const LABELS: Record<string, string> = {
+      name: 'お名前', company: '会社・団体名', email: 'メールアドレス', tel: '電話番号',
+      kind: 'ご依頼の種類', date: '開催希望日・時期', audience: '対象者・想定人数', message: 'ご相談内容',
+    };
+    const ORDER = Object.keys(LABELS);
+
+    const setMsg = (text: string, kind?: string) => {
+      msg.className = 'form-msg' + (kind ? ' ' + kind : '');
+      msg.textContent = text;
+    };
+
+    const collect = () => {
+      const d: Record<string, any> = {};
+      ORDER.forEach((k) => { d[k] = (form.elements.namedItem(k) as HTMLInputElement)?.value.trim() ?? ''; });
+      d.website = (form.elements.namedItem('website') as HTMLInputElement)?.value.trim() ?? '';
+      d.elapsed = Date.now() - openedAt;
+      return d;
+    };
+
+    const invalid = (d: Record<string, any>): [string, string] | null => {
+      if (!d.name) return ['name', 'お名前を入力してください'];
+      if (!d.email) return ['email', 'メールアドレスを入力してください'];
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email)) return ['email', 'メールアドレスの形式を確認してください'];
+      if (!d.message) return ['message', 'ご相談内容を入力してください'];
+      return null;
+    };
+
+    const mailtoFallback = (d: Record<string, any>, reason: string) => {
+      const lines = ORDER.map((k) => `${LABELS[k]}：${d[k] || '（未入力）'}`);
+      const href = `mailto:${MAIL_TO}?subject=${encodeURIComponent(
+        `【お問い合わせ】${d.kind || 'ご相談'}／${d.name}`
+      )}&body=${encodeURIComponent(lines.join('\n') + '\n')}`;
+      msg.className = 'form-msg err';
+      msg.textContent = '';
+      msg.append(reason + 'メールソフトを開きます。開かない場合は ');
+      const a = document.createElement('a');
+      a.href = href; a.textContent = MAIL_TO;
+      msg.append(a, ' 宛に、入力内容をそのままお送りください。');
+      window.location.href = href;
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = collect();
+      const bad = invalid(data);
+      if (bad) {
+        setMsg(bad[1], 'err');
+        (form.elements.namedItem(bad[0]) as HTMLElement | null)?.focus();
+        return;
+      }
+      submit.disabled = true;
+      setMsg('送信しています…');
+      try {
+        const r = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        const body = await r.json();
+        if (body?.ok) {
+          form.reset();
+          openedAt = Date.now();
+          setMsg('送信しました。2〜3営業日以内にご返信します。', 'ok');
+        } else if (body?.configured === false) {
+          mailtoFallback(data, 'フォーム送信が未設定のため、');
+        } else {
+          setMsg(body?.error || '送信に失敗しました。時間をおいて再度お試しください。', 'err');
+        }
+      } catch {
+        mailtoFallback(data, '送信できませんでした。');
+      } finally {
+        submit.disabled = false;
+      }
+    });
+  }
+</script>
+
+</Base>

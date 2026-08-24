@@ -1,0 +1,113 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import { SITE, ROLES, NUMBERS, TIMELINE } from '../lib/site';
+import portrait from '../assets/photos/portrait.jpg';
+import panel from '../assets/photos/panel.jpg';
+
+const title = 'プロフィール | 小澤健祐（おざけん）';
+const description =
+  '小澤健祐（おざけん）。一般社団法人AICX協会 代表理事。AI専門メディア「AINOW」編集長を経て、年間300回超の講演と1,500本超の記事執筆を行う。経歴、役職、著書、メディア出演。';
+---
+<Base {title} {description} railInitial="プロフィール">
+
+<section class="phead wrap" data-rail="プロフィール">
+  <div class="phead-glow" aria-hidden="true"></div>
+  <p class="label rv">About</p>
+  <h1 class="phead-h1 rv rv-d1">肩書きは複数あるが、<br />やっていることは一つしかない</h1>
+  <p class="phead-lede rv rv-d2">
+    技術のことばを、経営の意思決定に翻訳する。経営のことばを、現場の手順に翻訳する。
+    私がやっているのは、この2方向の翻訳だけです。
+  </p>
+</section>
+
+<section class="band band--paper" data-rail="人物">
+  <div class="wrap">
+    <div class="profile-grid">
+      <p class="profile-vert rv">語る側から、<br />動かす側へ</p>
+      <div class="profile-body rv rv-d1">
+        <p>出発点は、AI専門メディア「AINOW」の編集長でした。国内のAI活用事例を一次情報で追い続けるなかで、うまくいかない導入には共通の構造があると気づきます。それを自分で解くために、語る側から動かす側へ軸足を移しました。</p>
+        <p>いまは協会で業界の型をつくり、事業会社で実装の現実を引き受け、行政と大企業に外から助言しています。<b>この3つを同時に持っていること</b>が、私の提供できる唯一の希少性です。外部アドバイザーの価値は、正しい意見を言うことではありません。社内では立場上言えない結論を、代わりに口に出して責任を引き受けることです。</p>
+        <p>もうひとつ、他所ではあまり語られない側面があります。和辻哲郎・九鬼周造・柳田國男といった日本の思想を手がかりに、AIと文化の接続を考えてきた蓄積です。「なぜ日本の組織ではAI導入が進まないのか」を、能力ではなく<b>文化構造の問題</b>として説明できる。それが私の持ち込める、いちばん代えの利かない角度です。</p>
+        <div class="shots">
+          <Image src={portrait} alt="小澤健祐" width={840} widths={[420, 840]} sizes="(max-width:600px) 100vw, 30vw" class="shot shot--tall" />
+          <Image src={panel} alt="対談に登壇する小澤健祐" width={1200} widths={[600, 1200]} sizes="(max-width:600px) 100vw, 42vw" class="shot shot--wide" />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="s-num" data-rail="実績の輪郭">
+  <div class="nums-wrap" style="background:var(--ink-2)">
+    <div class="nums">
+      {NUMBERS.map((n) => (
+        <div class="num">
+          <div class="num-v">
+            <span class="cnt" data-to={n.value} data-comma={n.comma ? '1' : '0'}>
+              {n.comma ? n.value.toLocaleString('en-US') : n.value}
+            </span>
+            <small>{n.unit}</small>
+          </div>
+          <p class="num-k">{n.key}</p>
+          <p class="num-n">{n.note[0]}<br />{n.note[1]}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<section class="band wrap" data-rail="経歴">
+  <p class="label rv">Career</p>
+  <h2 class="h2 rv rv-d1">いま関わっていること</h2>
+  <div class="tl rv rv-d2">
+    {TIMELINE.map((t) => (
+      <article class="tl-item">
+        <p class="tl-period">{t.period}</p>
+        <div>
+          <h3 class="tl-h">{t.h}</h3>
+          <p class="tl-p">{t.p}</p>
+        </div>
+      </article>
+    ))}
+  </div>
+</section>
+
+<section class="band band--paper" data-rail="役職">
+  <div class="wrap">
+    <p class="label rv">Positions</p>
+    <h2 class="h2 rv rv-d1">役職一覧</h2>
+    <div class="credits rv rv-d2" style="margin-top:2.2rem">
+      {ROLES.map((r) => (
+        <div class="credit"><b>{r.org}</b><span>{r.title}</span></div>
+      ))}
+    </div>
+    <p class="lede rv rv-d2">
+      告知ページ用のプロフィール文と顔写真は<a href="/press/" style="border-bottom:1px solid var(--paper-rule)">プレスキット</a>にまとめてあります。
+    </p>
+  </div>
+</section>
+
+<section class="contact wrap" data-rail="連絡先">
+  <p class="label rv">Contact</p>
+  <h2 class="contact-h rv rv-d1">分断を超え、つなぐ。</h2>
+  <div class="contact-grid rv rv-d2">
+    <a class="cc" href="/speaking/">
+      <span class="cc-k">Speaking</span>
+      <span class="cc-v">講演・研修のご依頼</span>
+      <span class="cc-n">依頼できる4つの形とテーマ一覧。</span>
+    </a>
+    <a class="cc" href="/contact/">
+      <span class="cc-k">Form</span>
+      <span class="cc-v">お問い合わせフォーム</span>
+      <span class="cc-n">2〜3営業日以内に返信します。</span>
+    </a>
+    <a class="cc" href={SITE.x} target="_blank" rel="noopener noreferrer">
+      <span class="cc-k">X</span>
+      <span class="cc-v">{SITE.xHandle}</span>
+      <span class="cc-n">日々のAIの動きはこちらで。</span>
+    </a>
+  </div>
+</section>
+
+</Base>

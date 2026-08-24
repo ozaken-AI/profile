@@ -1,5 +1,7 @@
 ---
 import '../styles/global.css';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
 import { SITE } from '../lib/site';
 
 interface Props {
@@ -12,6 +14,7 @@ interface Props {
 }
 const { title, description, ogImage, railInitial = '現在地' } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const isTop = Astro.url.pathname === '/';
 const og = ogImage ?? new URL('/ogp.png', Astro.site).href;
 ---
 <!DOCTYPE html>
@@ -46,8 +49,11 @@ const og = ogImage ?? new URL('/ogp.png', Astro.site).href;
   <div class="rail-seal">健</div>
 </div>
 
-<div class="page">
+<SiteHeader />
+
+<div class:list={['page', { 'has-head': !isTop }]}>
   <slot />
+  <SiteFooter />
 </div>
 
 <script>
@@ -84,6 +90,14 @@ const og = ogImage ?? new URL('/ogp.png', Astro.site).href;
     es.forEach((e) => { if (e.isIntersecting) { run(e.target as HTMLElement); ioN.unobserve(e.target); } });
   }, { threshold: 0.5 });
   document.querySelectorAll<HTMLElement>('.cnt').forEach((el) => ioN.observe(el));
+
+  /* トップは巨大タイポを邪魔しないよう、1画面ぶんスクロールしてからヘッダーを出す */
+  const head = document.querySelector('.site-head--top');
+  if (head) {
+    const onScroll = () => head.classList.toggle('is-shown', window.scrollY > window.innerHeight * 0.7);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
 
   /* 左レール：現在地 */
   const railNow = document.getElementById('railNow');

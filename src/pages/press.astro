@@ -1,0 +1,124 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import { SITE, BIO } from '../lib/site';
+import portrait from '../assets/photos/portrait.jpg';
+import heroStage from '../assets/photos/hero-stage.jpg';
+import speakingStanding from '../assets/photos/speaking-standing.jpg';
+
+const title = 'プレスキット | 小澤健祐（おざけん）';
+const description =
+  '告知ページや記事に使えるプロフィール文（長短2種）、高解像度の顔写真・登壇写真、肩書きの正式表記。転載・加工は自由です。';
+
+const photos = [
+  { img: portrait,         file: '/press/ozaken-portrait.jpg',      label: 'ポートレート', spec: '縦 3211×4814', alt: '小澤健祐のポートレート' },
+  { img: heroStage,        file: '/press/ozaken-speaking.jpg',      label: '登壇・正面',   spec: '横 5088×3392', alt: '登壇する小澤健祐' },
+  { img: speakingStanding, file: '/press/ozaken-speaking-full.jpg', label: '登壇・全身',   spec: '横 5500×3667', alt: '基調講演で登壇する小澤健祐' },
+];
+---
+<Base {title} {description} railInitial="素材">
+
+<section class="phead wrap" data-rail="プレスキット">
+  <div class="phead-glow" aria-hidden="true"></div>
+  <p class="label rv">Press Kit</p>
+  <h1 class="phead-h1 rv rv-d1">告知に必要なものは、<br />ここに全部あります。</h1>
+  <p class="phead-lede rv rv-d2">
+    プロフィール文、顔写真、肩書きの正式表記。連絡してもらう手間をかけずに使ってください。
+    <b style="color:var(--fg)">転載・加工は自由</b>です。事前の確認も不要です。
+  </p>
+</section>
+
+<section class="band wrap" style="padding-top:0" data-rail="正式表記">
+  <p class="label rv">Naming</p>
+  <h2 class="h2 rv rv-d1">正式表記</h2>
+  <dl class="post-facts rv rv-d2" style="margin-top:2rem">
+    <dt>氏名</dt><dd>小澤健祐（おざけん）</dd>
+    <dt>英字</dt><dd>Kensuke Ozawa</dd>
+    <dt>肩書き</dt><dd>{SITE.role}</dd>
+    <dt>サイト</dt><dd>ozaken.ai</dd>
+    <dt>X</dt><dd>{SITE.xHandle}</dd>
+  </dl>
+</section>
+
+<section class="band band--paper" data-rail="プロフィール文">
+  <div class="wrap">
+    <p class="label rv">Bio</p>
+    <h2 class="h2 rv rv-d1">プロフィール文</h2>
+    <p class="lede rv rv-d2">枠の大きさに合わせて使い分けてください。コピーボタンでそのまま持っていけます。</p>
+
+    <div class="bio rv rv-d2">
+      <article class="bio-item">
+        <div class="bio-head">
+          <h3>短い版<span>約100字</span></h3>
+          <button type="button" class="copy" data-target="bio-short">コピー</button>
+        </div>
+        <p id="bio-short">{BIO.short}</p>
+      </article>
+      <article class="bio-item">
+        <div class="bio-head">
+          <h3>長い版<span>約300字</span></h3>
+          <button type="button" class="copy" data-target="bio-long">コピー</button>
+        </div>
+        <p id="bio-long">{BIO.long}</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="band wrap" data-rail="写真">
+  <p class="label rv">Photos</p>
+  <h2 class="h2 rv rv-d1">写真</h2>
+  <p class="lede rv rv-d2">クリックすると元データ（高解像度）が開きます。印刷にも耐えます。</p>
+
+  <div class="press-grid rv rv-d2">
+    {photos.map((p) => (
+      <a class="press-item" href={p.file} download>
+        <Image src={p.img} alt={p.alt} width={800} widths={[400, 800]} sizes="(max-width:700px) 100vw, 32vw" class="press-img" />
+        <div class="press-meta">
+          <span class="press-label">{p.label}</span>
+          <span class="press-spec">{p.spec}</span>
+        </div>
+      </a>
+    ))}
+  </div>
+
+  <a class="more" href="/press/ozaken-profile.txt" download>プロフィール文と写真URLをまとめたテキスト <span>↓</span></a>
+</section>
+
+<section class="contact wrap" data-rail="連絡先">
+  <p class="label rv">Contact</p>
+  <h2 class="contact-h rv rv-d1">足りないものがあれば、<br />言ってください。</h2>
+  <p class="lede rv rv-d2">別の構図の写真、指定文字数のプロフィール文、登壇テーマの説明文など、必要なものがあれば用意します。</p>
+  <div class="contact-grid rv rv-d2">
+    <a class="cc" href={`mailto:${SITE.email}`}>
+      <span class="cc-k">Mail</span>
+      <span class="cc-v">{SITE.email}</span>
+      <span class="cc-n">素材のご相談はメールが早いです。</span>
+    </a>
+    <a class="cc" href="/speaking/">
+      <span class="cc-k">Speaking</span>
+      <span class="cc-v">講演テーマ一覧</span>
+      <span class="cc-n">告知文に使えるテーマの説明はこちら。</span>
+    </a>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('.copy').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const el = document.getElementById(btn.dataset.target!);
+      if (!el) return;
+      try {
+        await navigator.clipboard.writeText(el.textContent!.trim());
+        const before = btn.textContent;
+        btn.textContent = 'コピーしました';
+        btn.classList.add('is-done');
+        setTimeout(() => { btn.textContent = before; btn.classList.remove('is-done'); }, 1800);
+      } catch {
+        btn.textContent = '手動で選択してください';
+      }
+    });
+  });
+</script>
+
+</Base>
