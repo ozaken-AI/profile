@@ -1,0 +1,14 @@
+---
+import { AFFILIATIONS } from '../lib/site';
+// 途切れずに流すため、同じ並びを2周ぶん置く
+const groups = [false, true];
+---
+<div class="ticker" aria-label="関与している組織">
+  <div class="ticker-track">
+    {groups.map((dup) => (
+      <div class="ticker-group" aria-hidden={dup ? 'true' : 'false'}>
+        {AFFILIATIONS.map((n) => <span class="ticker-item">{n}</span>)}
+      </div>
+    ))}
+  </div>
+</div>

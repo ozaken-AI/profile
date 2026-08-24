@@ -1,0 +1,108 @@
+---
+import '../styles/global.css';
+import { SITE } from '../lib/site';
+
+interface Props {
+  title: string;
+  description: string;
+  /** OGP画像の絶対URL。省略時はサイト共通のもの */
+  ogImage?: string;
+  /** 左レールに出す既定の現在地 */
+  railInitial?: string;
+}
+const { title, description, ogImage, railInitial = '現在地' } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const og = ogImage ?? new URL('/ogp.png', Astro.site).href;
+---
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+<meta property="og:type" content="website" />
+<meta property="og:url" content={canonical} />
+<meta property="og:site_name" content={SITE.name} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={og} />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="theme-color" content="#0A0D13" />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Shippori+Mincho+B1:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap"
+  rel="stylesheet"
+/>
+</head>
+<body>
+
+<div class="rail" aria-hidden="true">
+  <div class="rail-mark">OZAKEN.AI</div>
+  <div class="rail-now" id="railNow">{railInitial}</div>
+  <div class="rail-seal">健</div>
+</div>
+
+<div class="page">
+  <slot />
+</div>
+
+<script>
+  /* 出現アニメーション ＋ 左レールの現在地表示 */
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const io = new IntersectionObserver((es) => {
+    es.forEach((e) => {
+      if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+  document.querySelectorAll('.rv').forEach((el) => io.observe(el));
+
+  const hero = document.querySelector('.hero');
+  if (hero) requestAnimationFrame(() => hero.classList.add('on'));
+
+  /* 数字のカウントアップ */
+  function run(el: HTMLElement) {
+    const to = Number(el.dataset.to);
+    const comma = el.dataset.comma === '1';
+    const fmt = (v: number) => (comma ? v.toLocaleString('en-US') : String(v));
+    if (reduce) { el.textContent = fmt(to); return; }
+    el.textContent = fmt(0);
+    let t0: number | null = null;
+    const step = (t: number) => {
+      if (t0 === null) t0 = t;
+      const p = Math.min((t - t0) / 1500, 1);
+      el.textContent = fmt(Math.round(to * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+  const ioN = new IntersectionObserver((es) => {
+    es.forEach((e) => { if (e.isIntersecting) { run(e.target as HTMLElement); ioN.unobserve(e.target); } });
+  }, { threshold: 0.5 });
+  document.querySelectorAll<HTMLElement>('.cnt').forEach((el) => ioN.observe(el));
+
+  /* 左レール：現在地 */
+  const railNow = document.getElementById('railNow');
+  const marked = Array.from(document.querySelectorAll<HTMLElement>('[data-rail]'));
+  if (railNow && marked.length) {
+    railNow.style.transition = 'opacity .18s ease';
+    const ioR = new IntersectionObserver((es) => {
+      es.forEach((e) => {
+        if (e.isIntersecting && e.intersectionRatio > 0.18) {
+          const label = (e.target as HTMLElement).dataset.rail!;
+          if (railNow.textContent !== label) {
+            railNow.style.opacity = '0';
+            setTimeout(() => { railNow.textContent = label; railNow.style.opacity = '1'; }, 180);
+          }
+        }
+      });
+    }, { threshold: [0.18, 0.5] });
+    marked.forEach((el) => ioR.observe(el));
+  }
+</script>
+</body>
+</html>

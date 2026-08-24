@@ -1,0 +1,248 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import Ticker from '../components/Ticker.astro';
+import NewsList from '../components/NewsList.astro';
+import { getNews } from '../lib/microcms';
+import { SITE, NUMBERS, ROLES, MENU, STEPS, FAQ } from '../lib/site';
+
+import heroStage from '../assets/photos/hero-stage.jpg';
+import venue from '../assets/photos/venue.jpg';
+import portrait from '../assets/photos/portrait.jpg';
+import portraitFull from '../assets/photos/portrait-full.jpg';
+import speakingStanding from '../assets/photos/speaking-standing.jpg';
+import speakingSeated from '../assets/photos/speaking-seated.jpg';
+
+const news = (await getNews(4)).slice(0, 4);
+
+const title = '小澤健祐（おざけん）| 生成AI・AIエージェントの講演・研修・アドバイザリー';
+const description =
+  '一般社団法人AICX協会 代表理事。年間300回を超える登壇と1,500本超の記事執筆で、生成AIとAIエージェントの導入を、経営の意思決定と現場の実装の両側から支えています。講演・研修・顧問のご依頼はこちら。';
+---
+<Base {title} {description} railInitial="小澤健祐">
+
+<!-- ============ HERO ============ -->
+<section class="hero wrap" id="s-hero" data-rail="小澤健祐">
+  <div class="hero-glow" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <div>
+      <p class="hero-eyebrow">Kensuke Ozawa — Ozaken</p>
+      <p class="hero-vlabel">Vision</p>
+      <h1 class="hero-h1">
+        <span class="line"><span>人間とAIが</span></span>
+        <span class="line"><span><em>共存する社会</em>を</span></span>
+        <span class="line"><span>つくる。</span></span>
+      </h1>
+      <p class="hero-sub rv">
+        そのために、AIを語れる人ではなく<b>動かせる人</b>を増やしています。
+        年間<b>300回</b>を超える登壇と<b>1,500本</b>超の記事執筆で、生成AIとAIエージェントの導入を、
+        経営の意思決定と現場の実装の両側から支えています。
+      </p>
+    </div>
+
+    <div class="hero-vert" aria-hidden="true">
+      <div class="en">Mission</div>
+      <div class="vert-mission">{SITE.mission}</div>
+      <div>{SITE.role}</div>
+    </div>
+  </div>
+
+  <div class="hero-foot">
+    <div class="scrollcue rv rv-d2"><i></i>Scroll</div>
+  </div>
+</section>
+
+<!-- ============ STAGE：主張の直後に証拠を置く ============ -->
+<figure class="stage" id="s-stage" data-rail="現場">
+  <Image
+    src={heroStage} alt="登壇する小澤健祐"
+    width={2000} widths={[900, 1400, 2000]}
+    sizes="100vw" loading="eager" fetchpriority="high" class="stage-img"
+  />
+  <figcaption class="stage-cap">
+    <div class="stage-cap-inner">
+      <p>この日も、どこかで話している。</p>
+      <span>Speaking · 300+ times a year</span>
+    </div>
+  </figcaption>
+</figure>
+
+<Ticker />
+
+<!-- ============ NUMBERS ============ -->
+<section id="s-num" data-rail="実績の輪郭">
+  <div class="nums-wrap">
+    <Image
+      src={venue} alt="" aria-hidden="true"
+      width={1800} widths={[1200, 1800]} sizes="100vw" loading="lazy" class="nums-img"
+    />
+    <div class="nums">
+      {NUMBERS.map((n) => (
+        <div class="num">
+          <div class="num-v">
+            <span class="cnt" data-to={n.value} data-comma={n.comma ? '1' : '0'}>
+              {n.comma ? n.value.toLocaleString('en-US') : n.value}
+            </span>
+            <small>{n.unit}</small>
+          </div>
+          <p class="num-k">{n.key}</p>
+          <p class="num-n">{n.note[0]}<br />{n.note[1]}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- ============ NEWS ============ -->
+<section class="band wrap" id="s-news" data-rail="お知らせ">
+  <p class="label rv">News</p>
+  <h2 class="h2 rv rv-d1">動いたことを、その日のうちに。</h2>
+  <p class="lede rv rv-d2">登壇の報告も、出演も、リリースも、更新はここ一本。</p>
+  <div class="rv rv-d2"><NewsList items={news} /></div>
+  <a class="more" href="/news/">お知らせ一覧 <span>→</span></a>
+</section>
+
+<!-- ============ PROFILE（紙の面） ============ -->
+<section class="band band--paper" id="s-profile" data-rail="人物">
+  <div class="wrap">
+    <p class="label rv">Profile</p>
+    <div class="profile-grid">
+      <p class="profile-vert rv">肩書きは複数あるが、<br />やっていることは一つしかない</p>
+      <div class="profile-body rv rv-d1">
+        <p>技術のことばを、経営の意思決定に翻訳する。経営のことばを、現場の手順に翻訳する。<b>私がやっているのは、この2方向の翻訳だけ</b>です。登壇も執筆も経営も、そのための手段にすぎません。</p>
+        <p>出発点は、AI専門メディア「AINOW」の編集長でした。国内のAI活用事例を一次情報で追い続けるなかで、うまくいかない導入には共通の構造があると気づきます。それを自分で解くために、語る側から動かす側へ軸足を移しました。いまは協会で業界の型をつくり、事業会社で実装の現実を引き受け、行政と大企業に外から助言しています。</p>
+        <p>もうひとつ、他所ではあまり語られない側面があります。和辻哲郎・九鬼周造・柳田國男といった日本の思想を手がかりに、AIと文化の接続を考えてきた蓄積です。「なぜ日本の組織ではAI導入が進まないのか」を、能力ではなく<b>文化構造の問題</b>として説明できる。それが私の持ち込める、いちばん代えの利かない角度です。</p>
+
+        <div class="shots">
+          <Image src={portrait} alt="小澤健祐" width={840} widths={[420, 840]} sizes="(max-width:600px) 100vw, 30vw" class="shot shot--tall" />
+          <Image src={portraitFull} alt="登壇する小澤健祐" width={1200} widths={[600, 1200]} sizes="(max-width:600px) 100vw, 42vw" class="shot shot--wide" />
+        </div>
+
+        <div class="credits">
+          {ROLES.map((r) => (
+            <div class="credit"><b>{r.org}</b><span>{r.title}</span></div>
+          ))}
+        </div>
+        <a class="more" href="/about/">詳しい経歴 <span>→</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SPEAKING ============ -->
+<section class="band wrap" id="s-speaking" data-rail="依頼できること">
+  <p class="label rv">Speaking</p>
+  <h2 class="h2 rv rv-d1">生成AI・AIエージェントの講演と研修は、<br />聞き手と目的で形が変わる。</h2>
+  <p class="lede rv rv-d2">「AIの話をしてほしい」だけだと、誰も動かないまま終わります。聞き手が誰で、終わったあと何をしていてほしいか。この2つが決まれば、頼むべき形は決まります。</p>
+
+  <div class="menu rv rv-d2">
+    {MENU.map((m) => (
+      <div class="menu-item">
+        <span class="menu-idx">{m.idx}</span>
+        <h3 class="menu-h">{m.title}</h3>
+        <p class="menu-spec">{m.spec}</p>
+        <p class="menu-p">{m.body}</p>
+        <p class="menu-for">向いている場：<b>{m.forWhom}</b></p>
+      </div>
+    ))}
+  </div>
+
+  <div class="pair rv rv-d3">
+    <Image src={speakingStanding} alt="基調講演で登壇する小澤健祐" width={1120} widths={[560, 1120]} sizes="(max-width:600px) 100vw, 46vw" class="shotbox" />
+    <Image src={speakingSeated} alt="パネルディスカッションに登壇する小澤健祐" width={1120} widths={[560, 1120]} sizes="(max-width:600px) 100vw, 46vw" class="shotbox" />
+  </div>
+
+  <a class="more" href="/speaking/">講演依頼について <span>→</span></a>
+</section>
+
+<!-- ============ RESOURCES ============ -->
+<section class="band wrap" id="s-resources" data-rail="資料">
+  <p class="label rv">Resources</p>
+  <h2 class="h2 rv rv-d1">話した内容は、<br />資料として全部置いてある。</h2>
+
+  <a class="res rv rv-d2" href={SITE.contentSite} target="_blank" rel="noopener noreferrer">
+    <div>
+      <p class="res-domain">content.ozaken.ai</p>
+      <p class="res-p">講演で使った図解、導入の手順書、チェックリスト。聞いたその日に社内へ回せる形にしてあるので、当日の資料請求のやり取りが要りません。</p>
+      <div class="res-tags">
+        <span class="res-tag">講演スライド</span>
+        <span class="res-tag">導入の手順書</span>
+        <span class="res-tag">チェックリスト</span>
+        <span class="res-tag">図解</span>
+      </div>
+    </div>
+    <div class="res-go" aria-hidden="true">→</div>
+  </a>
+
+  <div class="roles rv rv-d2" style="margin-top:2.75rem">
+    <div class="role"><p class="role-k">著書</p><p class="role-org">生成AI導入の教科書</p><p class="role-t">Book</p></div>
+    <div class="role"><p class="role-k">著書</p><p class="role-org">AIエージェントの教科書</p><p class="role-t">Book</p></div>
+    <div class="role"><p class="role-k">メディア</p><p class="role-org">NewsPicks</p><p class="role-t">Pro Picker</p></div>
+    <div class="role"><p class="role-k">番組</p><p class="role-org">AI DIVE</p><p class="role-t">Main MC</p></div>
+  </div>
+</section>
+
+<!-- ============ PROCESS + FAQ（紙の面） ============ -->
+<section class="band band--paper" id="s-process" data-rail="依頼の流れ">
+  <div class="wrap">
+    <p class="label rv">How it works</p>
+    <h2 class="h2 rv rv-d1">依頼から当日までに、<br />やることは4つだけ。</h2>
+
+    <div class="steps rv rv-d2">
+      {STEPS.map((s) => (
+        <div class="step">
+          <p class="step-n">{s.n}</p>
+          <h3 class="step-h">{s.h}</h3>
+          <p class="step-p">{s.p}</p>
+        </div>
+      ))}
+    </div>
+
+    <div class="faq rv rv-d2">
+      {FAQ.map((f) => (
+        <details>
+          <summary>{f.q}</summary>
+          <p>{f.a}</p>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section class="contact wrap" id="s-contact" data-rail="連絡先">
+  <p class="label rv">Contact</p>
+  <h2 class="contact-h rv rv-d1">AIの話をしに行くのではなく、<br />現場が動き出すところまでを引き受けます。</h2>
+
+  <div class="contact-grid rv rv-d2">
+    <a class="cc" href="/contact/">
+      <span class="cc-k">Form</span>
+      <span class="cc-v">お問い合わせフォーム</span>
+      <span class="cc-n">目的・対象者・想定人数・日程を入れて送信。2〜3営業日以内に返信します。</span>
+    </a>
+    <a class="cc" href={`mailto:${SITE.email}`}>
+      <span class="cc-k">Mail</span>
+      <span class="cc-v">{SITE.email}</span>
+      <span class="cc-n">直接メールでも構いません。</span>
+    </a>
+    <a class="cc" href={SITE.x} target="_blank" rel="noopener noreferrer">
+      <span class="cc-k">X</span>
+      <span class="cc-v">{SITE.xHandle}</span>
+      <span class="cc-n">日々のAIの動きはこちらで発信しています。</span>
+    </a>
+    <a class="cc" href="/press/">
+      <span class="cc-k">Press Kit</span>
+      <span class="cc-v">プロフィール・顔写真</span>
+      <span class="cc-n">告知ページ用の素材一式。プロフィール文は長短2種を用意。</span>
+    </a>
+  </div>
+
+  <footer>
+    <div class="foot-row">
+      <span>{SITE.name}／{SITE.role}</span>
+      <span>© 2026 ozaken.ai</span>
+    </div>
+  </footer>
+</section>
+
+</Base>

@@ -3,3 +3,10 @@ Thumbs.db
 node_modules/
 .wrangler/
 *.log
+
+# Astro
+dist/
+.astro/
+.env
+.env.local
+.env.*.local

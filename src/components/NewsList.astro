@@ -1,0 +1,27 @@
+---
+import { formatDate, categoryOf, newsHref, isExternal, type NewsItem } from '../lib/microcms';
+
+interface Props { items: NewsItem[]; }
+const { items } = Astro.props;
+---
+{items.length === 0 ? (
+  <div class="news-empty">
+    <p>お知らせを準備中です。</p>
+  </div>
+) : (
+  <div class="news-list">
+    {items.map((item) => (
+      <a
+        class="news-row"
+        href={newsHref(item)}
+        target={isExternal(item) ? '_blank' : undefined}
+        rel={isExternal(item) ? 'noopener noreferrer' : undefined}
+      >
+        <span class="news-date">{formatDate(item.publishedDate)}</span>
+        <span class="news-cat">{categoryOf(item)}</span>
+        <h3 class="news-ttl">{item.title}</h3>
+        <span class="news-arrow">→</span>
+      </a>
+    ))}
+  </div>
+)}
