@@ -3,11 +3,15 @@
  *
  * POST /api/contact
  *
- * 必要な環境変数（Cloudflare Pages → Settings → Environment variables）
- *   RESEND_API_KEY  … Resend の API キー。未設定ならフォームはメーラー起動に切り替わる
+ * 必要な環境変数（Cloudflare Pages → Settings → Variables and Secrets）
+ *   RESEND_API_KEY  … Resend の API キー。Secret で入れる。
+ *                     未設定ならフォームはメーラー起動に切り替わる
  *   CONTACT_TO      … 受信アドレス（未設定なら kensuke.ozawa@aicx.jp）
- *   CONTACT_FROM    … 送信元。Resend で認証済みのドメインのアドレスにする
- *                     （未設定なら onboarding@resend.dev。動作確認用で、本番では必ず設定する）
+ *   CONTACT_FROM    … 送信元（未設定なら onboarding@resend.dev）
+ *                     ドメイン認証をしていない間、Resend は Resend の登録アドレス宛にしか
+ *                     送れない。受信先と登録アドレスを合わせておけば、認証なしでも届く。
+ *
+ * 手順は docs/contact-email.md にある。
  */
 
 const DEFAULT_TO = 'kensuke.ozawa@aicx.jp';

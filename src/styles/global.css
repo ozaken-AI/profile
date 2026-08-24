@@ -400,7 +400,9 @@ section{position:relative}
 @media(max-width:760px){.profile-grid{grid-template-columns:1fr}.profile-vert{writing-mode:horizontal-tb;border-left:0;padding-left:0;border-bottom:1px solid var(--paper-rule);padding-bottom:1.2rem;max-height:none}}
 
 /* ---------- SPEAKING（依頼メニュー） ---------- */
-.menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));gap:1px;background:var(--rule-2);margin-top:3rem;border:1px solid var(--rule-2)}
+/* 4項目なので、3列＋1列の欠けが出ないよう2列で組む */
+.menu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--rule-2);margin-top:3rem;border:1px solid var(--rule-2)}
+@media(max-width:720px){.menu{grid-template-columns:1fr}}
 .menu-item{background:var(--ink);padding:clamp(1.75rem,3vw,2.4rem);display:flex;flex-direction:column;gap:.9rem;transition:background .4s ease}
 .menu-item:hover{background:var(--ink-2)}
 .menu-idx{font-family:var(--f-en);font-size:10.5px;font-weight:700;letter-spacing:.2em;color:var(--fg-mute)}
@@ -535,13 +537,14 @@ footer{border-top:1px solid var(--rule-2);padding-block:2.5rem;font-size:.78rem;
 /* 5項目あるので狭い画面では折り返さず、はみ出すぶんだけ横に流す。
    折り返すとヘッダーが2段になって、下のコンテンツに重なる。 */
 @media(max-width:640px){
-  .site-head{gap:.9rem;padding-inline:1rem}
+  .site-head{gap:.75rem;padding-inline:.85rem}
+  .site-mark-ja{font-size:.94rem;letter-spacing:.04em}
   .site-nav{
-    flex-wrap:nowrap;overflow-x:auto;gap:.75rem;justify-content:flex-start;
+    flex-wrap:nowrap;overflow-x:auto;gap:.62rem;justify-content:flex-start;
     scrollbar-width:none;-webkit-overflow-scrolling:touch;
   }
   .site-nav::-webkit-scrollbar{display:none}
-  .site-nav a{font-size:.74rem}
+  .site-nav a{font-size:.72rem}
 }
 
 .site-foot{background:var(--ink);border-top:1px solid var(--rule-2);padding-block:clamp(2.5rem,5vw,4rem)}
