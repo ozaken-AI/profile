@@ -43,12 +43,17 @@ function categoryOf(title) {
 const ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' };
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ESC[c]);
 
-/** 段落配列 → richEditorV2 に入る HTML。 */
+/**
+ * 段落配列 → richEditorV2 に入る HTML。
+ * 1つの段落のなかに空行が入っていることがあるので、そこでも段落を割る。
+ * 残った改行は <br> にする（CSVに生の改行を残さないためでもある）。
+ */
 function toHtml(paragraphs, links) {
   const body = paragraphs
+    .flatMap((t) => t.replace(/\r\n?/g, '\n').split(/\n{2,}/))
     .map((t) => t.replace(/＝\s*$/, '').trim())
     .filter(Boolean)
-    .map((t) => `<p>${esc(t)}</p>`);
+    .map((t) => `<p>${esc(t).replace(/\n/g, '<br>')}</p>`);
 
   if (links.length) {
     body.push('<h3>関連リンク</h3>');
@@ -63,7 +68,7 @@ function toHtml(paragraphs, links) {
 
 /** 抜粋。本文の1段落目を、文の切れ目で110字くらいに詰める。 */
 function toExcerpt(paragraphs) {
-  const first = (paragraphs[0] ?? '').trim();
+  const first = (paragraphs[0] ?? '').replace(/\s+/g, ' ').trim();
   if (first.length <= 110) return first;
   const cut = first.slice(0, 110);
   const stop = Math.max(cut.lastIndexOf('。'), cut.lastIndexOf('！'), cut.lastIndexOf('？'));
