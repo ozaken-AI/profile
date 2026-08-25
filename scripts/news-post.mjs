@@ -38,6 +38,51 @@ if (!bodyText.trim()) fail('本文が空です。');
 const ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' };
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ESC[c]);
 
+/**
+ * 本文中のリンク。次の3つの書き方を <a> にする。
+ *   <a href="https://example.com/">表示したい文字</a>
+ *   [表示したい文字](https://example.com/)
+ *   https://example.com/ … そのまま貼っただけのURL
+ *
+ * これ以外のHTMLタグは、そのままの文字として表示される（本文は全部エスケープするため）。
+ */
+const RAW_ANCHOR = '<a\\s[^>]*?href=["\']?(https?://[^"\'\\s>]+)["\']?[^>]*>([\\s\\S]*?)</a\\s*>';
+const MD_LINK = '\\[([^\\]\\n]+)\\]\\((https?://[^\\s)]+)\\)';
+// 裸のURLは、日本語の句読点を巻き込まないよう、URLに使える文字だけに絞る
+const BARE_URL = "(https?://[A-Za-z0-9\\-._~:/?#\\[\\]@!$&*+,;=%]+)";
+const LINK_RE = new RegExp(`${RAW_ANCHOR}|${MD_LINK}|${BARE_URL}`, 'g');
+
+/** URLの末尾に句読点がくっついていたら、リンクから外す。 */
+function trimUrl(url) {
+  const m = url.match(/^(.*?)([!?.,:;]+)$/);
+  return m ? [m[1], m[2]] : [url, ''];
+}
+
+function anchor(url, label) {
+  return `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(label)}</a>`;
+}
+
+/** 1段落ぶんのテキストを、リンクだけ生かしてHTMLにする。 */
+function inline(text) {
+  let out = '';
+  let last = 0;
+  let m;
+  LINK_RE.lastIndex = 0;
+  while ((m = LINK_RE.exec(text)) !== null) {
+    out += esc(text.slice(last, m.index));
+    if (m[1] !== undefined) {
+      out += anchor(m[1], m[2].replace(/<[^>]*>/g, '').trim() || m[1]); // 書かれた <a> タグ
+    } else if (m[3] !== undefined) {
+      out += anchor(m[4], m[3]); // [表示したい文字](URL)
+    } else {
+      const [url, tail] = trimUrl(m[5]); // 裸のURL
+      out += anchor(url, url) + esc(tail);
+    }
+    last = m.index + m[0].length;
+  }
+  return out + esc(text.slice(last));
+}
+
 /** 空行で段落を割り、残った改行は <br> にする。 */
 function toHtml(text) {
   return text
@@ -45,13 +90,23 @@ function toHtml(text) {
     .split(/\n{2,}/)
     .map((t) => t.trim())
     .filter(Boolean)
-    .map((t) => `<p>${esc(t).replace(/\n/g, '<br>')}</p>`)
+    .map((t) => `<p>${inline(t).replace(/\n/g, '<br>')}</p>`)
     .join('');
+}
+
+/** 抜粋に出すとき用に、リンクの記法を表示文字だけにする。 */
+function plain(text) {
+  LINK_RE.lastIndex = 0;
+  return text.replace(LINK_RE, (_, rawUrl, rawLabel, mdLabel, mdUrl, bare) => {
+    if (rawUrl !== undefined) return rawLabel.replace(/<[^>]*>/g, '').trim() || rawUrl;
+    if (mdLabel !== undefined) return mdLabel;
+    return bare;
+  });
 }
 
 /** 抜粋。本文の書き出しを、文の切れ目で110字くらいに詰める。 */
 function toExcerpt(text) {
-  const first = text.replace(/\r\n?/g, '\n').split(/\n{2,}/)[0].replace(/\s+/g, ' ').trim();
+  const first = plain(text).replace(/\r\n?/g, '\n').split(/\n{2,}/)[0].replace(/\s+/g, ' ').trim();
   if (first.length <= 110) return first;
   const cut = first.slice(0, 110);
   const stop = Math.max(cut.lastIndexOf('。'), cut.lastIndexOf('！'), cut.lastIndexOf('？'));
