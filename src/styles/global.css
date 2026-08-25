@@ -344,6 +344,9 @@ section{position:relative}
 .stage-img{
   position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 32%;
 }
+/* トップの帯は立ち姿なので、頭が切れないよう上を多めに残す。
+   スクロールで上下に動くぶんの余裕も見込んでいる。 */
+.stage--top .stage-img{object-position:center 14%}
 .stage-cap{
   position:absolute;left:0;right:0;bottom:0;z-index:2;
   padding:0 var(--pad) clamp(1.25rem,3vw,2rem);

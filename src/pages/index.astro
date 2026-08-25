@@ -6,10 +6,10 @@ import NewsList from '../components/NewsList.astro';
 import { getNews } from '../lib/microcms';
 import { SITE, NUMBERS, ROLES, MENU, STEPS, FAQ, PROFILE } from '../lib/site';
 
-import heroStage from '../assets/photos/hero-stage.jpg';
+import stageWide from '../assets/photos/portrait-full.jpg';
+import panel from '../assets/photos/panel.jpg';
 import venue from '../assets/photos/venue.jpg';
 import portrait from '../assets/photos/portrait.jpg';
-import portraitFull from '../assets/photos/portrait-full.jpg';
 import speakingStanding from '../assets/photos/speaking-standing.jpg';
 import speakingSeated from '../assets/photos/speaking-seated.jpg';
 
@@ -53,9 +53,9 @@ const description =
 </section>
 
 <!-- ============ STAGE：主張の直後に証拠を置く ============ -->
-<figure class="stage" id="s-stage" data-rail="現場">
+<figure class="stage stage--top" id="s-stage" data-rail="現場">
   <Image
-    src={heroStage} alt="登壇する小澤健祐"
+    src={stageWide} alt="登壇する小澤健祐"
     width={4000} widths={[1200, 1800, 2600, 3400, 4000]} quality={84}
     sizes="100vw" loading="eager" fetchpriority="high" class="stage-img"
   />
@@ -113,7 +113,7 @@ const description =
 
         <div class="shots">
           <Image src={portrait} alt="小澤健祐" width={1600} widths={[420, 840, 1200, 1600]} quality={84} sizes="(max-width:600px) 100vw, 30vw" class="shot shot--tall" />
-          <Image src={portraitFull} alt="登壇する小澤健祐" width={2200} widths={[600, 1200, 1600, 2200]} quality={84} sizes="(max-width:600px) 100vw, 42vw" class="shot shot--wide" />
+          <Image src={panel} alt="対談に登壇する小澤健祐" width={2200} widths={[600, 1200, 1600, 2200]} quality={84} sizes="(max-width:600px) 100vw, 42vw" class="shot shot--wide" />
         </div>
 
         <div class="credits stg">
