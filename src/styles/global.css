@@ -275,9 +275,9 @@ section{position:relative}
 .hero-media{
   position:absolute;left:var(--cut);right:0;top:-10%;bottom:-16%;z-index:0;
   pointer-events:none;overflow:hidden;
-  /* 左端は地に溶かす。文字が乗るのはこのあたり */
-  -webkit-mask-image:linear-gradient(to right,transparent 0,#000 24%);
-          mask-image:linear-gradient(to right,transparent 0,#000 24%);
+  /* 左端は地に溶かす（文字が乗るのはこのあたり）。右端も切り落とさず溶かす */
+  -webkit-mask-image:linear-gradient(to right,transparent 0,#000 24%,#000 84%,transparent 100%);
+          mask-image:linear-gradient(to right,transparent 0,#000 24%,#000 84%,transparent 100%);
   clip-path:inset(0 0 100% 0);
   transition:clip-path 1.5s var(--ease) .45s;
 }
