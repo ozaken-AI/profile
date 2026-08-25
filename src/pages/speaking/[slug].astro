@@ -24,7 +24,12 @@ const photo = item.slug === 'keynote' || item.slug === 'training' ? speakingStan
 const title = `${item.kind}（${item.title}）のご依頼 | 小澤健祐（おざけん）`;
 const description = `${item.body} ${item.spec}。${item.forWhom}。生成AI・AIエージェントの${item.kind}のご依頼はこちらから。`;
 ---
-<Base {title} {description} ogImage="/ogp-speaking.png" railInitial={item.kind}>
+<Base
+  {title} {description}
+  ogImage="/ogp-speaking.png"
+  ogImageAlt="小澤健祐（おざけん）｜生成AI・AIエージェントの講演・研修・アドバイザリー"
+  railInitial={item.kind}
+>
 
 <section class="phead wrap" data-rail={item.kind}>
   <div class="phead-glow" aria-hidden="true"></div>

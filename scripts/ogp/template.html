@@ -11,6 +11,10 @@
     --f-mincho:'Shippori Mincho B1','Hiragino Mincho ProN',serif;
     --f-gothic:'Zen Kaku Gothic New','Hiragino Sans',sans-serif;
     --f-en:'Archivo','Helvetica Neue',Arial,sans-serif;
+    /* 見出しの箱の左端から、写真の左端までの距離。
+       ここを境に、見出しは塗りから輪郭に切り替わる（サイトのファーストビューと同じ）*/
+    --cut:536px;
+    --pad:64px;
   }
   *{margin:0;padding:0;box-sizing:border-box}
   body{width:1200px;height:630px;background:var(--ink);color:var(--fg);overflow:hidden;position:relative}
@@ -23,23 +27,31 @@
   }
   /* 紙の粒子 */
   .grain{
-    position:absolute;inset:0;opacity:.16;mix-blend-mode:overlay;
+    position:absolute;inset:0;opacity:.16;mix-blend-mode:overlay;pointer-events:none;
     background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/></filter><rect width='140' height='140' filter='url(%23n)' opacity='.5'/></svg>");
   }
-  /* 右の写真。左端を地に溶かす */
+  /* 右の写真。左端は地に溶かし、上下も地の色まで沈める */
   .photo{
-    position:absolute;right:0;top:0;width:600px;height:630px;
-    background-size:cover;background-position:42% 30%;
-    -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 55%);
-            mask-image:linear-gradient(90deg,transparent 0,#000 55%);
-    filter:saturate(.9) contrast(1.03);
+    position:absolute;left:calc(var(--pad) + var(--cut));right:0;top:0;bottom:0;overflow:hidden;
+    -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 26%);
+            mask-image:linear-gradient(90deg,transparent 0,#000 26%);
+  }
+  .photo>i{
+    display:block;width:100%;height:100%;
+    background-size:cover;background-position:44% 20%;
+    filter:grayscale(.4) contrast(1.06) brightness(.9);
   }
   .photo::after{
     content:'';position:absolute;inset:0;
-    background:linear-gradient(90deg,rgba(10,13,19,.9) 0,rgba(10,13,19,.25) 45%,rgba(10,13,19,0) 78%);
+    background:linear-gradient(180deg,var(--ink) 0,rgba(10,13,19,.28) 14%,rgba(10,13,19,.06) 46%,rgba(10,13,19,.5) 84%,var(--ink) 100%);
+  }
+  /* 塗りと輪郭が入れ替わる境目の罫 */
+  .cut{
+    position:absolute;left:calc(var(--pad) + var(--cut));top:0;bottom:0;width:1px;
+    background:linear-gradient(180deg,transparent,var(--rule) 12%,var(--rule) 88%,transparent);
   }
 
-  .in{position:absolute;inset:0;padding:56px 64px;display:flex;flex-direction:column}
+  .in{position:absolute;inset:0;padding:46px var(--pad) 44px;display:flex;flex-direction:column}
 
   .mark{display:flex;align-items:baseline;gap:14px}
   .mark b{font-family:var(--f-mincho);font-size:22px;font-weight:500;letter-spacing:.1em}
@@ -47,36 +59,45 @@
 
   .label{
     font-family:var(--f-en);font-size:12px;font-weight:800;letter-spacing:.28em;text-transform:uppercase;
-    color:var(--fg-mute);display:flex;align-items:center;gap:16px;margin-top:52px;
+    color:var(--fg-mid);display:flex;align-items:center;gap:14px;margin-top:34px;
   }
-  .label i{display:block;width:74px;height:1px;background:var(--rule)}
+  .label i{display:block;width:30px;height:2px;background:var(--seal)}
 
-  h1{
-    font-family:var(--f-mincho);font-weight:500;font-size:60px;line-height:1.34;
-    letter-spacing:.02em;margin-top:16px;max-width:730px;
+  /* 見出しは2枚重ね。左＝塗り／右＝輪郭を、同じ幅の箱で切り分ける */
+  .h1wrap{position:relative;margin-top:14px}
+  .h1wrap h1,.h1wrap .o{
+    font-family:var(--f-mincho);font-weight:500;font-size:92px;line-height:1.16;letter-spacing:.01em;
   }
-  h1 em{font-style:normal;font-weight:700}
-  h1.sm{font-size:50px;line-height:1.4}
+  .h1wrap em{font-style:normal;font-weight:700}
+  .h1wrap h1{clip-path:inset(-10% calc(100% - var(--cut)) -10% -12%)}
+  .h1wrap .o{
+    position:absolute;inset:0;color:transparent;
+    -webkit-text-stroke:1.4px var(--fg);
+    clip-path:inset(-10% -12% -10% var(--cut));
+  }
+  .h1wrap .o em{-webkit-text-stroke:2px var(--fg)}
+  .h1wrap.sm h1,.h1wrap.sm .o{font-size:64px;line-height:1.34}
 
   .sub{
     font-family:var(--f-gothic);font-size:16px;line-height:1.9;color:var(--fg-mid);
-    margin-top:18px;max-width:600px;
+    margin-top:20px;width:var(--cut);
   }
+  .sub:empty{display:none}
 
   .foot{margin-top:auto;display:flex;align-items:flex-end;justify-content:space-between;gap:24px}
-  .who b{display:block;font-family:var(--f-mincho);font-size:22px;font-weight:500;letter-spacing:.06em}
-  .who span{display:block;font-family:var(--f-gothic);font-size:13px;color:var(--fg-mute);margin-top:6px}
+  .who b{display:block;font-family:var(--f-mincho);font-size:19px;font-weight:500;letter-spacing:.06em}
+  .who>span{display:block;font-family:var(--f-gothic);font-size:12.5px;color:var(--fg-mute);margin-top:5px}
 
-  .nums{display:flex;gap:30px;margin-top:22px}
+  .nums{display:flex;gap:30px;margin-top:18px}
   .num i{
-    display:block;font-family:var(--f-en);font-size:30px;font-weight:800;font-style:normal;
+    display:block;font-family:var(--f-en);font-size:28px;font-weight:800;font-style:normal;
     letter-spacing:-.01em;font-variant-numeric:tabular-nums;
   }
-  .num i small{font-size:12px;font-weight:700;letter-spacing:.06em;margin-left:4px;color:var(--fg-mute)}
+  .num i small{font-size:11px;font-weight:700;letter-spacing:.06em;margin-left:4px;color:var(--fg-mute)}
   .num span{display:block;font-family:var(--f-gothic);font-size:11px;color:var(--fg-mute);margin-top:2px}
 
   .seal{
-    position:absolute;right:64px;top:56px;width:38px;height:38px;border-radius:3px;
+    position:absolute;right:var(--pad);top:46px;width:38px;height:38px;border-radius:3px;z-index:3;
     background:var(--seal);color:#fff;font-family:var(--f-mincho);font-size:19px;
     display:flex;align-items:center;justify-content:center;
   }
@@ -84,15 +105,21 @@
 </head>
 <body>
   <div class="glow"></div>
-  <div class="photo" id="photo"></div>
+  <div class="photo"><i id="photo"></i></div>
+  <div class="cut"></div>
   <div class="grain"></div>
   <div class="seal">健</div>
 
   <div class="in">
     <div class="mark"><b>小澤健祐</b><span>OZAKEN.AI</span></div>
 
-    <p class="label" id="label"><i></i><span id="labelText">Vision</span></p>
-    <h1 id="h1"></h1>
+    <p class="label"><i></i><span id="labelText">Vision</span></p>
+
+    <div class="h1wrap" id="h1wrap">
+      <h1 id="h1"></h1>
+      <div class="o" id="h1o" aria-hidden="true"></div>
+    </div>
+
     <p class="sub" id="sub"></p>
 
     <div class="foot">
@@ -112,23 +139,24 @@
   const V = {
     main: {
       label: 'Vision',
-      h1: '人間とAIが<br><em>共存する社会</em>をつくる。',
-      sub: '生成AIとAIエージェントの導入を、経営の意思決定と現場の実装の両側から支えています。',
+      h1: '人間とAIが<br><em>共存する社会</em>を<br>つくる。',
+      // 見出しを大きく取るぶん、説明文は description に任せる
+      sub: '',
     },
     speaking: {
       label: 'Speaking',
-      h1: '生成AI・AIエージェントの<br>講演・研修・アドバイザリー',
+      h1: '生成AI・AIエージェントの<br>講演・研修・<em>アドバイザリー</em>',
       sm: true,
       sub: '経営層向けの基調講演から、全社リテラシー研修、実装ワークショップ、顧問まで。聞き手と目的に合わせて構成します。',
     },
   };
   const v = V[new URLSearchParams(location.search).get('v') || 'main'];
   document.getElementById('labelText').textContent = v.label;
-  const h1 = document.getElementById('h1');
-  h1.innerHTML = v.h1;
-  if (v.sm) h1.classList.add('sm');
+  document.getElementById('h1').innerHTML = v.h1;
+  document.getElementById('h1o').innerHTML = v.h1;
+  if (v.sm) document.getElementById('h1wrap').classList.add('sm');
   document.getElementById('sub').textContent = v.sub;
-  document.getElementById('photo').style.backgroundImage = 'url(stage.jpg)';
+  document.getElementById('photo').style.backgroundImage = 'url(hero.jpg)';
 </script>
 </body>
 </html>

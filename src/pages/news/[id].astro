@@ -32,7 +32,11 @@ const description =
   lead ||
   `${formatDate(item.publishedDate)}｜${cat}。${item.eventName ?? ''} 小澤健祐（おざけん）のお知らせ。`;
 ---
-<Base {title} {description} {...(ogImage ? { ogImage } : {})} railInitial={cat}>
+<Base
+  {title} {description} {...(ogImage ? { ogImage } : {})}
+  ogType="article" publishedTime={item.publishedDate}
+  railInitial={cat}
+>
 
 <article class="post" data-rail={cat}>
   <div class="wrap">
