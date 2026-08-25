@@ -27,7 +27,7 @@ const isTop = Astro.url.pathname === '/';
 // 相対パスで渡されても絶対URLにする。第1引数が絶対URLならベースは無視される。
 const ogPath = ogImage ?? '/ogp.png';
 // SNS側は画像をURL単位で長く持つ。作り直したら OG_VERSION を上げて、取り直させる。
-const OG_VERSION = '2';
+const OG_VERSION = '3';
 const isOwnOg = ogPath.startsWith('/ogp');
 const og = new URL(isOwnOg ? `${ogPath}?v=${OG_VERSION}` : ogPath, Astro.site).href;
 // public/ogp*.png は1200×630で作ってある。
@@ -127,7 +127,7 @@ const gaId = import.meta.env.PUBLIC_GA_ID as string | undefined;
     </div>
     <div class="curtain-seal">
       <i class="curtain-ripple"></i>
-      <b class="curtain-stamp"><span>健</span></b>
+      <b class="curtain-stamp"></b>
     </div>
     <p class="curtain-mark">OZAKEN.AI</p>
     <div class="curtain-bar"><i></i></div>
@@ -138,7 +138,7 @@ const gaId = import.meta.env.PUBLIC_GA_ID as string | undefined;
   <div class="rail-mark">OZAKEN.AI</div>
   <div class="rail-now" id="railNow">{railInitial}</div>
   <div class="rail-prog"><i></i></div>
-  <div class="rail-seal">健</div>
+  <div class="rail-seal" aria-hidden="true"></div>
 </div>
 
 <SiteHeader />

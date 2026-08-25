@@ -10,6 +10,7 @@
 - `fonts.css` と `fonts/` … Google Fonts（Shippori Mincho B1／Archivo／Zen Kaku Gothic New）を
   ローカルに落としたもの。ネットにつながる環境なら `<link>` を Google Fonts に差し替えてよい
 - `hero.jpg` … `src/assets/photos/speaking-closeup.jpg` をコピー（トップのファーストビューと同じ写真）
+- `seal.png` … 落款用の丸写真。`public/favicon-96.png`（か大きめの正方形版）をコピー
 
 見出しは2枚重ねになっている。写真の左端（CSS変数 `--cut`）を境に、
 左は塗り、右は輪郭だけで描く。サイトのファーストビューと同じ作りなので、
