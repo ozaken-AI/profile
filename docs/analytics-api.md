@@ -75,44 +75,58 @@ GA4 → 管理 → **カスタム定義** → **カスタムディメンショ�
 
 ---
 
-## 6. 鍵をClaude Codeの環境変数に入れる
+## 6. 鍵をGitHub Actionsのシークレットに入れる
 
-**鍵の中身をこの会話にそのまま貼らないでください。** かわりに、Claude Codeの
-Environment設定（このプロジェクトを動かしている環境の設定画面）に、直接、
-環境変数として登録します。
+**Claude Codeの「環境変数」欄には入れないでください。** あの欄は「この環境を使う
+すべてのユーザーに表示される」設定用のもので、秘密鍵を置く場所ではありません
+（画面にもそう注意書きがあります）。
 
-登録する3つ：
+かわりに、このリポジトリで**お知らせ投稿にも使っている場所**、GitHub Actionsの
+シークレットに入れます。ここは保存後は誰も中身を読み出せない、正しい置き場所です。
 
-| 変数名 | 値 |
-|---|---|
-| `GOOGLE_SERVICE_ACCOUNT_JSON` | ダウンロードしたJSONファイルの中身。そのまま貼るか、base64にしたもの |
-| `GA4_PROPERTY_ID` | 手順4で控えた数字 |
-| `SITE_URL` | Search Consoleに登録したURL（例：`https://ozaken.ai/`） |
+1. GitHubでこのリポジトリを開く → **Settings → Secrets and variables → Actions**
+2. **New repository secret** を3回繰り返して、次を登録
 
-JSONをbase64にしたい場合（改行が混ざって環境変数の入力欄で崩れるのを避けたいとき）：
+   | Name | Secret |
+   |---|---|
+   | `GOOGLE_SERVICE_ACCOUNT_JSON` | ダウンロードしたJSONファイルの中身。そのまま貼るか、base64にしたもの |
+   | `GA4_PROPERTY_ID` | 手順4で控えた数字 |
+   | `SITE_URL` | Search Consoleに登録したURL（例：`https://ozaken.ai/`） |
+
+JSONをbase64にしたい場合（改行が混ざって入力欄で崩れるのを避けたいとき）：
 
 ```bash
 base64 -i key.json | tr -d '\n'
 ```
 
-登録場所は、claude.ai/code のこのプロジェクトの **Environment（環境）** 設定です。
-Cloudflare Pages の環境変数とは別の場所なので、間違えないようにしてください
-（あちらは `PUBLIC_GA_ID` 用で、サイトの公開ビルドに埋め込むためのものです）。
+Cloudflare Pages の環境変数（`PUBLIC_GA_ID` 用）とも、Claude Codeの環境変数とも
+別の場所です。3つとも用途が違うので、混ざらないようにしてください。
 
 ---
 
 ## 7. 使う
 
-環境変数が入っていれば、次回以降のセッションで、このリポジトリのルートから：
+`.github/workflows/analytics-report.yml` というワークフローを用意してあります。
+GitHubの **Actions タブ →「アクセスを見る」→ Run workflow** から、見たいレポートと
+期間（既定28日）を選んで実行できます。実行が終わったら、そのジョブのログに
+表がそのまま出ます。
+
+Claude Codeとの会話からも同じものを起動できます。「先週のアクセス見て」
+「どのページから相談が来てる？」と言えば、このワークフローを実行して
+ログを読み、内容を要約します（GitHub Actions経由で動かすので、
+シークレットが会話やこの環境に流れ込むことはありません）。
+
+### 手元で直接実行したい場合
+
+シークレットをどこかの環境変数として自分で用意できれば、次のコマンドで
+そのまま動きます（Claude Codeのセッションでは、上の理由から基本使いません）。
 
 ```bash
-node scripts/analytics-report.mjs all
+GOOGLE_SERVICE_ACCOUNT_JSON=... GA4_PROPERTY_ID=... SITE_URL=... \
+  node scripts/analytics-report.mjs all
 ```
 
-で、ページ別の閲覧数、参照元、送信しているイベントの発生回数と内訳、
-検索クエリ、検索から見られているページが、まとめて表で出ます。
-
-個別に見たいときは：
+個別に見たいときは、`all` の部分を差し替えます。
 
 ```bash
 node scripts/analytics-report.mjs pages          # GA4：ページ別
@@ -124,14 +138,11 @@ node scripts/analytics-report.mjs search-pages   # Search Console：ページ別
 node scripts/analytics-report.mjs pages --days 7 # 期間を変える（既定28日）
 ```
 
-チャットで「先週のアクセス見て」「どのページから相談が来てる？」と言えば、
-このコマンドを実行して数字を読み、内容を要約します。
-
 ---
 
 ## うまくいかないとき
 
-- **`環境変数 ... が設定されていません`** → 手順6が終わっていません
+- **`環境変数 ... が設定されていません`** → 手順6のシークレット登録が終わっていません
 - **`GOOGLE_SERVICE_ACCOUNT_JSON を JSON として読めませんでした`** → 鍵の中身が壊れています。JSONファイルをもう一度開いて、中身をそのままコピーし直してください
 - **`403` や `PERMISSION_DENIED`** → 手順2・3の招待が漏れているか、`client_email` を貼り間違えています
 - **`events-detail` だけ「登録が要ります」と出る** → 手順5が未了です。登録後、反映まで数時間かかることがあります

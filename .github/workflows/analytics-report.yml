@@ -1,0 +1,43 @@
+# GA4 と Search Console の数字を取ってくるワークフロー。
+#
+# GitHub の Actions タブ →「アクセスを見る」→ Run workflow から実行する。
+# Claude との会話からも同じものを起動でき、実行後のログをそのまま読める。
+#
+# 事前に必要なもの（docs/analytics-api.md 参照）
+#   Settings → Secrets and variables → Actions → Secrets
+#     GOOGLE_SERVICE_ACCOUNT_JSON … サービスアカウントの鍵（JSONそのもの、または base64）
+#     GA4_PROPERTY_ID             … GA4の数字のプロパティID（測定ID "G-..." ではない）
+#     SITE_URL                    … Search Console に登録したURL（例: https://ozaken.ai/）
+name: アクセスを見る
+
+on:
+  workflow_dispatch:
+    inputs:
+      report:
+        description: '見たいもの'
+        type: choice
+        options: ['all', 'pages', 'sources', 'events', 'events-detail', 'queries', 'search-pages']
+        default: 'all'
+      days:
+        description: '直近何日ぶん'
+        required: false
+        default: '28'
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - run: npm install
+
+      - name: 数字を取ってくる
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
+          SITE_URL: ${{ secrets.SITE_URL }}
+        run: node scripts/analytics-report.mjs "${{ inputs.report }}" --days "${{ inputs.days }}"
