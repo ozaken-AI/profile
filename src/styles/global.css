@@ -151,8 +151,9 @@ section{position:relative}
 .line{display:block;overflow:hidden}
 .line>span{display:block;transform:translateY(105%);transition:transform 1.15s var(--ease)}
 .hero.on .line>span{transform:none}
-.hero.on .line:nth-child(2)>span{transition-delay:.12s}
-.hero.on .line:nth-child(3)>span{transition-delay:.24s}
+.hero.on .line>span{transition-delay:.36s}
+.hero.on .line:nth-child(2)>span{transition-delay:.48s}
+.hero.on .line:nth-child(3)>span{transition-delay:.6s}
 
 /* 粒子をゆっくり漂わせる。transform だけを動かして描画を軽くする。 */
 @media(prefers-reduced-motion:no-preference){
@@ -169,18 +170,36 @@ section{position:relative}
 /* スクロールに連動する動き。対応していないブラウザでは何も起きない。 */
 @supports (animation-timeline: view()){
   @media(prefers-reduced-motion:no-preference){
-    /* 全面に敷いた写真を、スクロール量に合わせてゆっくり流す */
+    /* 全面に敷いた写真を、スクロール量に合わせてゆっくり流す。
+       写真の親は overflow:hidden で、それ自体がスクロール枠として扱われてしまう。
+       view() をそのまま書くと動かないので、親に名前を付けて参照する。 */
+    .stage{view-timeline:--stage block}
+    .nums-wrap{view-timeline:--nums block}
     .stage-img,.nums-img{
       animation:parallax linear both;
-      animation-timeline:view();
       animation-range:cover 0% cover 100%;
       will-change:transform;
     }
+    .stage-img{animation-timeline:--stage}
+    .nums-img{animation-timeline:--nums}
     @keyframes parallax{
       /* scale の余白（片側10%）より translate（7%）を小さくして、端が透けないようにする */
       from{transform:translate3d(0,-7%,0) scale(1.2)}
       to{transform:translate3d(0,7%,0) scale(1.2)}
     }
+    /* 最初の画面は、スクロールで送り出すように上へ抜ける */
+    /* .hero も overflow:hidden なので、view() ではなく画面のスクロール量で見る */
+    .hero-inner{
+      animation:heroout linear both;
+      animation-timeline:scroll(root block);
+      animation-range:0 80vh;
+      will-change:transform,opacity;
+    }
+    @keyframes heroout{
+      from{transform:translate3d(0,0,0);opacity:1}
+      to{transform:translate3d(0,-12%,0);opacity:0}
+    }
+
     /* 左レールの読み進みインジケータ */
     .rail-prog>i{animation:progress linear both;animation-timeline:scroll(root block)}
     @keyframes progress{from{transform:scaleY(0)}to{transform:scaleY(1)}}
@@ -193,7 +212,38 @@ section{position:relative}
   .phead-h1,.h2,.contact-h{clip-path:none!important;opacity:1!important}
   .ticker-track,body::before{animation:none!important}
 }
-/* ---------- HERO ---------- */
+/* ---------- HERO ----------
+   最初の画面だけは、読む順番どおりに出す。
+   Vision のラベル → 見出しの3行 → 補足 → 縦組みのミッション → スクロールの合図。 */
+.hero-eyebrow,.hero-vlabel,.hero-sub,.hero-vert,.hero-foot{
+  opacity:0;transform:translateY(16px);
+  transition:opacity .95s var(--ease),transform .95s var(--ease);
+}
+.hero.on .hero-eyebrow,.hero.on .hero-vlabel,.hero.on .hero-sub,
+.hero.on .hero-vert,.hero.on .hero-foot{opacity:1;transform:none}
+.hero.on .hero-eyebrow{transition-delay:.05s}
+.hero.on .hero-vlabel{transition-delay:.2s}
+/* 見出しの3行はここで出る（.line の項を参照）*/
+.hero.on .hero-sub{transition-delay:.9s}
+.hero.on .hero-vert{transition-delay:1.05s}
+.hero.on .hero-foot{transition-delay:1.2s}
+
+/* 「共存する社会」だけ、行が着地したあとに少し遅れて濃くなる */
+.hero-h1 em{color:var(--fg-mid);transition:color 1.4s ease 1s}
+.hero.on .hero-h1 em{color:var(--fg)}
+
+/* 縦組みのミッションは、上から書かれるように出す */
+.hero-vert .vert-mission{clip-path:inset(0 0 100% 0);transition:clip-path 1.4s var(--ease) 1.25s}
+.hero.on .hero-vert .vert-mission{clip-path:inset(0 0 -12% 0)}
+
+@media(prefers-reduced-motion:reduce){
+  .hero-eyebrow,.hero-vlabel,.hero-sub,.hero-vert,.hero-foot{
+    opacity:1!important;transform:none!important;transition:none!important;
+  }
+  .hero-h1 em{color:var(--fg)!important}
+  .hero-vert .vert-mission{clip-path:none!important}
+}
+
 .hero{
   min-height:100svh;display:flex;flex-direction:column;justify-content:center;
   padding-block:clamp(5rem,11vh,7rem) clamp(2rem,4vh,3rem);position:relative;overflow:hidden;
@@ -202,6 +252,15 @@ section{position:relative}
   position:absolute;inset:auto -20% 12% -10%;height:70%;pointer-events:none;
   background:radial-gradient(60% 60% at 30% 40%,rgba(56,86,148,.32),transparent 70%);
   filter:blur(30px);
+  will-change:transform,opacity;
+}
+/* transform と opacity だけ動かすので、描画は軽い */
+@media(prefers-reduced-motion:no-preference){
+  .hero-glow{animation:glow 16s ease-in-out infinite alternate}
+}
+@keyframes glow{
+  from{transform:translate3d(-2%,1%,0) scale(1);opacity:.8}
+  to{transform:translate3d(5%,-3%,0) scale(1.14);opacity:1}
 }
 .hero-inner{position:relative;display:grid;grid-template-columns:1fr auto;gap:clamp(2rem,5vw,4rem);align-items:end}
 
