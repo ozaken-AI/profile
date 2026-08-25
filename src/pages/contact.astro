@@ -73,7 +73,7 @@ const description =
     </div>
 
     <p class="form-foot">
-      いただいた内容は、ご相談への回答以外の目的では利用しません。通常2〜3営業日以内にご返信します。
+      いただいた内容は、ご相談への回答以外の目的では利用しません（<a href="/privacy/">取り扱いについて</a>）。通常2〜3営業日以内にご返信します。
       お急ぎの場合は <a href={`mailto:${SITE.email}`}>{SITE.email}</a> まで直接ご連絡ください。
       告知ページ用のプロフィール文と顔写真は <a href="/press/">プレスキット</a> にあります。
     </p>
@@ -152,12 +152,16 @@ const description =
           form.reset();
           openedAt = Date.now();
           setMsg('送信しました。2〜3営業日以内にご返信します。', 'ok');
+          (window as any).ozTrack?.('contact_submit', { result: 'ok' });
         } else if (body?.configured === false) {
+          (window as any).ozTrack?.('contact_submit', { result: 'メーラーに切替' });
           mailtoFallback(data, 'フォーム送信が未設定のため、');
         } else {
+          (window as any).ozTrack?.('contact_submit', { result: 'エラー' });
           setMsg(body?.error || '送信に失敗しました。時間をおいて再度お試しください。', 'err');
         }
       } catch {
+        (window as any).ozTrack?.('contact_submit', { result: '通信失敗' });
         mailtoFallback(data, '送信できませんでした。');
       } finally {
         submit.disabled = false;

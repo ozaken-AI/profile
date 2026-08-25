@@ -1244,3 +1244,7 @@ footer{border-top:1px solid var(--rule-2);padding-block:2.5rem;font-size:.78rem;
   :root:not([data-entered]) .hero{animation:heroin 1.5s var(--ease) 1.2s both}
 }
 @keyframes heroin{from{transform:scale(1.035)}to{transform:scale(1)}}
+
+/* フッターの規約リンク。著作権表示と同じ列に、控えめに置く */
+.foot-legal a{border-bottom:1px solid var(--rule);transition:color .3s ease,border-color .3s ease}
+.foot-legal a:hover{color:var(--fg);border-color:var(--fg-mute)}

@@ -1,0 +1,110 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE } from '../lib/site';
+
+const title = 'プライバシーポリシー | 小澤健祐（おざけん）';
+const description =
+  'ozaken.ai で取得する情報、その使いみち、外部に送信している情報についてまとめています。';
+
+// 最後に見直した日。中身を変えたらここも直す。
+const updated = '2026年8月25日';
+---
+<Base {title} {description} railInitial="規約">
+
+<section class="phead wrap" data-rail="プライバシーポリシー">
+  <div class="phead-glow" aria-hidden="true"></div>
+  <p class="label rv">Privacy Policy</p>
+  <h1 class="phead-h1 rv rv-d1">取り扱いについて</h1>
+  <p class="phead-lede rv rv-d2">
+    このサイト（ozaken.ai）で取得する情報と、その使いみちです。
+    外部に送信しているものも、下にすべて挙げています。
+  </p>
+</section>
+
+<section class="post wrap" data-rail="内容">
+  <div class="post-body rv">
+    <h2>1. 運営者</h2>
+    <p>
+      小澤健祐（おざけん）が個人として運営しています。<br />
+      連絡先：<a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+    </p>
+
+    <h2>2. お問い合わせフォームで受け取る情報</h2>
+    <p>
+      <a href="/contact/">お問い合わせフォーム</a>から送っていただいた内容を、メールで受け取ります。
+      受け取るのは、フォームに入力された項目（お名前、ご所属、メールアドレス、ご相談内容など）だけです。
+    </p>
+    <p>これらは次の目的にのみ使います。</p>
+    <ul>
+      <li>ご相談への返信と、その後のやりとり</li>
+      <li>講演・研修・伴走支援・アドバイザリーのご依頼に関する調整</li>
+    </ul>
+    <p>
+      ご本人の同意がある場合と、法令に基づく場合を除いて、第三者に提供することはありません。
+      なお、フォームの送信にはメール配信サービス <a href="https://resend.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer">Resend</a>（Resend, Inc.／米国）を利用しているため、
+      入力内容は同社のサーバーを経由します。
+    </p>
+
+    <h2>3. アクセス解析</h2>
+    <p>
+      サイトの利用状況を知るために、Google LLC の提供する
+      <a href="https://policies.google.com/privacy?hl=ja" target="_blank" rel="noopener noreferrer">Google アナリティクス</a>
+      を利用しています。Cookie を使って、閲覧されたページ、参照元、おおよその地域、ブラウザの種類などを集計します。
+      個人を特定する情報は取得していません。
+    </p>
+    <p>
+      広告目的の機能（Google シグナル、広告のパーソナライズ）は、いずれも無効にしています。
+    </p>
+    <p>
+      収集を望まれない場合は、
+      <a href="https://tools.google.com/dlpage/gaoptout?hl=ja" target="_blank" rel="noopener noreferrer">Google アナリティクス オプトアウト アドオン</a>
+      をご利用いただくか、ブラウザの設定で Cookie を無効にしてください。
+      サイトの閲覧そのものには支障ありません。
+    </p>
+
+    <h2>4. 外部に送信している情報</h2>
+    <p>
+      このサイトを開いたとき、次の事業者へ情報が送信されます（電気通信事業法に基づく公表）。
+    </p>
+    <ul>
+      <li>
+        <b>Google LLC</b>（アクセス解析）— 閲覧ページのURL、参照元、Cookieに保存された識別子、
+        IPアドレス（短縮処理あり）、ブラウザと端末の情報。
+        目的はサイトの利用状況の把握。
+      </li>
+      <li>
+        <b>Google LLC</b>（Google Fonts）— 表示に使う書体を読み込むため、IPアドレスとブラウザの情報。
+      </li>
+      <li>
+        <b>Cloudflare, Inc.</b>（サイトの配信）— 配信のためにアクセス情報を処理します。
+      </li>
+      <li>
+        <b>Resend, Inc.</b>（メール送信）— お問い合わせフォームを送信したときのみ、入力内容。
+      </li>
+    </ul>
+
+    <h2>5. 外部サイトへのリンク</h2>
+    <p>
+      サイト内には、他社のサービスや記事へのリンクがあります。
+      リンク先での情報の取り扱いについては、それぞれの運営者の定めによります。
+    </p>
+
+    <h2>6. 開示・削除のご請求</h2>
+    <p>
+      お問い合わせフォームからいただいた情報について、内容の確認、訂正、削除をご希望の場合は、
+      <a href={`mailto:${SITE.email}`}>{SITE.email}</a> までご連絡ください。
+      ご本人であることを確認したうえで対応します。
+    </p>
+
+    <h2>7. 改定</h2>
+    <p>
+      内容を変更した場合は、このページに反映します。
+    </p>
+
+    <p style="margin-top:2.5rem;color:var(--fg-mute);font-size:.86rem">
+      最終更新：{updated}
+    </p>
+  </div>
+</section>
+
+</Base>

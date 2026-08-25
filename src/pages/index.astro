@@ -51,7 +51,7 @@ const description =
       <span class="line"><span class="ln">人間とAIが</span></span>
       <span class="line"><span class="ln"><em>共存する社会</em>を</span></span>
       <span class="line"><span class="ln">つくる<a
-        class="hero-dot" id="heroDot" href={SITE.line}
+        class="hero-dot" id="heroDot" href={SITE.line} data-place="見出しの句点"
         target="_blank" rel="noopener noreferrer"
         aria-label="LINEで小澤健祐に直接連絡する">。</a></span></span>
         </h1>
@@ -287,7 +287,7 @@ const description =
     <h2 class="secret-h" id="secretTitle">LINEでつながる</h2>
     <p class="secret-p">見つけていただき、ありがとうございます。<br />ここからなら直接ご連絡いただけます。</p>
     <div class="secret-qr" aria-hidden="true" set:html={lineQr}></div>
-    <a class="secret-btn" href={SITE.line} target="_blank" rel="noopener noreferrer">LINEで友だち追加 <span aria-hidden="true">→</span></a>
+    <a class="secret-btn" href={SITE.line} data-place="隠しコマンドの面" target="_blank" rel="noopener noreferrer">LINEで友だち追加 <span aria-hidden="true">→</span></a>
     <button class="secret-copy" type="button" id="secretCopy">リンクをコピー</button>
   </div>
 </div>
@@ -306,6 +306,7 @@ const description =
       requestAnimationFrame(() => panel.classList.add('on'));
       document.documentElement.style.overflow = 'hidden';
       card?.focus();
+      window.ozTrack?.('secret_open', {});
     }
     function close() {
       if (panel.hidden) return;

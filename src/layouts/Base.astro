@@ -34,6 +34,9 @@ const og = new URL(isOwnOg ? `${ogPath}?v=${OG_VERSION}` : ogPath, Astro.site).h
 // CMSのサムネイルなど外から来た画像は大きさが分からないので寸法を書かない。
 const ogSized = isOwnOg;
 const ogAlt = ogImageAlt ?? '小澤健祐（おざけん）｜人間とAIが共存する社会をつくる。';
+// アクセス解析。IDは Cloudflare Pages の環境変数 PUBLIC_GA_ID に入れる。
+// 未設定ならタグを出さない（開発中やプレビューで数字を汚さないため）。
+const gaId = import.meta.env.PUBLIC_GA_ID as string | undefined;
 ---
 <!DOCTYPE html>
 <html lang="ja">
@@ -83,6 +86,24 @@ const ogAlt = ogImageAlt ?? '小澤健祐（おざけん）｜人間とAIが共�
   /* 2回目以降は幕を出さない。描画より先に決める必要があるのでここに置く。 */
   try { if (sessionStorage.getItem('ozaken:entered')) document.documentElement.dataset.entered = '1'; } catch (e) {}
 </script>
+{gaId && (
+  <>
+    <link rel="preconnect" href="https://www.googletagmanager.com" />
+    <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}></script>
+    <script is:inline define:vars={{ gaId }}>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { window.dataLayer.push(arguments); }
+      window.gtag = gtag;
+      gtag('js', new Date());
+      gtag('config', gaId, {
+        // 広告向けのシグナルは送らない。見たいのは流入と導線だけなので。
+        allow_google_signals: false,
+        allow_ad_personalization_signals: false,
+        anonymize_ip: true,
+      });
+    </script>
+  </>
+)}
 <noscript><style>
   /* JSが動かない環境でも、出現アニメーション待ちで中身が消えないようにする */
   .rv,.stg>*{opacity:1!important;transform:none!important}
@@ -129,6 +150,28 @@ const ogAlt = ogImageAlt ?? '小澤健祐（おざけん）｜人間とAIが共�
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // 見出しとまとまりも同じ仕組みで出す。取りこぼすと出たまま隠れるので、まとめて拾う。
+  /* 計測イベント。タグが無い環境では何もしない。 */
+  const track = (name: string, params: Record<string, unknown> = {}) => {
+    const g = (window as any).gtag;
+    if (typeof g === 'function') g('event', name, params);
+  };
+  (window as any).ozTrack = track;
+
+  /* 外に出るリンクは、どこから出たかを残す。
+     句点のリンクと隠しコマンドの面は途中で伝播を止めているので、捕捉側で拾う。 */
+  document.addEventListener('click', (e) => {
+    const a = (e.target as HTMLElement)?.closest?.('a[href]') as HTMLAnchorElement | null;
+    if (!a) return;
+    const href = a.getAttribute('href') || '';
+    if (href.includes('line.me')) {
+      track('line_click', { place: a.dataset.place || 'その他', page: location.pathname });
+    } else if (/^https?:/.test(href) && !href.includes(location.host)) {
+      track('outbound_click', { url: href, page: location.pathname });
+    } else if (href === '/contact/' || href.startsWith('/contact/')) {
+      track('contact_cta', { from: location.pathname, label: (a.textContent || '').trim().slice(0, 40) });
+    }
+  }, true);
+
   const ANIMATED = '.rv, .stg, .h2, .phead-h1, .contact-h';
 
   // 見出しを確定させる処理。中身は下で入れる（幕の開きに合わせて呼ぶため）
