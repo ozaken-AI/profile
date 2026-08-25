@@ -399,6 +399,57 @@ section{position:relative}
   .news-arrow{display:none}
 }
 
+/* ---------- 依頼の形ごとのページ ---------- */
+.lp-sub{
+  font-family:var(--f-mincho);font-size:clamp(1.05rem,2.4vw,1.45rem);
+  color:var(--fg-mid);margin-top:1rem;line-height:1.6;
+}
+.lp-h3{
+  font-family:var(--f-mincho);font-size:1.25rem;font-weight:500;
+  margin-top:3.5rem;padding-top:1.6rem;border-top:1px solid var(--rule);
+}
+
+/* 申し込みボタン。面積のある要素は朱ではなく白地で置く */
+.btn{
+  display:inline-flex;align-items:center;gap:.9rem;margin-top:2.6rem;
+  background:var(--fg);color:var(--ink);border-radius:2px;
+  padding:.95rem 1.7rem;font-size:.92rem;letter-spacing:.02em;
+  transition:transform .4s var(--ease),background .3s ease;
+}
+.btn span{font-family:var(--f-en);transition:transform .4s var(--ease)}
+.btn:hover{background:#fff}
+.btn:hover span{transform:translateX(5px)}
+
+/* 時間・形式などの早見表 */
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1px;background:var(--rule-2);border:1px solid var(--rule-2)}
+.fact{background:var(--ink);padding:1.4rem 1.5rem}
+.fact dt{font-family:var(--f-en);font-size:10.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--fg-mute)}
+.fact dd{font-family:var(--f-mincho);font-size:1rem;line-height:1.6;margin-top:.6rem}
+
+/* 「こんなとき」の箇条書き */
+.sitlist{list-style:none;display:grid;gap:0;margin-top:2.6rem;border-top:1px solid var(--paper-rule)}
+.sitlist li{
+  border-bottom:1px solid var(--paper-rule);padding:1.15rem 0 1.15rem 2.2rem;position:relative;
+  font-family:var(--f-mincho);font-size:1.02rem;line-height:1.75;
+}
+.sitlist li::before{
+  content:'—';position:absolute;left:0;top:1.15rem;color:var(--seal);
+  font-family:var(--f-en);font-size:.9rem;
+}
+.sitlist--dark{border-top-color:var(--rule);margin-top:1.8rem}
+.sitlist--dark li{border-bottom-color:var(--rule);color:var(--fg-mid);font-size:.97rem}
+
+/* 下層ページの写真は、ヒーローほど背を高くしない */
+.stage--lp{aspect-ratio:21/7}
+@media(max-width:640px){.stage--lp{aspect-ratio:3/2}}
+
+/* 進め方 */
+.lpflow{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1px;background:var(--rule-2);border:1px solid var(--rule-2);margin-top:2.75rem}
+.lpstep{background:var(--ink);padding:clamp(1.6rem,3vw,2.2rem)}
+.lpstep-n{font-family:var(--f-en);font-size:1.9rem;font-weight:800;color:var(--rule);line-height:1}
+.lpstep-h{font-family:var(--f-mincho);font-size:1.14rem;font-weight:500;margin-top:1rem}
+.lpstep-p{font-size:.88rem;line-height:2;color:var(--fg-mute);margin-top:.7rem}
+
 /* ---------- 実績（登壇・メディア） ---------- */
 .track{display:grid;gap:0;margin-top:2.6rem}
 .track-g{
@@ -463,12 +514,21 @@ section{position:relative}
 @media(max-width:720px){.menu{grid-template-columns:1fr}}
 .menu-item{background:var(--ink);padding:clamp(1.75rem,3vw,2.4rem);display:flex;flex-direction:column;gap:.9rem;transition:background .4s ease}
 .menu-item:hover{background:var(--ink-2)}
+.menu-go{
+  margin-top:1rem;font-family:var(--f-en);font-size:11px;font-weight:700;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--fg-mute);
+  display:inline-flex;align-items:center;gap:.5rem;transition:color .3s ease;
+}
+.menu-go span{transition:transform .4s var(--ease)}
+.menu-item:hover .menu-go{color:var(--fg)}
+.menu-item:hover .menu-go span{transform:translateX(5px)}
 .menu-idx{font-family:var(--f-en);font-size:10.5px;font-weight:700;letter-spacing:.2em;color:var(--fg-mute)}
 .menu-h{font-family:var(--f-mincho);font-size:1.62rem;font-weight:500;line-height:1.4;letter-spacing:.04em}
 .menu-sub{font-family:var(--f-mincho);font-size:.95rem;color:var(--fg-mid);line-height:1.6;margin-top:-.35rem}
 .menu-spec{font-family:var(--f-en);font-size:.8rem;color:var(--fg-mid);letter-spacing:.04em;font-variant-numeric:tabular-nums}
 .menu-p{font-size:.86rem;color:var(--fg-mute);line-height:1.95}
 .menu-for{margin-top:auto;padding-top:1rem;border-top:1px solid var(--rule-2);font-size:.78rem;color:var(--fg-mute)}
+.menu-item .menu-go{margin-top:.2rem}
 .menu-for b{color:var(--fg-mid);font-weight:500}
 
 

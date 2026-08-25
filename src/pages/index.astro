@@ -136,14 +136,15 @@ const description =
 
   <div class="menu stg">
     {MENU.map((m) => (
-      <div class="menu-item">
+      <a class="menu-item" href={`/speaking/${m.slug}/`}>
         <span class="menu-idx">{m.idx}</span>
         <h3 class="menu-h">{m.kind}</h3>
         <p class="menu-sub">{m.title}</p>
         <p class="menu-spec">{m.spec}</p>
         <p class="menu-p">{m.body}</p>
         <p class="menu-for">向いている場：<b>{m.forWhom}</b></p>
-      </div>
+        <span class="menu-go">詳しく <span aria-hidden="true">→</span></span>
+      </a>
     ))}
   </div>
 

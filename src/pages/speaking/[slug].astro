@@ -1,0 +1,177 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import { SITE, MENU, TOPICS, FAQ, SPEAKING_TRACK } from '../../lib/site';
+import speakingStanding from '../../assets/photos/speaking-standing.jpg';
+import speakingSeated from '../../assets/photos/speaking-seated.jpg';
+
+export async function getStaticPaths() {
+  return MENU.map((m) => ({ params: { slug: m.slug }, props: { item: m } }));
+}
+
+type Item = (typeof MENU)[number];
+interface Props { item: Item; }
+const { item } = Astro.props;
+
+const topics = item.topics.map((i) => TOPICS[i]).filter(Boolean);
+const track = SPEAKING_TRACK.find((g) => g.label === item.trackLabel);
+// 費用・オンライン・リードタイムは、どの形でも同じことを聞かれる
+const faq = FAQ.slice(0, 3);
+const others = MENU.filter((m) => m.slug !== item.slug);
+
+const photo = item.slug === 'keynote' || item.slug === 'training' ? speakingStanding : speakingSeated;
+
+const title = `${item.kind}（${item.title}）のご依頼 | 小澤健祐（おざけん）`;
+const description = `${item.body} ${item.spec}。${item.forWhom}。生成AI・AIエージェントの${item.kind}のご依頼はこちらから。`;
+---
+<Base {title} {description} ogImage="/ogp-speaking.png" railInitial={item.kind}>
+
+<section class="phead wrap" data-rail={item.kind}>
+  <div class="phead-glow" aria-hidden="true"></div>
+  <p class="label rv"><a href="/speaking/" style="color:inherit">Speaking</a> ／ {item.idx}</p>
+  <h1 class="phead-h1">{item.kind}</h1>
+  <p class="lp-sub rv rv-d1">{item.title}</p>
+  <p class="phead-lede rv rv-d2">{item.lede}</p>
+  <a class="btn rv rv-d3" href="/contact/">この形で相談する <span aria-hidden="true">→</span></a>
+</section>
+
+<section class="band wrap" style="padding-top:0" data-rail="概要">
+  <dl class="facts stg">
+    {item.facts.map((f) => (
+      <div class="fact"><dt>{f.k}</dt><dd>{f.v}</dd></div>
+    ))}
+  </dl>
+</section>
+
+<section class="band band--paper" data-rail="こんなとき">
+  <div class="wrap">
+    <p class="label rv">Situations</p>
+    <h2 class="h2">こんなご相談から始まります</h2>
+    <ul class="sitlist stg">
+      {item.situations.map((s) => <li>{s}</li>)}
+    </ul>
+    <p class="lede rv rv-d2">
+      当てはまるものが無くても構いません。目的だけ伝えてもらえれば、
+      <a href="/speaking/" style="border-bottom:1px solid var(--paper-rule)">ほかの形</a>も含めて提案します。
+    </p>
+  </div>
+</section>
+
+<figure class="stage stage--lp" data-rail={item.kind}>
+  <Image src={photo} alt={`${item.kind}の様子`} width={2600} widths={[1000, 1600, 2200, 2600]} quality={84} sizes="100vw" class="stage-img" />
+</figure>
+
+<section class="band wrap" data-rail="進め方">
+  <p class="label rv">How it works</p>
+  <h2 class="h2">進め方</h2>
+  <div class="lpflow stg">
+    {item.flow.map((f, i) => (
+      <article class="lpstep">
+        <p class="lpstep-n">{String(i + 1).padStart(2, '0')}</p>
+        <h3 class="lpstep-h">{f.h}</h3>
+        <p class="lpstep-p">{f.p}</p>
+      </article>
+    ))}
+  </div>
+
+  <h3 class="lp-h3 rv">お渡しするもの</h3>
+  <ul class="sitlist sitlist--dark stg">
+    {item.deliver.map((d) => <li>{d}</li>)}
+  </ul>
+</section>
+
+{topics.length > 0 && (
+  <section class="band band--paper" data-rail="テーマ">
+    <div class="wrap">
+      <p class="label rv">Topics</p>
+      <h2 class="h2">よく依頼されるテーマ</h2>
+      <p class="lede rv rv-d2">出発点です。実際は業種・職種・すでに使っているツールに合わせて毎回組み直します。</p>
+      <div class="topics stg">
+        {topics.map((t, i) => (
+          <article class="topic">
+            <p class="topic-n">{String(i + 1).padStart(2, '0')}</p>
+            <div>
+              <h3 class="topic-h">{t.title}</h3>
+              <p class="topic-lead">{t.lead}</p>
+              <ul class="topic-points">{t.points.map((pt) => <li>{pt}</li>)}</ul>
+              <p class="topic-for">対象：{t.forWhom}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+      <a class="more" href="/speaking/#topics">テーマの一覧 <span>→</span></a>
+    </div>
+  </section>
+)}
+
+{track && (
+  <section class="band wrap" data-rail="実績">
+    <p class="label rv">Track record</p>
+    <h2 class="h2">これまでの{track.label}</h2>
+    <div class="track stg" style="margin-top:2rem">
+      <div class="track-g" style="grid-template-columns:1fr">
+        <ul class="track-l">{track.items.map((i) => <li>{i}</li>)}</ul>
+      </div>
+    </div>
+    <p class="track-note rv rv-d2">
+      一回ごとの報告は<a href="/news/" style="border-bottom:1px solid var(--rule)">お知らせ</a>に残しています。
+      <a href="/speaking/#track" style="border-bottom:1px solid var(--rule)">実績の全体</a>もこちらに。
+    </p>
+  </section>
+)}
+
+<section class="band band--paper" data-rail="よくある質問">
+  <div class="wrap">
+    <p class="label rv">FAQ</p>
+    <h2 class="h2">よく聞かれること</h2>
+    <div class="faq stg">
+      {faq.map((f) => (
+        <details class="qa"><summary>{f.q}</summary><p>{f.a}</p></details>
+      ))}
+    </div>
+  </div>
+</section>
+
+<section class="band wrap" data-rail="ほかの形">
+  <p class="label rv">Other formats</p>
+  <h2 class="h2">ほかの形</h2>
+  <div class="menu stg" style="margin-top:2.4rem">
+    {others.map((m) => (
+      <a class="menu-item" href={`/speaking/${m.slug}/`}>
+        <span class="menu-idx">{m.idx}</span>
+        <h3 class="menu-h">{m.kind}</h3>
+        <p class="menu-sub">{m.title}</p>
+        <p class="menu-spec">{m.spec}</p>
+        <p class="menu-for">向いている場：<b>{m.forWhom}</b></p>
+      </a>
+    ))}
+  </div>
+</section>
+
+<section class="contact wrap" data-rail="依頼する">
+  <p class="label rv">Contact</p>
+  <h2 class="contact-h">ご依頼・ご相談</h2>
+  <p class="lede rv rv-d2">
+    目的・対象者・想定人数・日程をお知らせいただけると、可否と概算をお返ししやすくなります。
+    企画が固まっていない段階のご相談も歓迎です。
+  </p>
+  <div class="contact-grid stg">
+    <a class="cc" href="/contact/">
+      <span class="cc-k">Form</span>
+      <span class="cc-v">お問い合わせフォーム</span>
+      <span class="cc-n">2〜3営業日以内に返信します。</span>
+    </a>
+    <a class="cc" href={`mailto:${SITE.email}`}>
+      <span class="cc-k">Mail</span>
+      <span class="cc-v">{SITE.email}</span>
+      <span class="cc-n">日程だけでも構いません。</span>
+    </a>
+    <a class="cc" href="/press/">
+      <span class="cc-k">Press Kit</span>
+      <span class="cc-v">告知用の素材</span>
+      <span class="cc-n">プロフィール文と顔写真。</span>
+    </a>
+  </div>
+</section>
+
+</Base>
