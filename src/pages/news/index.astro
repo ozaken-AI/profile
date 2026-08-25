@@ -25,7 +25,7 @@ const description =
 
 <section class="band wrap" style="padding-top:0" data-rail="一覧">
   {present.length > 1 && (
-    <div class="log-toolbar rv" id="filters" role="group" aria-label="カテゴリで絞り込み">
+    <div class="log-toolbar stg" id="filters" role="group" aria-label="カテゴリで絞り込み">
       <button type="button" class="chip" data-cat="all" aria-pressed="true">すべて</button>
       {present.map((c) => (
         <button type="button" class="chip" data-cat={c} aria-pressed="false">{c}</button>

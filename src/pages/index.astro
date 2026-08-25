@@ -116,7 +116,7 @@ const description =
           <Image src={portraitFull} alt="登壇する小澤健祐" width={2200} widths={[600, 1200, 1600, 2200]} quality={84} sizes="(max-width:600px) 100vw, 42vw" class="shot shot--wide" />
         </div>
 
-        <div class="credits">
+        <div class="credits stg">
           {ROLES.map((r) => (
             <div class="credit"><b>{r.org}</b><span>{r.title}</span></div>
           ))}
@@ -134,7 +134,7 @@ const description =
   <h2 class="h2 rv rv-d1">講演・研修・伴走支援・<br />アドバイザリー</h2>
   <p class="lede rv rv-d2">聞き手が誰で、終わったあと何をしていてほしいか。この2つをうかがえると、どんな形がよさそうかをご提案しやすくなります。</p>
 
-  <div class="menu rv rv-d2">
+  <div class="menu stg">
     {MENU.map((m) => (
       <div class="menu-item">
         <span class="menu-idx">{m.idx}</span>
@@ -187,7 +187,7 @@ const description =
     <p class="label rv">How it works</p>
     <h2 class="h2 rv rv-d1">依頼から当日までの流れ</h2>
 
-    <div class="steps rv rv-d2">
+    <div class="steps stg">
       {STEPS.map((s) => (
         <div class="step">
           <p class="step-n">{s.n}</p>
@@ -197,7 +197,7 @@ const description =
       ))}
     </div>
 
-    <div class="faq rv rv-d2">
+    <div class="faq stg">
       {FAQ.map((f) => (
         <details>
           <summary>{f.q}</summary>
@@ -213,7 +213,7 @@ const description =
   <p class="label rv">Contact</p>
   <h2 class="contact-h rv rv-d1">ご依頼・ご相談</h2>
 
-  <div class="contact-grid rv rv-d2">
+  <div class="contact-grid stg">
     <a class="cc" href="/contact/">
       <span class="cc-k">Form</span>
       <span class="cc-v">お問い合わせフォーム</span>

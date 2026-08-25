@@ -42,12 +42,19 @@ const og = new URL(ogImage ?? '/ogp.png', Astro.site).href;
   href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Shippori+Mincho+B1:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap"
   rel="stylesheet"
 />
+<noscript><style>
+  /* JSが動かない環境でも、出現アニメーション待ちで中身が消えないようにする */
+  .rv,.stg>*{opacity:1!important;transform:none!important}
+  .phead-h1,.h2,.contact-h{clip-path:none!important;opacity:1!important}
+  .line>span{transform:none!important}
+</style></noscript>
 </head>
 <body>
 
 <div class="rail" aria-hidden="true">
   <div class="rail-mark">OZAKEN.AI</div>
   <div class="rail-now" id="railNow">{railInitial}</div>
+  <div class="rail-prog"><i></i></div>
   <div class="rail-seal">健</div>
 </div>
 
@@ -62,17 +69,27 @@ const og = new URL(ogImage ?? '/ogp.png', Astro.site).href;
   /* 出現アニメーション ＋ 左レールの現在地表示 */
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  const io = new IntersectionObserver((es) => {
-    es.forEach((e) => {
-      if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); }
-    });
-    // お知らせ一覧のように画面より背の高い要素は交差比が0.12に届かない。
-    // しきい値は0にして、下端の余白で「少し入ったら」を作る。
-  }, { threshold: 0, rootMargin: '0px 0px -12% 0px' });
-  document.querySelectorAll('.rv').forEach((el) => io.observe(el));
+  // 見出しとまとまりも同じ仕組みで出す。取りこぼすと出たまま隠れるので、まとめて拾う。
+  const ANIMATED = '.rv, .stg, .h2, .phead-h1, .contact-h';
 
-  const hero = document.querySelector('.hero');
-  if (hero) requestAnimationFrame(() => hero.classList.add('on'));
+  try {
+    const io = new IntersectionObserver((es) => {
+      es.forEach((e) => {
+        if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); }
+      });
+      // お知らせ一覧のように画面より背の高い要素は交差比が0.12に届かない。
+      // しきい値は0にして、下端の余白で「少し入ったら」を作る。
+    }, { threshold: 0, rootMargin: '0px 0px -12% 0px' });
+    document.querySelectorAll(ANIMATED).forEach((el) => io.observe(el));
+
+    const hero = document.querySelector('.hero');
+    if (hero) requestAnimationFrame(() => hero.classList.add('on'));
+  } catch (e) {
+    // 出現の仕掛けが動かなかったときに、中身が隠れたままにならないようにする
+    document.querySelectorAll(ANIMATED).forEach((el) => el.classList.add('on'));
+    document.querySelector('.hero')?.classList.add('on');
+    console.error('[reveal]', e);
+  }
 
   /* 数字のカウントアップ */
   function run(el: HTMLElement) {

@@ -24,6 +24,8 @@
   --f-gothic: 'Zen Kaku Gothic New', 'Hiragino Sans', 'Noto Sans JP', sans-serif;
   --f-en:     'Archivo', 'Helvetica Neue', Arial, sans-serif;
 
+  --ease: cubic-bezier(.19,1,.22,1);
+
   --rail: 64px;
   --pad: clamp(1.25rem, 4vw, 4.5rem);
   --maxw: 1180px;
@@ -78,6 +80,9 @@ img{max-width:100%;height:auto;display:block}
   display:grid;place-items:center;font-family:var(--f-mincho);
   font-size:12px;color:#fff;line-height:1;
 }
+/* 読み進み。scroll() に対応していない環境では線が出ないだけ。 */
+.rail-prog{width:1px;flex:1;margin-block:1rem;background:var(--rule-2);overflow:hidden}
+.rail-prog>i{display:block;width:100%;height:100%;background:var(--fg-mute);transform:scaleY(0);transform-origin:top}
 @media(max-width:860px){.rail{display:none}}
 
 /* ---------- 版面 ---------- */
@@ -110,22 +115,83 @@ section{position:relative}
 }
 .band--paper .lede{color:var(--paper-mute)}
 
-/* ---------- 出現アニメーション ---------- */
-.rv{opacity:0;transform:translateY(26px);transition:opacity .9s cubic-bezier(.22,1,.36,1),transform .9s cubic-bezier(.22,1,.36,1)}
+/* ---------- 出現アニメーション ----------
+   画面に入った要素に .on が付く（Base.astro の IntersectionObserver）。
+   動きは「速く出て、ゆっくり止まる」で統一する。 */
+.rv{opacity:0;transform:translateY(26px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
 .rv.on{opacity:1;transform:none}
 .rv-d1{transition-delay:.09s}.rv-d2{transition-delay:.18s}.rv-d3{transition-delay:.27s}
 
+/* 見出しは下から現れるのではなく、上から書かれるように出す。
+   clip-path を左右に広げているのは、明朝の払いが切れないようにするため。 */
+.phead-h1,.h2,.contact-h{
+  clip-path:inset(0 -12% 108% -12%);
+  transition:clip-path 1.15s var(--ease),opacity .8s ease;
+  opacity:.001;
+}
+.phead-h1.on,.h2.on,.contact-h.on,.no-anim .phead-h1,.no-anim .h2,.no-anim .contact-h{
+  clip-path:inset(-15% -12% -15% -12%);opacity:1;
+}
+/* 見出しに .rv が付いていても、二重に動かさない */
+.rv.phead-h1,.rv.h2,.rv.contact-h{transform:none}
+
+/* まとまりの中身を1つずつずらして出す */
+.stg>*{opacity:0;transform:translateY(20px);transition:opacity .75s var(--ease),transform .75s var(--ease)}
+.stg.on>*{opacity:1;transform:none}
+.stg.on>*:nth-child(1){transition-delay:.05s}
+.stg.on>*:nth-child(2){transition-delay:.12s}
+.stg.on>*:nth-child(3){transition-delay:.19s}
+.stg.on>*:nth-child(4){transition-delay:.26s}
+.stg.on>*:nth-child(5){transition-delay:.33s}
+.stg.on>*:nth-child(6){transition-delay:.4s}
+.stg.on>*:nth-child(7){transition-delay:.47s}
+.stg.on>*:nth-child(n+8){transition-delay:.54s}
+
 /* 行マスク：ヒーロー見出し専用 */
 .line{display:block;overflow:hidden}
-.line>span{display:block;transform:translateY(105%);transition:transform 1.15s cubic-bezier(.19,1,.22,1)}
+.line>span{display:block;transform:translateY(105%);transition:transform 1.15s var(--ease)}
 .hero.on .line>span{transform:none}
 .hero.on .line:nth-child(2)>span{transition-delay:.12s}
 .hero.on .line:nth-child(3)>span{transition-delay:.24s}
 
+/* 粒子をゆっくり漂わせる。transform だけを動かして描画を軽くする。 */
+@media(prefers-reduced-motion:no-preference){
+  body::before{animation:drift 8s steps(1,end) infinite}
+}
+@keyframes drift{
+  0%{transform:translate3d(0,0,0)}      12.5%{transform:translate3d(-2%,1%,0)}
+  25%{transform:translate3d(1%,-2%,0)}  37.5%{transform:translate3d(-1%,-1%,0)}
+  50%{transform:translate3d(2%,2%,0)}   62.5%{transform:translate3d(-2%,-1%,0)}
+  75%{transform:translate3d(1%,2%,0)}   87.5%{transform:translate3d(-1%,1%,0)}
+  100%{transform:translate3d(0,0,0)}
+}
+
+/* スクロールに連動する動き。対応していないブラウザでは何も起きない。 */
+@supports (animation-timeline: view()){
+  @media(prefers-reduced-motion:no-preference){
+    /* 全面に敷いた写真を、スクロール量に合わせてゆっくり流す */
+    .stage-img,.nums-img{
+      animation:parallax linear both;
+      animation-timeline:view();
+      animation-range:cover 0% cover 100%;
+      will-change:transform;
+    }
+    @keyframes parallax{
+      /* scale の余白（片側10%）より translate（7%）を小さくして、端が透けないようにする */
+      from{transform:translate3d(0,-7%,0) scale(1.2)}
+      to{transform:translate3d(0,7%,0) scale(1.2)}
+    }
+    /* 左レールの読み進みインジケータ */
+    .rail-prog>i{animation:progress linear both;animation-timeline:scroll(root block)}
+    @keyframes progress{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+  }
+}
+
 @media(prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
-  .rv,.line>span{transition:none!important;opacity:1!important;transform:none!important}
-  .ticker-track{animation:none!important}
+  .rv,.line>span,.stg>*{transition:none!important;opacity:1!important;transform:none!important}
+  .phead-h1,.h2,.contact-h{clip-path:none!important;opacity:1!important}
+  .ticker-track,body::before{animation:none!important}
 }
 /* ---------- HERO ---------- */
 .hero{

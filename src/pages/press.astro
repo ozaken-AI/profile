@@ -70,7 +70,7 @@ const photos = [
   <h2 class="h2 rv rv-d1">写真</h2>
   <p class="lede rv rv-d2">クリックすると元データ（高解像度）をダウンロードできます。</p>
 
-  <div class="press-grid rv rv-d2">
+  <div class="press-grid stg">
     {photos.map((p) => (
       <a class="press-item" href={p.file} download>
         <Image src={p.img} alt={p.alt} width={1000} widths={[300, 600, 1000]} quality={82} sizes="(max-width:420px) 46vw, (max-width:700px) 45vw, 30vw" class="press-img" />
@@ -89,7 +89,7 @@ const photos = [
   <p class="label rv">Contact</p>
   <h2 class="contact-h rv rv-d1">ほかに必要な素材は、<br />ご相談ください。</h2>
   <p class="lede rv rv-d2">別の構図の写真、指定文字数のプロフィール文、登壇テーマの説明文など、必要なものがあれば用意します。</p>
-  <div class="contact-grid rv rv-d2">
+  <div class="contact-grid stg">
     <a class="cc" href={`mailto:${SITE.email}`}>
       <span class="cc-k">Mail</span>
       <span class="cc-v">{SITE.email}</span>

@@ -38,7 +38,7 @@ const description =
   <h2 class="h2 rv rv-d1">ご依頼の例</h2>
   <p class="lede rv rv-d2">よくある形を並べています。ここに当てはまらなくても構いません。目的だけ伝えてもらえれば、こちらから形を提案します。</p>
 
-  <div class="menu rv rv-d2">
+  <div class="menu stg">
     {MENU.map((m) => (
       <div class="menu-item">
         <span class="menu-idx">{m.idx}</span>
@@ -63,7 +63,7 @@ const description =
     <h2 class="h2 rv rv-d1">よく依頼されるテーマ</h2>
     <p class="lede rv rv-d2">下のテーマはあくまで出発点です。実際は業種・職種・すでに使っているツールに合わせて毎回組み直します。</p>
 
-    <div class="topics rv rv-d2">
+    <div class="topics stg">
       {TOPICS.map((t, i) => (
         <article class="topic">
           <p class="topic-n">{String(i + 1).padStart(2, '0')}</p>
@@ -87,7 +87,7 @@ const description =
   <p class="lede rv rv-d2">
     展示会の特別講演から、社内向けの研修、顧問として関わっている先まで。規模の目安として、名前を出せるものを挙げています。
   </p>
-  <div class="track rv rv-d2">
+  <div class="track stg">
     {SPEAKING_TRACK.map((g) => (
       <div class="track-g">
         <h3 class="track-k">{g.label}</h3>
@@ -103,7 +103,7 @@ const description =
 <section class="band wrap" data-rail="依頼の流れ">
   <p class="label rv">How it works</p>
   <h2 class="h2 rv rv-d1">依頼から当日までの流れ</h2>
-  <div class="steps steps--dark rv rv-d2">
+  <div class="steps steps--dark stg">
     {STEPS.map((s) => (
       <div class="step-d">
         <p class="step-n">{s.n}</p>
@@ -118,7 +118,7 @@ const description =
   <div class="wrap">
     <p class="label rv">FAQ</p>
     <h2 class="h2 rv rv-d1">よく聞かれること</h2>
-    <div class="faq rv rv-d2">
+    <div class="faq stg">
       {FAQ.map((f) => (
         <details>
           <summary>{f.q}</summary>
@@ -136,7 +136,7 @@ const description =
     目的・対象者・想定人数・日程をお知らせいただけると、可否と概算をお返ししやすくなります。
     企画が固まっていない段階のご相談も歓迎です。
   </p>
-  <div class="contact-grid rv rv-d2">
+  <div class="contact-grid stg">
     <a class="cc" href="/contact/">
       <span class="cc-k">Form</span>
       <span class="cc-v">お問い合わせフォーム</span>
