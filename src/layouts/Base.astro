@@ -160,15 +160,12 @@ const gaId = import.meta.env.PUBLIC_GA_ID as string | undefined;
   };
   (window as any).ozTrack = track;
 
-  /* 外に出るリンクは、どこから出たかを残す。
-     LINEの案内の面は途中で伝播を止めているので、捕捉側で拾う。 */
+  /* 外に出るリンクは、どこから出たかを残す */
   document.addEventListener('click', (e) => {
     const a = (e.target as HTMLElement)?.closest?.('a[href]') as HTMLAnchorElement | null;
     if (!a) return;
     const href = a.getAttribute('href') || '';
-    if (href.includes('line.me')) {
-      track('line_click', { place: a.dataset.place || 'その他', page: location.pathname });
-    } else if (/^https?:/.test(href) && !href.includes(location.host)) {
+    if (/^https?:/.test(href) && !href.includes(location.host)) {
       track('outbound_click', { url: href, page: location.pathname });
     } else if (href === '/contact/' || href.startsWith('/contact/')) {
       track('contact_cta', { from: location.pathname, label: (a.textContent || '').trim().slice(0, 40) });

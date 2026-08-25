@@ -5,7 +5,6 @@ import Ticker from '../components/Ticker.astro';
 import NewsList from '../components/NewsList.astro';
 import { getNews } from '../lib/microcms';
 import { SITE, NUMBERS, ROLES, HERO_ROLES, MENU, STEPS, FAQ, PROFILE } from '../lib/site';
-import lineQr from '../assets/line-qr.svg?raw';
 
 import stageWide from '../assets/photos/portrait-full.jpg';
 import panel from '../assets/photos/panel.jpg';
@@ -75,7 +74,6 @@ const description =
 
   <div class="hero-foot">
     <div class="scrollcue"><i></i>Scroll</div>
-    <button class="line-open" type="button" id="lineOpen"><i aria-hidden="true"></i>LINEでつながる</button>
     <p class="hero-role" id="heroRole" aria-hidden="true">
       {HERO_ROLES.map((r, i) => (
         <span class:list={['hero-role-i', { on: i === 0 }]}>{r}</span>
@@ -271,65 +269,4 @@ const description =
 
 </section>
 
-<!-- ============ LINEの案内 ============
-     フッターの「LINEでつながる」から開く。墨の面で、サイトの他の部分と同じ調子にする。 -->
-<div class="lpanel" id="linePanel" hidden>
-  <div class="lpanel-scrim" data-lp-close></div>
-  <div class="lpanel-card" role="dialog" aria-modal="true" aria-labelledby="lpanelTitle" tabindex="-1">
-    <button class="lpanel-x" type="button" data-lp-close aria-label="閉じる">×</button>
-    <div class="lpanel-seal" aria-hidden="true">健</div>
-    <p class="lpanel-eyebrow">LINE</p>
-    <h2 class="lpanel-h" id="lpanelTitle">LINEでつながる</h2>
-    <p class="lpanel-p">講演・研修・メディアのご相談は、<br />LINEでも直接受け付けています。</p>
-    <div class="lpanel-qr" aria-hidden="true" set:html={lineQr}></div>
-    <a class="lpanel-btn" href={SITE.line} data-place="案内の面" target="_blank" rel="noopener noreferrer">友だち追加 <span aria-hidden="true">→</span></a>
-    <button class="lpanel-copy" type="button" id="lpanelCopy">リンクをコピー</button>
-  </div>
-</div>
-
-<script is:inline define:vars={{ LINE_URL: SITE.line }}>
-  (() => {
-    const panel = document.getElementById('linePanel');
-    if (!panel) return;
-    const card = panel.querySelector('.lpanel-card');
-    let last = null;
-
-    function open() {
-      if (!panel.hidden) return;
-      last = document.activeElement;
-      panel.hidden = false;
-      requestAnimationFrame(() => panel.classList.add('on'));
-      document.documentElement.style.overflow = 'hidden';
-      card?.focus();
-      window.ozTrack?.('line_panel_open', {});
-    }
-    function close() {
-      if (panel.hidden) return;
-      panel.classList.remove('on');
-      document.documentElement.style.overflow = '';
-      setTimeout(() => { panel.hidden = true; }, 320);
-      if (last instanceof HTMLElement) last.focus();
-    }
-    document.getElementById('lineOpen')?.addEventListener('click', open);
-    panel.querySelectorAll('[data-lp-close]').forEach((b) => b.addEventListener('click', close));
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
-    // カードの中のクリックで閉じないようにする
-    card?.addEventListener('click', (e) => e.stopPropagation());
-
-    /* リンクをコピー */
-    const copy = document.getElementById('lpanelCopy');
-    copy?.addEventListener('click', async () => {
-      try { await navigator.clipboard.writeText(LINE_URL); }
-      catch {
-        const t = document.createElement('textarea');
-        t.value = LINE_URL; document.body.appendChild(t); t.select();
-        try { document.execCommand('copy'); } catch {}
-        t.remove();
-      }
-      const before = copy.textContent;
-      copy.textContent = 'コピーしました';
-      setTimeout(() => { copy.textContent = before; }, 1600);
-    });
-  })();
-</script>
 </Base>
