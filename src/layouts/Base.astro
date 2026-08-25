@@ -47,6 +47,8 @@ const og = new URL(ogImage ?? '/ogp.png', Astro.site).href;
   .rv,.stg>*{opacity:1!important;transform:none!important}
   .phead-h1,.h2,.contact-h{clip-path:none!important;opacity:1!important}
   .line>span{transform:none!important}
+  .hero-media{clip-path:none!important}
+  .hero-cut{transform:none!important}
 </style></noscript>
 </head>
 <body>
@@ -89,6 +91,71 @@ const og = new URL(ogImage ?? '/ogp.png', Astro.site).href;
     document.querySelectorAll(ANIMATED).forEach((el) => el.classList.add('on'));
     document.querySelector('.hero')?.classList.add('on');
     console.error('[reveal]', e);
+  }
+
+  /* 見出しが「確定していく」ように出す。
+     文字は最初ランダムに入れ替わり、左から順に本来の字に落ち着く。
+     塗りの見出しと輪郭の見出しは同じ文字列を書き込むので、継ぎ目はずれない。 */
+  const CJK = '知能情報生成学習演算推論記憶構造意味言語共存社会人間未来創造変革設計実装対話理解';
+  const LAT = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const pick = (c: string) =>
+    c.charCodeAt(0) < 128 ? LAT[(Math.random() * LAT.length) | 0] : CJK[(Math.random() * CJK.length) | 0];
+
+  function textNodes(root: Element) {
+    const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const out: Text[] = [];
+    let n: Node | null;
+    while ((n = w.nextNode())) out.push(n as Text);
+    return out;
+  }
+  function paint(nodes: Text[], lens: number[], s: string) {
+    let k = 0;
+    for (let i = 0; i < nodes.length; i++) { nodes[i].nodeValue = s.slice(k, k + lens[i]); k += lens[i]; }
+  }
+
+  try {
+    const solid = document.getElementById('heroH1');
+    const outline = document.getElementById('heroH1o');
+    if (solid && !reduce) {
+      const gl = outline ? Array.from(outline.querySelectorAll('.ln')) : [];
+      const jobs = Array.from(solid.querySelectorAll('.ln')).map((ln, i) => {
+        const a = textNodes(ln);
+        const b = gl[i] ? textNodes(gl[i]) : [];
+        return { i, a, b, lens: a.map((n) => (n.nodeValue || '').length), chars: a.map((n) => n.nodeValue || '').join('').split('') };
+      }).filter((j) => j.chars.length);
+
+      if (jobs.length) {
+        const t0 = performance.now();
+        let lastRoll = 0;
+        let cur: string[] = jobs.map(() => '');
+        const frame = (t: number) => {
+          const el = t - t0;
+          const roll = t - lastRoll > 46;
+          if (roll) lastRoll = t;
+          let pending = false;
+          jobs.forEach((j, ji) => {
+            let out = '';
+            const prev = cur[ji];
+            for (let k = 0; k < j.chars.length; k++) {
+              // 行ごとに少しずらし、そのなかで1文字ずつ確定させる
+              const lock = 300 + j.i * 140 + k * 72;
+              if (el >= lock) { out += j.chars[k]; continue; }
+              pending = true;
+              out += roll || !prev[k] ? pick(j.chars[k]) : prev[k];
+            }
+            if (out !== prev) {
+              cur[ji] = out;
+              paint(j.a, j.lens, out);
+              if (j.b.length) paint(j.b, j.lens, out);
+            }
+          });
+          if (pending) requestAnimationFrame(frame);
+        };
+        requestAnimationFrame(frame);
+      }
+    }
+  } catch (e) {
+    console.error('[scramble]', e);
   }
 
   /* 数字のカウントアップ */

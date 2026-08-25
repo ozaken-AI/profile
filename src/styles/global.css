@@ -266,8 +266,80 @@ section{position:relative}
   from{transform:translate3d(-2%,1%,0) scale(1);opacity:.8}
   to{transform:translate3d(5%,-3%,0) scale(1.14);opacity:1}
 }
-.hero-inner{position:relative;display:grid;grid-template-columns:1fr auto;gap:clamp(2rem,5vw,4rem);align-items:end}
+.hero-inner{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:clamp(2rem,5vw,4rem);align-items:end}
 
+/* ---- 写真と見出しが食い合う面 --------------------------------
+   --cut が写真の左端。見出しはこの線を境に、左＝塗り／右＝輪郭に切り替わる。
+   どちらも同じ幅の箱を基準にしているので、継ぎ目はぴったり合う。 */
+.hero-stage{position:relative;--cut:56%;min-width:0}
+.hero-media{
+  position:absolute;left:var(--cut);right:0;top:-10%;bottom:-16%;z-index:0;
+  pointer-events:none;overflow:hidden;
+  /* 左端は地に溶かす。文字が乗るのはこのあたり */
+  -webkit-mask-image:linear-gradient(to right,transparent 0,#000 24%);
+          mask-image:linear-gradient(to right,transparent 0,#000 24%);
+  clip-path:inset(0 0 100% 0);
+  transition:clip-path 1.5s var(--ease) .45s;
+}
+.hero.on .hero-media{clip-path:inset(0 0 0 0)}
+.hero-media-img{width:100%;height:100%;object-fit:cover;object-position:44% 20%;
+  filter:grayscale(.4) contrast(1.06) brightness(.9)}
+/* 上下を沈めて、重なった文字が読めるようにする */
+.hero-media::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,var(--ink) 0,rgba(10,13,19,.28) 16%,rgba(10,13,19,.06) 46%,rgba(10,13,19,.5) 82%,var(--ink) 100%);
+}
+/* 写真が開くとき、その境目を1本の線が走る */
+.hero-media-scan{
+  position:absolute;left:0;right:0;top:0;height:2px;opacity:0;z-index:2;
+  background:linear-gradient(90deg,transparent,rgba(190,214,255,.9),transparent);
+}
+@media(prefers-reduced-motion:no-preference){
+  .hero.on .hero-media-scan{animation:scan 1.5s var(--ease) .45s both}
+}
+@keyframes scan{
+  0%{top:0;opacity:0} 12%{opacity:.95} 86%{opacity:.9} 100%{top:100%;opacity:0}
+}
+/* 切り替えの線。ここで塗りと輪郭が入れ替わることを示す */
+.hero-cut{
+  position:absolute;left:var(--cut);top:-16%;bottom:-22%;width:1px;z-index:1;pointer-events:none;
+  background:linear-gradient(180deg,transparent,var(--rule) 14%,var(--rule) 86%,transparent);
+  transform:scaleY(0);transform-origin:top;
+  transition:transform 1.3s var(--ease) .35s;
+}
+.hero.on .hero-cut{transform:scaleY(1)}
+
+.hero-h1wrap{position:relative;z-index:2}
+/* 左半分＝塗り。右にはみ出したぶんは切り落とす */
+.hero-h1--s{clip-path:inset(-8% calc(100% - var(--cut)) -8% -20%)}
+/* 右半分＝輪郭。写真の上に重なるのはこちら */
+.hero-h1--o{
+  position:absolute;inset:0;pointer-events:none;user-select:none;
+  color:transparent;-webkit-text-stroke:1.1px var(--fg);
+  clip-path:inset(-8% -20% -8% var(--cut));
+}
+.hero-h1--o em{color:transparent!important;-webkit-text-stroke:1.5px var(--fg)}
+
+@media(prefers-reduced-motion:reduce){
+  .hero-media{clip-path:none!important;transition:none!important}
+  .hero-cut{transform:none!important;transition:none!important}
+}
+
+/* 画面が狭いときは重ねない。写真は地に薄く敷いて、見出しは塗りだけにする */
+@media(max-width:860px){
+  .hero-stage{--cut:100%}
+  .hero-h1--o,.hero-cut{display:none}
+  .hero-media{
+    position:absolute;left:auto;right:-14vw;top:-6vh;bottom:auto;
+    width:78vw;height:52svh;opacity:.3;
+    -webkit-mask-image:radial-gradient(70% 70% at 62% 38%,#000,transparent 72%);
+            mask-image:radial-gradient(70% 70% at 62% 38%,#000,transparent 72%);
+  }
+  .hero-media::after{background:linear-gradient(180deg,rgba(10,13,19,.2),rgba(10,13,19,.85))}
+  .hero-ghost{display:none}
+}
+
+.hero-eyebrow,.hero-vlabel{position:relative;z-index:2}
 .hero-eyebrow{
   font-family:var(--f-en);font-size:11.5px;font-weight:700;letter-spacing:.28em;
   text-transform:uppercase;color:var(--fg-mute);margin-bottom:clamp(1.5rem,4vh,2.75rem);
@@ -289,7 +361,8 @@ section{position:relative}
 
 /* 3行を1行ずつ立てる。説明ではなく、宣言として読ませる */
 .hero-sub{
-  margin-top:clamp(1.4rem,3vh,2.1rem);max-width:34em;
+  position:relative;z-index:2;
+  margin-top:clamp(1.4rem,3vh,2.1rem);max-width:min(34em,calc(var(--cut) - 2.5rem));
   color:var(--fg-mid);font-family:var(--f-mincho);
   font-size:clamp(1rem,1.9vw,1.24rem);line-height:1.95;
 }
@@ -302,12 +375,12 @@ section{position:relative}
 
 /* 背景に敷く、輪郭だけの巨大な文字。画面の端で切れるくらいの大きさにする */
 .hero-ghost{
-  /* 下端で切れるくらいの位置に置く。本文の裏に丸ごと重ねない */
-  position:absolute;right:-3vw;bottom:-5vh;pointer-events:none;user-select:none;
+  /* 左下で切れるくらいの位置に置く。右は写真に譲る */
+  position:absolute;left:-4vw;bottom:-7vh;pointer-events:none;user-select:none;z-index:0;
   font-family:var(--f-en);font-weight:900;letter-spacing:-.02em;
   font-size:clamp(6rem,19vw,16rem);line-height:.78;
   color:transparent;-webkit-text-stroke:1px var(--rule);
-  opacity:.45;
+  opacity:.28;
 }
 /* 出るときにゆっくり寄ってきて、そのあとは横にごく静かに流れ続ける */
 .hero-ghost>span{display:block;transform:translateY(8%);opacity:0;transition:transform 1.8s var(--ease) .3s,opacity 1.8s ease .3s}
@@ -316,7 +389,6 @@ section{position:relative}
   .hero.on .hero-ghost{animation:ghostdrift 26s ease-in-out infinite alternate}
 }
 @keyframes ghostdrift{from{transform:translate3d(0,0,0)}to{transform:translate3d(-3.5%,1.5%,0)}}
-@media(max-width:860px){.hero-ghost{bottom:auto;top:8vh;right:-6vw;opacity:.4}}
 @media(prefers-reduced-motion:reduce){.hero-ghost>span{opacity:1!important;transform:none!important;transition:none!important}}
 
 /* 縦組みの肩書き */
@@ -324,8 +396,10 @@ section{position:relative}
   writing-mode:vertical-rl;font-family:var(--f-mincho);
   font-size:clamp(.78rem,1.4vw,.92rem);letter-spacing:.38em;color:var(--fg-mid);
   border-left:1px solid var(--rule);padding-left:1.5rem;
-  display:flex;align-items:flex-start;gap:2rem;white-space:nowrap;
+  display:flex;align-items:flex-start;gap:1.6rem;white-space:nowrap;
 }
+/* 縦書きの flex は上下が主軸。縮ませると字が重なるので詰めない */
+.hero-vert>*{flex:none}
 .hero-vert .en{
   font-family:var(--f-en);font-size:11px;font-weight:600;letter-spacing:.24em;
   color:var(--fg-mute);text-transform:uppercase;
@@ -338,7 +412,7 @@ section{position:relative}
 
 /* ポートレート */
 .hero-foot{
-  position:relative;margin-top:clamp(1.75rem,4vh,2.75rem);
+  position:relative;z-index:3;margin-top:clamp(1.75rem,4vh,2.75rem);
   display:flex;align-items:center;justify-content:flex-start;gap:clamp(1.2rem,3vw,2.5rem);flex-wrap:wrap;
 }
 .portrait{
@@ -353,12 +427,13 @@ section{position:relative}
 }
 /* 入れ替わる肩書き。行の高さは固定して、下の要素が動かないようにする */
 .hero-role{
-  position:relative;flex:1;min-width:0;height:1.6em;
-  font-family:var(--f-mincho);font-size:.86rem;letter-spacing:.04em;color:var(--fg-mute);
+  position:relative;flex:1;min-width:0;height:1.6em;z-index:3;
+  font-family:var(--f-mincho);font-size:.86rem;letter-spacing:.04em;color:var(--fg-mid);
 }
 .hero-role-i{
-  /* 右端に寄せて、SCROLL と competing しないようにする */
+  /* 右端＝写真の上。人物のキャプションとして読ませるので、地を少し敷く */
   position:absolute;right:0;top:0;white-space:nowrap;
+  text-shadow:0 1px 14px rgba(10,13,19,.95),0 0 4px rgba(10,13,19,.8);
   opacity:0;transform:translateY(.45em);
   transition:opacity .7s var(--ease),transform .7s var(--ease);
 }

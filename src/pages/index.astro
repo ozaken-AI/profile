@@ -12,6 +12,7 @@ import venue from '../assets/photos/venue.jpg';
 import portrait from '../assets/photos/portrait.jpg';
 import speakingStanding from '../assets/photos/speaking-standing.jpg';
 import speakingSeated from '../assets/photos/speaking-seated.jpg';
+import heroPhoto from '../assets/photos/speaking-closeup.jpg';
 
 const news = (await getNews(4)).slice(0, 4);
 
@@ -25,15 +26,39 @@ const description =
 <section class="hero wrap" id="s-hero" data-rail="小澤健祐">
   <div class="hero-glow" aria-hidden="true"></div>
   <div class="hero-ghost" aria-hidden="true"><span>OZAKEN</span></div>
+
   <div class="hero-inner">
-    <div>
+    <div class="hero-stage">
+      <!-- 右に写真を置き、見出しの右端だけがその上に乗る。
+           重なった側は塗りではなく輪郭で出す（下の --cut で切り替える）。 -->
+      <div class="hero-media" aria-hidden="true">
+        <Image
+          src={heroPhoto} alt=""
+          width={1400} widths={[420, 700, 1000, 1400]} quality={82}
+          sizes="(max-width:860px) 100vw, 34vw"
+          loading="eager" fetchpriority="high" class="hero-media-img"
+        />
+        <span class="hero-media-scan"></span>
+      </div>
+      <span class="hero-cut" aria-hidden="true"></span>
+
       <p class="hero-eyebrow">Kensuke Ozawa — Ozaken</p>
       <p class="hero-vlabel">Vision</p>
-      <h1 class="hero-h1">
-        <span class="line"><span>人間とAIが</span></span>
-        <span class="line"><span><em>共存する社会</em>を</span></span>
-        <span class="line"><span>つくる。</span></span>
-      </h1>
+
+      <div class="hero-h1wrap">
+        <h1 class="hero-h1 hero-h1--s" id="heroH1">
+      <span class="line"><span class="ln">人間とAIが</span></span>
+      <span class="line"><span class="ln"><em>共存する社会</em>を</span></span>
+      <span class="line"><span class="ln">つくる。</span></span>
+        </h1>
+        <!-- 写真に重なる側。中身は上と同じで、輪郭だけを描く -->
+        <div class="hero-h1 hero-h1--o" id="heroH1o" aria-hidden="true">
+      <span class="line"><span class="ln">人間とAIが</span></span>
+      <span class="line"><span class="ln"><em>共存する社会</em>を</span></span>
+      <span class="line"><span class="ln">つくる。</span></span>
+        </div>
+      </div>
+
       <p class="hero-sub">
         <span>技術のことばを、<b>経営の意思決定</b>に。</span>
         <span>経営のことばを、<b>現場の手順</b>に。</span>
@@ -46,7 +71,6 @@ const description =
     <div class="hero-vert" aria-hidden="true">
       <div class="en">Mission</div>
       <div class="vert-mission">{SITE.mission}</div>
-      <div>{SITE.role}</div>
     </div>
   </div>
 
