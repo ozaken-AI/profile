@@ -5,6 +5,7 @@ import Ticker from '../components/Ticker.astro';
 import NewsList from '../components/NewsList.astro';
 import { getNews } from '../lib/microcms';
 import { SITE, NUMBERS, ROLES, HERO_ROLES, MENU, STEPS, FAQ, PROFILE } from '../lib/site';
+import lineQr from '../assets/line-qr.svg?raw';
 
 import stageWide from '../assets/photos/portrait-full.jpg';
 import panel from '../assets/photos/panel.jpg';
@@ -271,4 +272,95 @@ const description =
 
 </section>
 
+<!-- ============ 隠しコマンド（LINE） ============
+     ファーストビューを上から順に VISION → 見出し → SCROLL と3回たたくと開く。
+     PCでは ozaken とタイプしても開く。ナビからは辿れない。 -->
+<div class="secret" id="secret" hidden>
+  <div class="secret-scrim" data-secret-close></div>
+  <div class="secret-card" role="dialog" aria-modal="true" aria-labelledby="secretTitle" tabindex="-1">
+    <button class="secret-x" type="button" data-secret-close aria-label="閉じる">×</button>
+    <div class="secret-seal" aria-hidden="true">健</div>
+    <p class="secret-eyebrow">Hidden</p>
+    <h2 class="secret-h" id="secretTitle">LINEでつながる</h2>
+    <p class="secret-p">見つけていただき、ありがとうございます。<br />ここからなら直接ご連絡いただけます。</p>
+    <div class="secret-qr" aria-hidden="true" set:html={lineQr}></div>
+    <a class="secret-btn" href={SITE.line} target="_blank" rel="noopener noreferrer">LINEで友だち追加 <span aria-hidden="true">→</span></a>
+    <button class="secret-copy" type="button" id="secretCopy">リンクをコピー</button>
+  </div>
+</div>
+
+<script is:inline define:vars={{ LINE_URL: SITE.line }}>
+  (() => {
+    const panel = document.getElementById('secret');
+    if (!panel) return;
+    const card = panel.querySelector('.secret-card');
+    let last = null;
+
+    function open() {
+      if (!panel.hidden) return;
+      last = document.activeElement;
+      panel.hidden = false;
+      requestAnimationFrame(() => panel.classList.add('on'));
+      document.documentElement.style.overflow = 'hidden';
+      card?.focus();
+    }
+    function close() {
+      if (panel.hidden) return;
+      panel.classList.remove('on');
+      document.documentElement.style.overflow = '';
+      setTimeout(() => { panel.hidden = true; }, 320);
+      if (last instanceof HTMLElement) last.focus();
+    }
+    panel.querySelectorAll('[data-secret-close]').forEach((b) => b.addEventListener('click', close));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+    // カードの中のクリックで閉じないようにする
+    card?.addEventListener('click', (e) => e.stopPropagation());
+
+    /* リンクをコピー */
+    const copy = document.getElementById('secretCopy');
+    copy?.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(LINE_URL); }
+      catch { 
+        const t = document.createElement('textarea');
+        t.value = LINE_URL; document.body.appendChild(t); t.select();
+        try { document.execCommand('copy'); } catch {}
+        t.remove();
+      }
+      const before = copy.textContent;
+      copy.textContent = 'コピーしました';
+      setTimeout(() => { copy.textContent = before; }, 1600);
+    });
+
+    /* 順番にたたく。間違えたら最初から。6秒あいてもリセット。 */
+    const SEQ = ['#s-hero .hero-vlabel', '#s-hero .hero-h1wrap', '#s-hero .scrollcue'];
+    let step = 0;
+    let timer = 0;
+    const arm = () => { clearTimeout(timer); timer = window.setTimeout(() => { step = 0; }, 6000); };
+    SEQ.forEach((sel, i) => {
+      const el = document.querySelector(sel);
+      if (!el) return;
+      el.style.cursor = 'default';
+      el.addEventListener('click', () => {
+        if (i !== step) { clearTimeout(timer); step = i === 0 ? 1 : 0; if (step) arm(); return; }
+        step += 1;
+        // 効いたことが分かるように、朱をひと呼吸だけ差す
+        el.classList.remove('secret-hit');
+        void el.offsetWidth;
+        el.classList.add('secret-hit');
+        if (step === SEQ.length) { clearTimeout(timer); step = 0; open(); } else arm();
+      });
+    });
+
+    /* PCは ozaken とタイプしても開く */
+    let buf = '';
+    document.addEventListener('keydown', (e) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const t = e.target;
+      if (t instanceof HTMLElement && /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return;
+      if (e.key.length !== 1) return;
+      buf = (buf + e.key.toLowerCase()).slice(-6);
+      if (buf === 'ozaken') { buf = ''; open(); }
+    });
+  })();
+</script>
 </Base>
