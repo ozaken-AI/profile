@@ -44,7 +44,17 @@ microCMS →「サービス設定」→「APIキー」
 万一どこかに漏らしてしまったときは、microCMS でキーを再発行して、
 上の2か所を差し替えてください。
 
-### 2. GitHub に登録する
+### 2. GitHub にも同じキーを登録する
+
+> **なぜ Cloudflare ではなく GitHub なのか**
+>
+> Cloudflare に入れてあるキーは「サイトがビルド時にお知らせを**読む**」ためのものです。
+> 投稿する処理はどこかで**動かす**必要があり、チャットから起動できるのが
+> GitHub Actions だけなので、そちら側にもキーの控えが要ります。
+>
+> なお **Cloudflare に登録した Secret は後から中身を見られません。**
+> コピー元は microCMS のAPIキー画面から取ってください。
+
 
 `ozaken-AI/profile` → **Settings** → **Secrets and variables** → **Actions**
 → **Secrets** タブ → **New repository secret**
