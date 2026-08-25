@@ -50,13 +50,16 @@ const description =
         <h1 class="hero-h1 hero-h1--s" id="heroH1">
       <span class="line"><span class="ln">人間とAIが</span></span>
       <span class="line"><span class="ln"><em>共存する社会</em>を</span></span>
-      <span class="line"><span class="ln">つくる。</span></span>
+      <span class="line"><span class="ln">つくる<a
+        class="hero-dot" id="heroDot" href={SITE.line}
+        target="_blank" rel="noopener noreferrer"
+        aria-label="LINEで小澤健祐に直接連絡する">。</a></span></span>
         </h1>
         <!-- 写真に重なる側。中身は上と同じで、輪郭だけを描く -->
         <div class="hero-h1 hero-h1--o" id="heroH1o" aria-hidden="true">
       <span class="line"><span class="ln">人間とAIが</span></span>
       <span class="line"><span class="ln"><em>共存する社会</em>を</span></span>
-      <span class="line"><span class="ln">つくる。</span></span>
+      <span class="line"><span class="ln">つくる<span>。</span></span></span>
         </div>
       </div>
 
@@ -336,6 +339,8 @@ const description =
     let step = 0;
     let timer = 0;
     const arm = () => { clearTimeout(timer); timer = window.setTimeout(() => { step = 0; }, 6000); };
+    // 「。」はLINEへの入口。手数には数えない
+    document.getElementById('heroDot')?.addEventListener('click', (e) => e.stopPropagation());
     SEQ.forEach((sel, i) => {
       const el = document.querySelector(sel);
       if (!el) return;
