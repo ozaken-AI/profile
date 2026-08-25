@@ -31,9 +31,8 @@ const description =
   <!-- コンテンツ管理システム（content.ozaken.ai）と対になるバッジ。書体と作りを揃える -->
   <p class="sys-badge"><i aria-hidden="true"></i>おざけん ポートフォリオ管理システム<span>／ OZAKEN.AI V2.0</span></p>
 
-  <!-- 舞台装置。光の錐 → 人物 → 床あかり → 塵 の順に重ねる -->
+  <!-- 舞台装置。人物 → 床あかり → 塵 の順に重ねる -->
   <div class="hero-fx" aria-hidden="true">
-    <div class="spot-beam"></div>
     <div class="hero-actor">
       <Image
         src={heroPhoto} alt=""
@@ -54,10 +53,7 @@ const description =
         <h1 class="hero-h1" id="heroH1">
           <span class="line l1"><span class="ln">人間とAIが</span></span>
           <span class="line l2"><span class="ln"><em>共存する社会</em>を</span></span>
-          <span class="line l3"><span class="ln">つくる<a
-            class="hero-dot" id="heroDot" href={SITE.line} data-place="見出しの句点"
-            target="_blank" rel="noopener noreferrer"
-            aria-label="LINEで小澤健祐に直接連絡する">。</a></span></span>
+          <span class="line l3"><span class="ln">つくる<span class="hero-dot">。</span></span></span>
         </h1>
       </div>
 
@@ -66,6 +62,12 @@ const description =
         <span>経営のことばを、<b>現場の手順</b>に。</span>
       </p>
     </div>
+
+    <!-- 右端の縦組みミッション。写真の暗部の上に置く -->
+    <div class="hero-vert" aria-hidden="true">
+      <span class="en">Mission</span>
+      <span class="vert-mission">{SITE.mission}</span>
+    </div>
   </div>
 
   <!-- マウスに追従する第2の照明。文字も写真も、なでた場所がほのかに明るくなる -->
@@ -73,6 +75,7 @@ const description =
 
   <div class="hero-foot">
     <div class="scrollcue"><i></i>Scroll</div>
+    <button class="line-open" type="button" id="lineOpen"><i aria-hidden="true"></i>LINEでつながる</button>
     <p class="hero-role" id="heroRole" aria-hidden="true">
       {HERO_ROLES.map((r, i) => (
         <span class:list={['hero-role-i', { on: i === 0 }]}>{r}</span>
@@ -268,28 +271,27 @@ const description =
 
 </section>
 
-<!-- ============ 隠しコマンド（LINE） ============
-     ファーストビューを上から順に VISION → 見出し → SCROLL と3回たたくと開く。
-     PCでは ozaken とタイプしても開く。ナビからは辿れない。 -->
-<div class="secret" id="secret" hidden>
-  <div class="secret-scrim" data-secret-close></div>
-  <div class="secret-card" role="dialog" aria-modal="true" aria-labelledby="secretTitle" tabindex="-1">
-    <button class="secret-x" type="button" data-secret-close aria-label="閉じる">×</button>
-    <div class="secret-seal" aria-hidden="true">健</div>
-    <p class="secret-eyebrow">Hidden</p>
-    <h2 class="secret-h" id="secretTitle">LINEでつながる</h2>
-    <p class="secret-p">見つけていただき、ありがとうございます。<br />ここからなら直接ご連絡いただけます。</p>
-    <div class="secret-qr" aria-hidden="true" set:html={lineQr}></div>
-    <a class="secret-btn" href={SITE.line} data-place="隠しコマンドの面" target="_blank" rel="noopener noreferrer">LINEで友だち追加 <span aria-hidden="true">→</span></a>
-    <button class="secret-copy" type="button" id="secretCopy">リンクをコピー</button>
+<!-- ============ LINEの案内 ============
+     フッターの「LINEでつながる」から開く。墨の面で、サイトの他の部分と同じ調子にする。 -->
+<div class="lpanel" id="linePanel" hidden>
+  <div class="lpanel-scrim" data-lp-close></div>
+  <div class="lpanel-card" role="dialog" aria-modal="true" aria-labelledby="lpanelTitle" tabindex="-1">
+    <button class="lpanel-x" type="button" data-lp-close aria-label="閉じる">×</button>
+    <div class="lpanel-seal" aria-hidden="true">健</div>
+    <p class="lpanel-eyebrow">LINE</p>
+    <h2 class="lpanel-h" id="lpanelTitle">LINEでつながる</h2>
+    <p class="lpanel-p">講演・研修・メディアのご相談は、<br />LINEでも直接受け付けています。</p>
+    <div class="lpanel-qr" aria-hidden="true" set:html={lineQr}></div>
+    <a class="lpanel-btn" href={SITE.line} data-place="案内の面" target="_blank" rel="noopener noreferrer">友だち追加 <span aria-hidden="true">→</span></a>
+    <button class="lpanel-copy" type="button" id="lpanelCopy">リンクをコピー</button>
   </div>
 </div>
 
 <script is:inline define:vars={{ LINE_URL: SITE.line }}>
   (() => {
-    const panel = document.getElementById('secret');
+    const panel = document.getElementById('linePanel');
     if (!panel) return;
-    const card = panel.querySelector('.secret-card');
+    const card = panel.querySelector('.lpanel-card');
     let last = null;
 
     function open() {
@@ -299,7 +301,7 @@ const description =
       requestAnimationFrame(() => panel.classList.add('on'));
       document.documentElement.style.overflow = 'hidden';
       card?.focus();
-      window.ozTrack?.('secret_open', {});
+      window.ozTrack?.('line_panel_open', {});
     }
     function close() {
       if (panel.hidden) return;
@@ -308,16 +310,17 @@ const description =
       setTimeout(() => { panel.hidden = true; }, 320);
       if (last instanceof HTMLElement) last.focus();
     }
-    panel.querySelectorAll('[data-secret-close]').forEach((b) => b.addEventListener('click', close));
+    document.getElementById('lineOpen')?.addEventListener('click', open);
+    panel.querySelectorAll('[data-lp-close]').forEach((b) => b.addEventListener('click', close));
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
     // カードの中のクリックで閉じないようにする
     card?.addEventListener('click', (e) => e.stopPropagation());
 
     /* リンクをコピー */
-    const copy = document.getElementById('secretCopy');
+    const copy = document.getElementById('lpanelCopy');
     copy?.addEventListener('click', async () => {
       try { await navigator.clipboard.writeText(LINE_URL); }
-      catch { 
+      catch {
         const t = document.createElement('textarea');
         t.value = LINE_URL; document.body.appendChild(t); t.select();
         try { document.execCommand('copy'); } catch {}
@@ -326,39 +329,6 @@ const description =
       const before = copy.textContent;
       copy.textContent = 'コピーしました';
       setTimeout(() => { copy.textContent = before; }, 1600);
-    });
-
-    /* 順番にたたく：名前 → 見出し → SCROLL。間違えたら最初から。6秒あいてもリセット。 */
-    const SEQ = ['#s-hero .hero-eyebrow', '#s-hero .hero-h1wrap', '#s-hero .scrollcue'];
-    let step = 0;
-    let timer = 0;
-    const arm = () => { clearTimeout(timer); timer = window.setTimeout(() => { step = 0; }, 6000); };
-    // 「。」はLINEへの入口。手数には数えない
-    document.getElementById('heroDot')?.addEventListener('click', (e) => e.stopPropagation());
-    SEQ.forEach((sel, i) => {
-      const el = document.querySelector(sel);
-      if (!el) return;
-      el.style.cursor = 'default';
-      el.addEventListener('click', () => {
-        if (i !== step) { clearTimeout(timer); step = i === 0 ? 1 : 0; if (step) arm(); return; }
-        step += 1;
-        // 効いたことが分かるように、朱をひと呼吸だけ差す
-        el.classList.remove('secret-hit');
-        void el.offsetWidth;
-        el.classList.add('secret-hit');
-        if (step === SEQ.length) { clearTimeout(timer); step = 0; open(); } else arm();
-      });
-    });
-
-    /* PCは ozaken とタイプしても開く */
-    let buf = '';
-    document.addEventListener('keydown', (e) => {
-      if (e.metaKey || e.ctrlKey || e.altKey) return;
-      const t = e.target;
-      if (t instanceof HTMLElement && /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return;
-      if (e.key.length !== 1) return;
-      buf = (buf + e.key.toLowerCase()).slice(-6);
-      if (buf === 'ozaken') { buf = ''; open(); }
     });
   })();
 </script>

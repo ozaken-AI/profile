@@ -10,7 +10,7 @@ export const SITE = {
   x: 'https://x.com/ozaken_AI',
   xHandle: '@ozaken_AI',
   contentSite: 'https://content.ozaken.ai/',
-  /** トップの隠しコマンドからだけ出す。ナビには載せない。 */
+  /** トップの「LINEでつながる」からだけ出す。ナビには載せない。 */
   line: 'https://line.me/ti/p/gmxEFjBHs4',
 } as const;
 

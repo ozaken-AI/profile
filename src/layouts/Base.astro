@@ -110,7 +110,8 @@ const gaId = import.meta.env.PUBLIC_GA_ID as string | undefined;
   .rv,.stg>*{opacity:1!important;transform:none!important}
   .phead-h1,.h2,.contact-h{clip-path:none!important;opacity:1!important}
   .line>span{transform:none!important}
-  .spot-beam,.hero-actor,.spot-pool,.hero-glow{opacity:1!important;animation:none!important}
+  .hero-actor,.spot-pool,.hero-glow{opacity:1!important;animation:none!important}
+  .hero-vert{opacity:1!important}
   .sys-badge{opacity:1!important}
   .spot-dust{opacity:.5!important}
 </style></noscript>
@@ -160,7 +161,7 @@ const gaId = import.meta.env.PUBLIC_GA_ID as string | undefined;
   (window as any).ozTrack = track;
 
   /* 外に出るリンクは、どこから出たかを残す。
-     句点のリンクと隠しコマンドの面は途中で伝播を止めているので、捕捉側で拾う。 */
+     LINEの案内の面は途中で伝播を止めているので、捕捉側で拾う。 */
   document.addEventListener('click', (e) => {
     const a = (e.target as HTMLElement)?.closest?.('a[href]') as HTMLAnchorElement | null;
     if (!a) return;

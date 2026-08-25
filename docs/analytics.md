@@ -74,9 +74,9 @@
 |---|---|---|
 | `contact_submit` | お問い合わせフォームを送信したとき | `result`：`ok` ／ `エラー` ／ `通信失敗` ／ `メーラーに切替` |
 | `contact_cta` | サイト内から `/contact/` へのリンクを押したとき | `from`：どのページから ／ `label`：押したリンクの文言 |
-| `line_click` | LINEのリンクを押したとき | `place`：`見出しの句点` ／ `隠しコマンドの面` |
+| `line_click` | LINEの友だち追加リンクを押したとき | `place`：`案内の面` |
 | `outbound_click` | 外部サイトへのリンクを押したとき | `url`：遷移先 |
-| `secret_open` | 隠しコマンドの面が開いたとき | — |
+| `line_panel_open` | 「LINEでつながる」の面が開いたとき | — |
 
 **一番見る価値があるのは `contact_cta` の `from` です。**
 4つの依頼ページのどれが実際に相談につながっているかが、これで分かります。
@@ -133,7 +133,7 @@ gtag('config', gaId, {
 | イベント送信の共通処理 | `src/layouts/Base.astro` の `track()` と `window.ozTrack` |
 | リンククリックの拾い方 | `src/layouts/Base.astro`（`document` の**捕捉側**で拾う） |
 | フォーム送信の結果 | `src/pages/contact.astro` |
-| LINEの入口の名前 | `src/pages/index.astro` の `data-place` |
+| LINEの入口 | `src/pages/index.astro`（`lineOpen` ボタンと案内の面） |
 
 > リンクの計測を**捕捉側**（`capture: true`）で登録しているのには理由があります。
 > 見出しの句点のリンクと隠しコマンドの面は、途中で `stopPropagation()` しているため、
