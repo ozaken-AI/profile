@@ -112,6 +112,44 @@ const og = new URL(ogImage ?? '/ogp.png', Astro.site).href;
   }, { threshold: 0.5 });
   document.querySelectorAll<HTMLElement>('.cnt').forEach((el) => ioN.observe(el));
 
+  /* ヒーローの肩書きを順に入れ替える */
+  const roleBox = document.getElementById('heroRole');
+  if (roleBox && !reduce) {
+    const items = Array.from(roleBox.querySelectorAll<HTMLElement>('.hero-role-i'));
+    if (items.length > 1) {
+      let i = 0;
+      setInterval(() => {
+        const cur = items[i];
+        i = (i + 1) % items.length;
+        const next = items[i];
+        cur.classList.remove('on');
+        cur.classList.add('out');
+        next.classList.remove('out');
+        next.classList.add('on');
+        // 次に出てくるときのために、外し終わったら初期位置へ戻す
+        setTimeout(() => cur.classList.remove('out'), 800);
+      }, 3200);
+    }
+  }
+
+  /* ヒーローのにじみを、ポインタのほうへゆっくり寄せる。
+     指で操作する端末と、動きを減らす設定では何もしない。 */
+  const glow = document.querySelector<HTMLElement>('.hero-glow');
+  const fine = window.matchMedia('(pointer: fine)').matches;
+  if (glow && fine && !reduce) {
+    const hero = glow.parentElement!;
+    let raf = 0;
+    hero.addEventListener('pointermove', (e) => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        const r = hero.getBoundingClientRect();
+        glow.style.setProperty('--gx', `${((e.clientX - r.left) / r.width) * 100}%`);
+        glow.style.setProperty('--gy', `${((e.clientY - r.top) / r.height) * 100}%`);
+      });
+    });
+  }
+
   /* トップは巨大タイポを邪魔しないよう、1画面ぶんスクロールしてからヘッダーを出す */
   const head = document.querySelector('.site-head--top');
   if (head) {

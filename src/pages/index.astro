@@ -4,7 +4,7 @@ import Base from '../layouts/Base.astro';
 import Ticker from '../components/Ticker.astro';
 import NewsList from '../components/NewsList.astro';
 import { getNews } from '../lib/microcms';
-import { SITE, NUMBERS, ROLES, MENU, STEPS, FAQ, PROFILE } from '../lib/site';
+import { SITE, NUMBERS, ROLES, HERO_ROLES, MENU, STEPS, FAQ, PROFILE } from '../lib/site';
 
 import stageWide from '../assets/photos/portrait-full.jpg';
 import panel from '../assets/photos/panel.jpg';
@@ -37,7 +37,9 @@ const description =
       <p class="hero-sub">
         <span>技術のことばを、<b>経営の意思決定</b>に。</span>
         <span>経営のことばを、<b>現場の手順</b>に。</span>
-        <span class="hero-sub-n">年間300回を超える登壇と、1,500本超の執筆。</span>
+        <span class="hero-sub-n">
+          年間<b class="cnt" data-to="300" data-comma="0">300</b>回を超える登壇と、<b class="cnt" data-to="1500" data-comma="1">1,500</b>本超の執筆。
+        </span>
       </p>
     </div>
 
@@ -50,6 +52,11 @@ const description =
 
   <div class="hero-foot">
     <div class="scrollcue"><i></i>Scroll</div>
+    <p class="hero-role" id="heroRole" aria-hidden="true">
+      {HERO_ROLES.map((r, i) => (
+        <span class:list={['hero-role-i', { on: i === 0 }]}>{r}</span>
+      ))}
+    </p>
   </div>
 </section>
 

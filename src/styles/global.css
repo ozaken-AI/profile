@@ -252,9 +252,11 @@ section{position:relative}
 }
 .hero-glow{
   position:absolute;inset:auto -20% 12% -10%;height:70%;pointer-events:none;
-  background:radial-gradient(60% 60% at 30% 40%,rgba(56,86,148,.32),transparent 70%);
+  /* --gx / --gy はポインタの位置。JSが動かなければ既定値のまま */
+  background:radial-gradient(60% 60% at var(--gx,30%) var(--gy,40%),rgba(56,86,148,.32),transparent 70%);
   filter:blur(30px);
   will-change:transform,opacity;
+  transition:background-position .6s ease;
 }
 /* transform と opacity だけ動かすので、描画は軽い */
 @media(prefers-reduced-motion:no-preference){
@@ -307,9 +309,13 @@ section{position:relative}
   color:transparent;-webkit-text-stroke:1px var(--rule);
   opacity:.45;
 }
-/* 出るときだけ、ゆっくり寄ってくる */
+/* 出るときにゆっくり寄ってきて、そのあとは横にごく静かに流れ続ける */
 .hero-ghost>span{display:block;transform:translateY(8%);opacity:0;transition:transform 1.8s var(--ease) .3s,opacity 1.8s ease .3s}
 .hero.on .hero-ghost>span{transform:none;opacity:1}
+@media(prefers-reduced-motion:no-preference){
+  .hero.on .hero-ghost{animation:ghostdrift 26s ease-in-out infinite alternate}
+}
+@keyframes ghostdrift{from{transform:translate3d(0,0,0)}to{transform:translate3d(-3.5%,1.5%,0)}}
 @media(max-width:860px){.hero-ghost{bottom:auto;top:8vh;right:-6vw;opacity:.4}}
 @media(prefers-reduced-motion:reduce){.hero-ghost>span{opacity:1!important;transform:none!important;transition:none!important}}
 
@@ -333,7 +339,7 @@ section{position:relative}
 /* ポートレート */
 .hero-foot{
   position:relative;margin-top:clamp(1.75rem,4vh,2.75rem);
-  display:flex;align-items:flex-end;justify-content:flex-start;gap:2rem;flex-wrap:wrap;
+  display:flex;align-items:center;justify-content:flex-start;gap:clamp(1.2rem,3vw,2.5rem);flex-wrap:wrap;
 }
 .portrait{
   width:clamp(96px,13vw,148px);aspect-ratio:3/4;flex:none;
@@ -345,6 +351,21 @@ section{position:relative}
   font-family:var(--f-en);font-size:9.5px;font-weight:700;letter-spacing:.16em;
   color:var(--fg-mute);text-transform:uppercase;line-height:1.7;padding:.5rem;
 }
+/* 入れ替わる肩書き。行の高さは固定して、下の要素が動かないようにする */
+.hero-role{
+  position:relative;flex:1;min-width:0;height:1.6em;
+  font-family:var(--f-mincho);font-size:.86rem;letter-spacing:.04em;color:var(--fg-mute);
+}
+.hero-role-i{
+  /* 右端に寄せて、SCROLL と competing しないようにする */
+  position:absolute;right:0;top:0;white-space:nowrap;
+  opacity:0;transform:translateY(.45em);
+  transition:opacity .7s var(--ease),transform .7s var(--ease);
+}
+.hero-role-i.on{opacity:1;transform:none}
+.hero-role-i.out{opacity:0;transform:translateY(-.45em)}
+@media(max-width:600px){.hero-role{font-size:.78rem;width:100%;flex:none}.hero-role-i{right:auto;left:0}}
+
 .scrollcue{
   font-family:var(--f-en);font-size:10.5px;font-weight:700;letter-spacing:.24em;
   text-transform:uppercase;color:var(--fg-mute);display:flex;align-items:center;gap:.7rem;

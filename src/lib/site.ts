@@ -57,6 +57,16 @@ export const ROLES = [
  * ここに書いてある「進め方」「持ち帰れるもの」は、
  * これまでのやり方をこちらで文章にしたもの。実際と違うところは直すこと。
  */
+/** ヒーローの下で入れ替わる肩書き。多いので、代表的なものだけ回す。 */
+export const HERO_ROLES: readonly string[] = [
+  '一般社団法人AICX協会　代表理事',
+  '経済産業省「AX時代のスキルに関するWG」委員',
+  'シンシアリー株式会社　取締役CCO',
+  '一般社団法人生成AI活用普及協会　常任協議員',
+  '株式会社Cinematorico　COO',
+  '千葉県船橋市　生成AIアドバイザー',
+] as const;
+
 export const MENU = [
   {
     slug: 'keynote',
