@@ -46,7 +46,8 @@ body{
 
 /* 粒子：全面に薄く敷く。地の平坦さを殺す */
 body::before{
-  content:'';position:fixed;inset:0;z-index:60;pointer-events:none;opacity:.055;
+  /* 動かしても端が画面に入らないよう、一回り大きく敷く */
+  content:'';position:fixed;inset:-4%;z-index:60;pointer-events:none;opacity:.055;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
@@ -158,8 +159,18 @@ section{position:relative}
 .hero.on .l1>span{transition-delay:.55s}
 .hero.on .l3>span{transition-delay:.72s}
 
-/* 紙の粒子は静止させておく。
-   以前はコマ送りで動かしていたが、暗い画面では画面全体の明滅に見えて目に障る。 */
+/* 粒子をコマ送りで漂わせる。膜は inset:-4% で大きめに敷いてあるので、
+   ±2% 動かしても端が画面に入らない（以前は端が露出して、枠がチカチカして見えた）。 */
+@media(prefers-reduced-motion:no-preference){
+  body::before{animation:drift 8s steps(1,end) infinite}
+}
+@keyframes drift{
+  0%{transform:translate3d(0,0,0)}      12.5%{transform:translate3d(-2%,1%,0)}
+  25%{transform:translate3d(1%,-2%,0)}  37.5%{transform:translate3d(-1%,-1%,0)}
+  50%{transform:translate3d(2%,2%,0)}   62.5%{transform:translate3d(-2%,-1%,0)}
+  75%{transform:translate3d(1%,2%,0)}   87.5%{transform:translate3d(-1%,1%,0)}
+  100%{transform:translate3d(0,0,0)}
+}
 
 /* スクロールに連動する動き。対応していないブラウザでは何も起きない。 */
 @supports (animation-timeline: view()){
@@ -213,7 +224,7 @@ section{position:relative}
   html{scroll-behavior:auto}
   .rv,.line>span,.stg>*{transition:none!important;opacity:1!important;transform:none!important}
   .phead-h1,.h2,.contact-h{clip-path:none!important;opacity:1!important}
-  .ticker-track{animation:none!important}
+  .ticker-track,body::before{animation:none!important}
 }
 /* ---------- HERO：開演の振り付け ----------
    暗転 → 点灯 → 発話 → 開場。名前 → 見出し → 補足 → 足元の順に出す。 */
@@ -379,8 +390,6 @@ section{position:relative}
 
 /* 見出しの「。」だけ、LINEへの入口にしてある。
    見た目は本文のまま。触れたときだけ朱が差す。 */
-/* 宣言の最後の一点だけ、落款と同じ朱で締める（飾り。リンクではない） */
-.hero-dot{color:var(--seal)}
 
 /* 画面が狭いときは、小さくても濃いスポットを人物に当てる。
    薄い写真を全面に敷くより、暗いなりに「人がいる」画面になる。 */
