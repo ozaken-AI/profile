@@ -110,8 +110,9 @@ const gaId = import.meta.env.PUBLIC_GA_ID as string | undefined;
   .rv,.stg>*{opacity:1!important;transform:none!important}
   .phead-h1,.h2,.contact-h{clip-path:none!important;opacity:1!important}
   .line>span{transform:none!important}
-  .hero-media{clip-path:none!important}
-  .hero-cut{transform:none!important}
+  .spot-beam,.hero-actor,.spot-pool,.hero-glow{opacity:1!important;animation:none!important}
+  .sys-badge{opacity:1!important}
+  .spot-dust{opacity:.5!important}
 </style></noscript>
 </head>
 <body>
@@ -257,8 +258,9 @@ const gaId = import.meta.env.PUBLIC_GA_ID as string | undefined;
             let out = '';
             const prev = cur[ji];
             for (let k = 0; k < j.chars.length; k++) {
-              // 行ごとに少しずらし、そのなかで1文字ずつ確定させる
-              const lock = 300 + j.i * 140 + k * 72;
+              // 光の当たる2行目から確定させる（スポットライトの理屈に合わせる）
+              const LINE_OFF = [420, 160, 560];
+              const lock = (LINE_OFF[j.i] ?? 300 + j.i * 140) + k * 72;
               if (el >= lock) { out += j.chars[k]; continue; }
               pending = true;
               out += roll || !prev[k] ? pick(j.chars[k]) : prev[k];

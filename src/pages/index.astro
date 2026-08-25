@@ -23,60 +23,53 @@ const description =
 ---
 <Base {title} {description} railInitial="小澤健祐">
 
-<!-- ============ HERO ============ -->
+<!-- ============ HERO：開演 ============
+     年300回、舞台に立つ人。最初の画面は暗転した劇場として組む。
+     スポットライトが1本入り、光の中に人物が浮かび、光に近い行から見出しが確定する。
+     開場したあとは、マウスが第2の照明になる。 -->
 <section class="hero wrap" id="s-hero" data-rail="小澤健祐">
-  <div class="hero-glow" aria-hidden="true"></div>
-  <div class="hero-ghost" aria-hidden="true"><span>OZAKEN</span></div>
+  <!-- コンテンツ管理システム（content.ozaken.ai）と対になるバッジ。書体と作りを揃える -->
+  <p class="sys-badge"><i aria-hidden="true"></i>おざけん ポートフォリオ管理システム<span>／ OZAKEN.AI V2.0</span></p>
+
+  <!-- 舞台装置。光の錐 → 人物 → 床あかり → 塵 の順に重ねる -->
+  <div class="hero-fx" aria-hidden="true">
+    <div class="spot-beam"></div>
+    <div class="hero-actor">
+      <Image
+        src={heroPhoto} alt=""
+        width={1400} widths={[420, 700, 1000, 1400]} quality={82}
+        sizes="(max-width:860px) 100vw, 64vw"
+        loading="eager" fetchpriority="high" class="hero-actor-img"
+      />
+    </div>
+    <div class="spot-pool"></div>
+    <div class="spot-dust"></div>
+  </div>
 
   <div class="hero-inner">
     <div class="hero-stage">
-      <!-- 右に写真を置き、見出しの右端だけがその上に乗る。
-           重なった側は塗りではなく輪郭で出す（下の --cut で切り替える）。 -->
-      <div class="hero-media" aria-hidden="true">
-        <Image
-          src={heroPhoto} alt=""
-          width={1400} widths={[420, 700, 1000, 1400]} quality={82}
-          sizes="(max-width:860px) 100vw, 34vw"
-          loading="eager" fetchpriority="high" class="hero-media-img"
-        />
-        <span class="hero-media-scan"></span>
-      </div>
-      <span class="hero-cut" aria-hidden="true"></span>
-
       <p class="hero-eyebrow">Kensuke Ozawa — Ozaken</p>
-      <p class="hero-vlabel">Vision</p>
 
       <div class="hero-h1wrap">
-        <h1 class="hero-h1 hero-h1--s" id="heroH1">
-      <span class="line"><span class="ln">人間とAIが</span></span>
-      <span class="line"><span class="ln"><em>共存する社会</em>を</span></span>
-      <span class="line"><span class="ln">つくる<a
-        class="hero-dot" id="heroDot" href={SITE.line} data-place="見出しの句点"
-        target="_blank" rel="noopener noreferrer"
-        aria-label="LINEで小澤健祐に直接連絡する">。</a></span></span>
+        <h1 class="hero-h1" id="heroH1">
+          <span class="line l1"><span class="ln">人間とAIが</span></span>
+          <span class="line l2"><span class="ln"><em>共存する社会</em>を</span></span>
+          <span class="line l3"><span class="ln">つくる<a
+            class="hero-dot" id="heroDot" href={SITE.line} data-place="見出しの句点"
+            target="_blank" rel="noopener noreferrer"
+            aria-label="LINEで小澤健祐に直接連絡する">。</a></span></span>
         </h1>
-        <!-- 写真に重なる側。中身は上と同じで、輪郭だけを描く -->
-        <div class="hero-h1 hero-h1--o" id="heroH1o" aria-hidden="true">
-      <span class="line"><span class="ln">人間とAIが</span></span>
-      <span class="line"><span class="ln"><em>共存する社会</em>を</span></span>
-      <span class="line"><span class="ln">つくる<span>。</span></span></span>
-        </div>
       </div>
 
       <p class="hero-sub">
         <span>技術のことばを、<b>経営の意思決定</b>に。</span>
         <span>経営のことばを、<b>現場の手順</b>に。</span>
-        <span class="hero-sub-n">
-          年間<b class="cnt" data-to="300" data-comma="0">300</b>回を超える登壇と、<b class="cnt" data-to="1500" data-comma="1">1,500</b>本超の執筆。
-        </span>
       </p>
     </div>
-
-    <div class="hero-vert" aria-hidden="true">
-      <div class="en">Mission</div>
-      <div class="vert-mission">{SITE.mission}</div>
-    </div>
   </div>
+
+  <!-- マウスに追従する第2の照明。文字も写真も、なでた場所がほのかに明るくなる -->
+  <div class="hero-glow" aria-hidden="true"></div>
 
   <div class="hero-foot">
     <div class="scrollcue"><i></i>Scroll</div>
@@ -335,8 +328,8 @@ const description =
       setTimeout(() => { copy.textContent = before; }, 1600);
     });
 
-    /* 順番にたたく。間違えたら最初から。6秒あいてもリセット。 */
-    const SEQ = ['#s-hero .hero-vlabel', '#s-hero .hero-h1wrap', '#s-hero .scrollcue'];
+    /* 順番にたたく：名前 → 見出し → SCROLL。間違えたら最初から。6秒あいてもリセット。 */
+    const SEQ = ['#s-hero .hero-eyebrow', '#s-hero .hero-h1wrap', '#s-hero .scrollcue'];
     let step = 0;
     let timer = 0;
     const arm = () => { clearTimeout(timer); timer = window.setTimeout(() => { step = 0; }, 6000); };
