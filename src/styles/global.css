@@ -316,9 +316,12 @@ section{position:relative}
   position:absolute;left:36%;right:0;top:0;bottom:0;
   -webkit-mask-image:radial-gradient(ellipse clamp(280px,28vw,400px) clamp(380px,38vw,560px) at 47% 42%,#000 0%,transparent 78%);
           mask-image:radial-gradient(ellipse clamp(280px,28vw,400px) clamp(380px,38vw,560px) at 47% 42%,#000 0%,transparent 78%);
-  opacity:.65;
-  /* 手前の塵（大きめ）と奥の塵（小さめ）の二層。下の dustdrift で速さを変える */
+  opacity:.8;
+  /* 手前のボケ玉・中の塵・奥の塵の三層。下の dustdrift で速さを変える */
   background-image:
+    radial-gradient(3.5px 3.5px at 24% 30%,rgba(238,245,255,.95),rgba(238,245,255,.25) 60%,transparent 100%),
+    radial-gradient(3px 3px at 70% 64%,rgba(238,245,255,.8),rgba(238,245,255,.2) 60%,transparent 100%),
+    radial-gradient(2.8px 2.8px at 48% 6%,rgba(238,245,255,.7),transparent 100%),
     radial-gradient(2.2px 2.2px at 30% 22%,rgba(235,242,255,.9),transparent 100%),
     radial-gradient(1.8px 1.8px at 62% 48%,rgba(235,242,255,.7),transparent 100%),
     radial-gradient(2px 2px at 44% 74%,rgba(235,242,255,.55),transparent 100%),
@@ -328,6 +331,7 @@ section{position:relative}
     radial-gradient(1.2px 1.2px at 50% 8%,rgba(220,232,255,.5),transparent 100%),
     radial-gradient(1px 1px at 8% 86%,rgba(220,232,255,.4),transparent 100%);
   background-size:
+    200px 200px,200px 200px,200px 200px,
     240px 240px,240px 240px,240px 240px,240px 240px,
     340px 340px,340px 340px,340px 340px,340px 340px;
 }
@@ -344,12 +348,12 @@ section{position:relative}
   .hero.on .spot-dust{animation:dustin 1.4s ease 1s both,dustdrift 14s linear 1s infinite}
 }
 /* 照明の呼吸。据わったあと、ごくゆっくり明滅し続ける */
-@keyframes actorbreathe{0%,100%{opacity:1}50%{opacity:.9}}
-@keyframes poolbreathe{0%,100%{opacity:1}50%{opacity:.72}}
-@keyframes glowbreathe{0%,100%{opacity:1}50%{opacity:.72}}
+@keyframes actorbreathe{0%,100%{opacity:1}50%{opacity:.87}}
+@keyframes poolbreathe{0%,100%{opacity:1}50%{opacity:.6}}
+@keyframes glowbreathe{0%,100%{opacity:1}50%{opacity:.62}}
 @media(prefers-reduced-motion:reduce){
   .hero-actor,.spot-pool{opacity:1!important;transition:none!important}
-  .spot-dust{opacity:.65!important}
+  .spot-dust{opacity:.8!important}
 }
 /* 素早い明滅のあと、据わる */
 @keyframes lighton{
@@ -360,10 +364,13 @@ section{position:relative}
   42%{opacity:.9}
   100%{opacity:1}
 }
-@keyframes dustin{from{opacity:0}to{opacity:.65}}
+@keyframes dustin{from{opacity:0}to{opacity:.8}}
 @keyframes dustdrift{
-  from{background-position:0 0,0 0,0 0,0 0,0 0,0 0,0 0,0 0}
-  to{background-position:0 -480px,0 -480px,0 -480px,0 -480px,0 -340px,0 -340px,0 -340px,0 -340px}
+  from{background-position:0 0,0 0,0 0,0 0,0 0,0 0,0 0,0 0,0 0,0 0,0 0}
+  to{background-position:
+    0 -600px,0 -600px,0 -600px,
+    0 -480px,0 -480px,0 -480px,0 -480px,
+    0 -340px,0 -340px,0 -340px,0 -340px}
 }
 
 .hero-h1wrap{position:relative;z-index:2}
@@ -403,8 +410,8 @@ section{position:relative}
   .spot-pool{left:calc(64% - 38vw);width:76vw}
   .spot-dust{
     left:0;
-    -webkit-mask-image:radial-gradient(ellipse 52vw 68vw at 64% 28%,#000 0%,transparent 78%);
-            mask-image:radial-gradient(ellipse 52vw 68vw at 64% 28%,#000 0%,transparent 78%);
+    -webkit-mask-image:radial-gradient(ellipse 58vw 76vw at 64% 28%,#000 0%,transparent 80%);
+            mask-image:radial-gradient(ellipse 58vw 76vw at 64% 28%,#000 0%,transparent 80%);
   }
   .hero-actor{
     left:0;
