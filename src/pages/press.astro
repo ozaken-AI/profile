@@ -3,17 +3,15 @@ import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import { SITE, BIO } from '../lib/site';
 import portrait from '../assets/photos/portrait.jpg';
-import heroStage from '../assets/photos/hero-stage.jpg';
-import speakingStanding from '../assets/photos/speaking-standing.jpg';
+import portraitFront from '../assets/photos/portrait-front.jpg';
 
 const title = 'プレスキット | 小澤健祐（おざけん）';
 const description =
-  '告知ページや記事に使えるプロフィール文（長短2種）、高解像度の顔写真・登壇写真、肩書きの正式表記をまとめています。';
+  '告知ページや記事に使えるプロフィール文（長短2種）、顔写真、肩書きの正式表記をまとめています。';
 
 const photos = [
-  { img: portrait,         file: '/press/ozaken-portrait.jpg',      label: 'ポートレート', spec: '縦 3211×4814', alt: '小澤健祐のポートレート' },
-  { img: heroStage,        file: '/press/ozaken-speaking.jpg',      label: '登壇・正面',   spec: '横 5088×3392', alt: '登壇する小澤健祐' },
-  { img: speakingStanding, file: '/press/ozaken-speaking-full.jpg', label: '登壇・全身',   spec: '横 5500×3667', alt: '基調講演で登壇する小澤健祐' },
+  { img: portraitFront, file: '/press/ozaken-portrait-front.jpg', label: 'ポートレート・正面', spec: '縦 1334×2000', alt: '正面を向いて笑う小澤健祐' },
+  { img: portrait,      file: '/press/ozaken-portrait.jpg',       label: 'ポートレート・斜め', spec: '縦 3211×4814', alt: '小澤健祐のポートレート' },
 ];
 ---
 <Base {title} {description} railInitial="素材">
@@ -68,12 +66,12 @@ const photos = [
 <section class="band wrap" data-rail="写真">
   <p class="label rv">Photos</p>
   <h2 class="h2 rv rv-d1">写真</h2>
-  <p class="lede rv rv-d2">クリックすると元データ（高解像度）をダウンロードできます。</p>
+  <p class="lede rv rv-d2">クリックすると元データをダウンロードできます。</p>
 
   <div class="press-grid stg">
     {photos.map((p) => (
       <a class="press-item" href={p.file} download>
-        <Image src={p.img} alt={p.alt} width={1000} widths={[300, 600, 1000]} quality={82} sizes="(max-width:420px) 46vw, (max-width:700px) 45vw, 30vw" class="press-img" />
+        <Image src={p.img} alt={p.alt} width={1000} widths={[300, 600, 1000]} quality={82} sizes="(max-width:420px) 46vw, (max-width:620px) 45vw, 280px" class="press-img" />
         <div class="press-meta">
           <span class="press-label">{p.label}</span>
           <span class="press-spec">{p.spec}</span>

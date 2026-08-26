@@ -1064,9 +1064,11 @@ footer{border-top:1px solid var(--rule-2);padding-block:2.5rem;font-size:.78rem;
 .copy.is-done{background:var(--seal);border-color:var(--seal);color:#fff}
 
 /* 配布する写真そのものを見せる場所なので、トリミングせず元の比率で並べる */
+/* 縦位置の写真なので、1枚あたりの幅に上限を置く。
+   上限がないと、枚数が少ないときに1枚が画面いっぱいまで伸びて間延びする。 */
 .press-grid{
   display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
-  gap:1rem;margin-top:2.5rem;align-items:start;
+  gap:1rem;margin-top:2.5rem;align-items:start;max-width:560px;
 }
 @media(max-width:420px){.press-grid{grid-template-columns:repeat(2,1fr)}}
 .press-item{display:block;border:1px solid var(--rule);border-radius:3px;overflow:hidden;background:var(--ink-2);transition:border-color .35s ease}
