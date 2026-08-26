@@ -317,23 +317,33 @@ section{position:relative}
   -webkit-mask-image:radial-gradient(ellipse clamp(280px,28vw,400px) clamp(380px,38vw,560px) at 47% 42%,#000 0%,transparent 78%);
           mask-image:radial-gradient(ellipse clamp(280px,28vw,400px) clamp(380px,38vw,560px) at 47% 42%,#000 0%,transparent 78%);
   opacity:.8;
-  /* 手前のボケ玉・中の塵・奥の塵の三層。下の dustdrift で速さを変える */
+}
+/* 手前・中・奥の三層。層ごとに別の要素にしてあるのは、落ちる速さと
+   横に流れる周期を、層ごとに変えるため。一枚に重ねると背景の位置は
+   ひとつしか動かせず、全部が同じ速さで、まっすぐ落ちる。 */
+.spot-dust>i{position:absolute;inset:0;display:block}
+.spot-dust>i:nth-child(1){
   background-image:
     radial-gradient(3.5px 3.5px at 24% 30%,rgba(238,245,255,.95),rgba(238,245,255,.25) 60%,transparent 100%),
     radial-gradient(3px 3px at 70% 64%,rgba(238,245,255,.8),rgba(238,245,255,.2) 60%,transparent 100%),
-    radial-gradient(2.8px 2.8px at 48% 6%,rgba(238,245,255,.7),transparent 100%),
+    radial-gradient(2.8px 2.8px at 48% 6%,rgba(238,245,255,.7),transparent 100%);
+  background-size:200px 200px;
+}
+.spot-dust>i:nth-child(2){
+  background-image:
     radial-gradient(2.2px 2.2px at 30% 22%,rgba(235,242,255,.9),transparent 100%),
     radial-gradient(1.8px 1.8px at 62% 48%,rgba(235,242,255,.7),transparent 100%),
     radial-gradient(2px 2px at 44% 74%,rgba(235,242,255,.55),transparent 100%),
-    radial-gradient(1.6px 1.6px at 82% 12%,rgba(235,242,255,.6),transparent 100%),
+    radial-gradient(1.6px 1.6px at 82% 12%,rgba(235,242,255,.6),transparent 100%);
+  background-size:240px 240px;
+}
+.spot-dust>i:nth-child(3){
+  background-image:
     radial-gradient(1.2px 1.2px at 18% 40%,rgba(220,232,255,.55),transparent 100%),
     radial-gradient(1px 1px at 72% 68%,rgba(220,232,255,.45),transparent 100%),
     radial-gradient(1.2px 1.2px at 50% 8%,rgba(220,232,255,.5),transparent 100%),
     radial-gradient(1px 1px at 8% 86%,rgba(220,232,255,.4),transparent 100%);
-  background-size:
-    200px 200px,200px 200px,200px 200px,
-    240px 240px,240px 240px,240px 240px,240px 240px,
-    340px 340px,340px 340px,340px 340px,340px 340px;
+  background-size:340px 340px;
 }
 
 /* ---- 点灯：暗転から、照明が「コッ」と入って据わる。
@@ -345,7 +355,12 @@ section{position:relative}
   .hero.on .hero-actor{transition:none;animation:lighton 1.25s ease-out .35s both,actorbreathe 8s ease-in-out 2.4s infinite}
   .hero.on .spot-pool{animation:poolbreathe 8s ease-in-out 2.4s infinite}
   .hero.on .hero-glow{animation:glowbreathe 9s ease-in-out 3s infinite}
-  .hero.on .spot-dust{animation:dustin 1.4s ease 1s both,dustdrift 14s linear 1s infinite}
+  .hero.on .spot-dust{animation:dustin 1.4s ease 1s both}
+  /* 縦の落下と横の流れは、わざと周期をずらしてある（34と19、30と23、62と27）。
+     割り切れないので二つが揃うことがなく、軌跡が直線にならない。 */
+  .hero.on .spot-dust>i:nth-child(1){animation:dustfallA 34s linear 1s infinite,dustswayA 19s ease-in-out 1s infinite alternate}
+  .hero.on .spot-dust>i:nth-child(2){animation:dustfallB 30s linear 1s infinite,dustswayB 23s ease-in-out 1s infinite alternate}
+  .hero.on .spot-dust>i:nth-child(3){animation:dustfallC 62s linear 1s infinite,dustswayC 27s ease-in-out 1s infinite alternate}
 }
 /* 照明の呼吸。据わったあと、ごくゆっくり明滅し続ける */
 @keyframes actorbreathe{0%,100%{opacity:1}50%{opacity:.87}}
@@ -365,13 +380,16 @@ section{position:relative}
   100%{opacity:1}
 }
 @keyframes dustin{from{opacity:0}to{opacity:.8}}
-@keyframes dustdrift{
-  from{background-position:0 0,0 0,0 0,0 0,0 0,0 0,0 0,0 0,0 0,0 0,0 0}
-  to{background-position:
-    0 -600px,0 -600px,0 -600px,
-    0 -480px,0 -480px,0 -480px,0 -480px,
-    0 -340px,0 -340px,0 -340px,0 -340px}
-}
+/* 落下。移動量はそれぞれのタイルの整数倍なので、一周してもつなぎ目が出ない。
+   秒あたり 12 / 8 / 5.5px。手前ほど速く、奥ほど遅い。 */
+@keyframes dustfallA{from{background-position:0 0}to{background-position:0 -400px}}
+@keyframes dustfallB{from{background-position:0 0}to{background-position:0 -240px}}
+@keyframes dustfallC{from{background-position:0 0}to{background-position:0 -340px}}
+/* 横の流れ。行って戻る（alternate）ので、端でいったん緩む。
+   手前の層だけ縦にも少し振って、落ちる速さそのものを揺らしている。 */
+@keyframes dustswayA{from{transform:translate3d(-15px,3px,0)}to{transform:translate3d(15px,-3px,0)}}
+@keyframes dustswayB{from{transform:translate3d(-10px,0,0)}to{transform:translate3d(10px,0,0)}}
+@keyframes dustswayC{from{transform:translate3d(-6px,0,0)}to{transform:translate3d(6px,0,0)}}
 
 .hero-h1wrap{position:relative;z-index:2}
 
