@@ -279,26 +279,35 @@ const gaId = import.meta.env.PUBLIC_GA_ID as string | undefined;
     console.error('[scramble]', e);
   }
 
-  /* 数字のカウントアップ */
-  function run(el: HTMLElement) {
-    const to = Number(el.dataset.to);
-    const comma = el.dataset.comma === '1';
-    const fmt = (v: number) => (comma ? v.toLocaleString('en-US') : String(v));
-    if (reduce) { el.textContent = fmt(to); return; }
-    el.textContent = fmt(0);
-    let t0: number | null = null;
-    const step = (t: number) => {
-      if (t0 === null) t0 = t;
-      const p = Math.min((t - t0) / 1500, 1);
-      el.textContent = fmt(Math.round(to * (1 - Math.pow(1 - p, 3))));
-      if (p < 1) requestAnimationFrame(step);
+  /* 桁の窓は overflow:hidden なので、外には「箱の下辺」をベースラインとして
+     報告する。実際の文字はそれより少し上にあるので、その差だけ窓を沈めないと
+     単位が数字に対して浮く。差は書体の寸法で決まる（Archivo とフォールバックの
+     Arial では 1em あたり 4% ほど違う）ので、いま描画されている書体から測る。 */
+  const odoCol = document.querySelector<HTMLElement>('.odo-col');
+  if (odoCol) {
+    const setDrop = () => {
+      const cs = getComputedStyle(odoCol);
+      const fs = parseFloat(cs.fontSize);
+      const ctx = document.createElement('canvas').getContext('2d');
+      if (!ctx) return;
+      ctx.font = `${cs.fontWeight} ${fs}px ${cs.fontFamily}`;
+      const m = ctx.measureText('0');
+      const a = m.fontBoundingBoxAscent, d = m.fontBoundingBoxDescent;
+      if (!a || !d) return;
+      const drop = (fs - (a + d)) / 2 + d;   // 行の余白の半分＋ディセンダ
+      document.querySelectorAll<HTMLElement>('.odo')
+        .forEach((el) => el.style.setProperty('--odo-drop', (drop / fs).toFixed(4) + 'em'));
     };
-    requestAnimationFrame(step);
+    setDrop();
+    document.fonts?.ready.then(setDrop);   // 書体が差し替わったら測り直す
   }
+
+  /* 数字のオドメーター。見えたら .on を付けるだけで、あとはCSSが帯を送る。
+     付けそこねても、静止状態がそのまま最終値なので数字は正しく出る。 */
   const ioN = new IntersectionObserver((es) => {
-    es.forEach((e) => { if (e.isIntersecting) { run(e.target as HTMLElement); ioN.unobserve(e.target); } });
-  }, { threshold: 0.5 });
-  document.querySelectorAll<HTMLElement>('.cnt').forEach((el) => ioN.observe(el));
+    es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('on'); ioN.unobserve(e.target); } });
+  }, { threshold: 0.4 });
+  document.querySelectorAll<HTMLElement>('.num').forEach((el) => ioN.observe(el));
 
   /* ヒーローの肩書きを順に入れ替える */
   const roleBox = document.getElementById('heroRole');

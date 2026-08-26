@@ -582,6 +582,42 @@ section{position:relative}
   display:flex;align-items:baseline;gap:.14em;flex-wrap:wrap;min-width:0;
 }
 .num-v small{font-size:.3em;font-weight:700;letter-spacing:.06em;color:var(--fg-mute);white-space:nowrap}
+
+/* 数字のオドメーター。0〜9を2周ぶん並べた帯を、狙いの桁まで送って止める。
+   1周ぶん余計に回すぶんだけ、止まり方が機械らしくなる。
+
+   --odo-drop は、桁の窓（高さ1em）の下辺と、文字のベースラインとの差。
+   overflow:hidden を掛けた inline-block は「箱の下辺」をベースラインとして
+   外に報告するため、この差のぶん窓を沈めないと、単位（回／年 など）が
+   数字に対して浮いて見える。差の大きさは書体の寸法で決まるので、既定値は
+   目安。実際に描画されている書体から測り直して Base.astro が上書きする。 */
+/* 桁の帯は読み上げの対象にならない。数字そのものは別に持たせる。 */
+.a11y{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.odo{--odo-drop:.18em;display:inline-block;white-space:nowrap}
+.odo-col{
+  display:inline-block;height:1em;overflow:hidden;
+  vertical-align:calc(var(--odo-drop) * -1);
+  /* 送っている最中、窓の上下に入ってくる次の桁を薄れさせる。輪郭で切ると
+     切り口が出るが、薄れさせると回っている物の見え方になる。数字が座って
+     いるのは 13〜85% あたりなので、止まったあとの字には掛からない。 */
+  -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 6%,#000 94%,transparent 100%);
+          mask-image:linear-gradient(180deg,transparent 0,#000 6%,#000 94%,transparent 100%);
+}
+.odo-col>i{display:block;font-style:normal;transform:translateY(calc(var(--n) * -1em))}
+.odo-col b,.odo-sep{display:block;height:1em;line-height:1em;font-weight:inherit}
+/* 桁区切りも、桁と同じ「下辺＝ベースライン」の箱にしないと、そこだけ浮く */
+.odo-sep{display:inline-block;height:1em;overflow:hidden;vertical-align:calc(var(--odo-drop) * -1)}
+.num.on .odo-col>i{
+  animation:odoroll 1.9s cubic-bezier(.16,1,.3,1) both;
+  animation-delay:calc(var(--i) * 90ms);
+}
+/* from を 0 に置くので、送り出す前はどの桁も 0 を見せている */
+@keyframes odoroll{
+  from{transform:translateY(0)}
+  to{transform:translateY(calc(var(--n) * -1em))}
+}
+/* JSが動かない場合も、静止状態がそのまま最終値になっている */
+@media(prefers-reduced-motion:reduce){.num.on .odo-col>i{animation:none}}
 .num-k{font-family:var(--f-mincho);font-size:.94rem;margin-top:1rem;color:var(--fg)}
 .num-n{font-size:.79rem;color:var(--fg-mute);margin-top:.3rem;line-height:1.75}
 
@@ -717,12 +753,52 @@ section{position:relative}
 .band--paper .more:hover{border-color:var(--paper-fg)}
 /* ---------- PROFILE（紙の面） ---------- */
 .profile-grid{display:grid;grid-template-columns:auto 1fr;gap:clamp(2rem,6vw,5rem);align-items:start;margin-top:3rem}
+/* 縦組みの一文は、読み進めた分だけ墨がのる。--read をスクロールで 0→100% に
+   進めて、background-clip:text で文字そのものに流し込む。@property を宣言して
+   おかないと percentage は「補間できない値」として扱われ、途中が飛ぶ。
+
+   未読の色を薄くしすぎない。ここは飾りではなく本文なので、塗られる前の状態
+   だけでコントラストが成立している必要がある（--paper-mute で 5.4:1）。 */
+@property --read{syntax:'<percentage>';inherits:false;initial-value:100%}
+
 .profile-vert{
   writing-mode:vertical-rl;font-family:var(--f-mincho);font-weight:500;
   font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.7;letter-spacing:.16em;
   color:var(--paper-fg);border-left:1px solid var(--paper-rule);padding-left:1.5rem;
   max-height:22em;
 }
+@supports ((background-clip:text) or (-webkit-background-clip:text)){
+  .profile-vert{
+    --read:100%;
+    /* 縦組みなので、読む向き＝上から下。境目は少しぼかす */
+    background:linear-gradient(180deg,
+      var(--paper-fg) 0 var(--read),
+      var(--paper-mute) calc(var(--read) + 14%) 100%);
+    -webkit-background-clip:text;background-clip:text;
+    color:transparent;
+  }
+  /* 横組みに畳んだときは、読む向きが変わるので流す向きも変える */
+  @media(max-width:760px){
+    .profile-vert{background:linear-gradient(90deg,
+      var(--paper-fg) 0 var(--read),
+      var(--paper-mute) calc(var(--read) + 14%) 100%)}
+  }
+}
+/* スクロール駆動は未対応のブラウザがある。その場合 --read は 100% のまま＝
+   全部墨がのった状態で出るので、読めなくなることはない。 */
+@supports (animation-timeline:view()){
+  @media(prefers-reduced-motion:no-preference){
+    .profile-vert{
+      --read:0%;
+      animation:inkread linear both;
+      animation-timeline:view(block);
+      /* 画面に入りきる前から始めて、真ん中に来るころに塗り終わる。
+         既定の範囲のままだと、まだ画面の下端にいるうちに塗りが終わる。 */
+      animation-range:entry 55% cover 52%;
+    }
+  }
+}
+@keyframes inkread{to{--read:100%}}
 .profile-body p{font-size:.97rem;line-height:2.15;color:#3A3A38;max-width:34em}
 .profile-body p+p{margin-top:1.3rem}
 .profile-body b{color:var(--paper-fg);font-weight:700}
@@ -838,8 +914,22 @@ section{position:relative}
 .contact{padding-block:clamp(5rem,12vw,9rem)}
 .contact-h{font-family:var(--f-mincho);font-weight:500;font-size:clamp(1.85rem,5.4vw,3.9rem);line-height:1.3;letter-spacing:-.01em;text-wrap:balance}
 .contact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1px;background:var(--rule-2);margin-top:3.5rem;border:1px solid var(--rule-2)}
-.cc{background:var(--ink);padding:1.8rem 1.6rem;display:flex;flex-direction:column;gap:.6rem;transition:background .4s ease}
+.cc{background:var(--ink);padding:1.8rem 1.6rem;display:flex;flex-direction:column;gap:.6rem;transition:background .4s ease;position:relative}
 .cc:hover{background:var(--ink-2)}
+/* ホバーで、朱の線が四隅を回って枠を閉じる。枠を持った2枚を三角形の clip-path で
+   切り、頂点の数を揃えたまま広げると、線が辺を伝っていくように見える。
+   2枚目を遅らせているのは、両方が同時に走ると対角ではなく途中で出会うため。
+   絶対配置なので、flex の子として並んでしまうことはない。 */
+.cc::before,.cc::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  /* 朱は落款のためのもの。線1本ぶんとはいえ枠は面積が出るので、少し引く */
+  border:1px solid rgba(178,58,43,.72);
+  clip-path:polygon(0 0,0 0,0 0);
+  transition:clip-path .4s linear;
+}
+.cc:hover::before,.cc:focus-visible::before{clip-path:polygon(0 0,100% 0,100% 100%)}
+.cc:hover::after,.cc:focus-visible::after{clip-path:polygon(0 0,0 100%,100% 100%);transition-delay:.2s}
+@media(prefers-reduced-motion:reduce){.cc::before,.cc::after{transition:none}}
 .cc-k{font-family:var(--f-en);font-size:10.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--fg-mute)}
 .cc-v{font-family:var(--f-mincho);font-size:1.08rem}
 .cc-n{font-size:.79rem;color:var(--fg-mute);line-height:1.85}

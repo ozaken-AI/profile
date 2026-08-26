@@ -17,6 +17,12 @@ import lineQr from '../assets/line-qr.svg?raw';
 
 const news = (await getNews(4)).slice(0, 4);
 
+// 実績の数字は、ビルド時に「桁の帯」へ分解する。0〜9を2周ぶん並べた帯を狙いの桁まで
+// 送って止めるので、走っている最中も本物の字形が出る。textContent を書き換える方式だと、
+// 等幅にしていても桁の増減で幅が跳ねる。
+const STRIP = Array.from({ length: 20 }, (_, i) => i % 10);
+const fmt = (v: number, comma: boolean) => (comma ? v.toLocaleString('en-US') : String(v));
+
 const title = '小澤健祐（おざけん）| 生成AI・AIエージェントの講演・研修・アドバイザリー';
 const description =
   '一般社団法人AICX協会 代表理事。年間300回を超える登壇と1,500本超の記事執筆で、生成AIとAIエージェントの導入を、経営の意思決定と現場の実装の両側から支えています。講演・研修・顧問のご依頼はこちら。';
@@ -111,8 +117,12 @@ const description =
       {NUMBERS.map((n) => (
         <div class="num">
           <div class="num-v">
-            <span class="cnt" data-to={n.value} data-comma={n.comma ? '1' : '0'}>
-              {n.comma ? n.value.toLocaleString('en-US') : n.value}
+            <span class="odo">
+              <span class="a11y">{fmt(n.value, n.comma)}</span>
+              {fmt(n.value, n.comma).split('').map((ch, i) => (ch === ','
+                ? <b class="odo-sep" aria-hidden="true">,</b>
+                : <span class="odo-col" aria-hidden="true"><i style={`--n:${10 + Number(ch)};--i:${i}`}>{STRIP.map((d) => <b>{d}</b>)}</i></span>
+              ))}
             </span>
             <small>{n.unit}</small>
           </div>
