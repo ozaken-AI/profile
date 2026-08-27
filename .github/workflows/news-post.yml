@@ -36,7 +36,7 @@ on:
         description: '外部リンク（入れると一覧から直接その記事に飛びます）'
         required: false
       contentId:
-        description: '記事ID＝URLの末尾（空なら日付から自動）'
+        description: '記事ID＝URLの末尾（空なら日付から自動。既にあるIDを入れると上書き）'
         required: false
       status:
         description: 'そのまま公開するか、下書きで置くか'

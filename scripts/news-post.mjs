@@ -172,18 +172,34 @@ if (process.env.DRY_RUN) {
   process.exit(0);
 }
 
-const res = await fetch(url, {
-  method: 'PUT',
-  headers: { 'X-MICROCMS-API-KEY': KEY, 'Content-Type': 'application/json' },
-  body: JSON.stringify(fields),
-});
+const send = (method) =>
+  fetch(url, {
+    method,
+    headers: { 'X-MICROCMS-API-KEY': KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify(fields),
+  });
+
+// microCMS は、すでにある記事IDへの PUT を受け付けない（400 "Content is already exists"）。
+// 更新は PATCH で送る決まりなので、はじかれたら同じ中身を PATCH で送り直す。
+// 誤字を直したいときに、同じIDのまま上書きできる。
+let res = await send('PUT');
+let overwrote = false;
 
 if (!res.ok) {
-  fail(`microCMS が受け付けませんでした（${res.status}）: ${await res.text().catch(() => '')}`);
+  const body = await res.text().catch(() => '');
+  if (res.status === 400 && /already exists/i.test(body)) {
+    res = await send('PATCH');
+    overwrote = true;
+    if (!res.ok) {
+      fail(`microCMS が上書きを受け付けませんでした（${res.status}）: ${await res.text().catch(() => '')}`);
+    }
+  } else {
+    fail(`microCMS が受け付けませんでした（${res.status}）: ${body}`);
+  }
 }
 
 const summary = [
-  `## ${draft ? '下書きとして保存しました' : '公開しました'}`,
+  `## ${overwrote ? '既存の記事を上書きしました' : draft ? '下書きとして保存しました' : '公開しました'}`,
   '',
   `- **タイトル**：${title}`,
   `- **カテゴリ**：${category}`,
