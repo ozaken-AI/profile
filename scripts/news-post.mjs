@@ -191,7 +191,23 @@ if (!res.ok) {
     res = await send('PATCH');
     overwrote = true;
     if (!res.ok) {
-      fail(`microCMS が上書きを受け付けませんでした（${res.status}）: ${await res.text().catch(() => '')}`);
+      const err = await res.text().catch(() => '');
+      // 上書きには PATCH の権限が要る。作成しかできないキーだと、ここで止まる。
+      if (/PATCH is forbidden/i.test(err)) {
+        fail(
+          [
+            `記事ID「${id}」はすでにあります。上書きしようとしましたが、APIキーに PATCH の権限がありません。`,
+            '',
+            '次のどちらかで直せます。',
+            '  1. microCMS の管理画面で直接直す（数文字の修正ならこちらが早い）',
+            '  2. microCMS → サービス設定 → APIキー で、news の PATCH にチェックを入れる',
+            '     （以降はこのワークフローから同じIDのまま上書きできるようになります）',
+            '',
+            `別の記事として出したい場合は、記事IDを変えて実行してください。`,
+          ].join('\n')
+        );
+      }
+      fail(`microCMS が上書きを受け付けませんでした（${res.status}）: ${err}`);
     }
   } else {
     fail(`microCMS が受け付けませんでした（${res.status}）: ${body}`);
