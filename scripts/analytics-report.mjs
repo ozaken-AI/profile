@@ -176,6 +176,98 @@ async function gscPages() {
   console.log(table(rows, ['ページ', 'クリック', '表示回数', 'CTR', '平均掲載順位']));
 }
 
+// 指名検索。自分の名前・屋号でどう見られているかを追う。
+// 表記ゆれを拾うため、クエリ文字列に対する部分一致で判定する。
+const BRAND = /ozaken|おざけん|オザケン|小澤\s*健祐|おざわ\s*けんすけ|ozawa\s*kensuke/i;
+
+/** 表示回数で重みづけした平均掲載順位。単純平均だと、1表示のクエリが同じ重さで効いてしまう。 */
+const weightedPosition = (rows) => {
+  const imp = rows.reduce((a, r) => a + r.impressions, 0);
+  if (!imp) return null;
+  return rows.reduce((a, r) => a + r.position * r.impressions, 0) / imp;
+};
+
+const arrow = (from, to) => {
+  if (from == null || to == null) return '';
+  const d = from - to;                      // 順位は小さいほど上
+  if (Math.abs(d) < 0.5) return '→ 横ばい';
+  return d > 0 ? `↑ ${d.toFixed(1)}上がった` : `↓ ${(-d).toFixed(1)}下がった`;
+};
+
+async function gscTrend() {
+  const res = await webmasters.searchanalytics.query({
+    siteUrl: SITE_URL,
+    requestBody: {
+      startDate: isoDaysAgo(DAYS + 3),
+      endDate: isoDaysAgo(0),
+      dimensions: ['date', 'query'],
+      rowLimit: 25000,
+    },
+  });
+  const all = res.data.rows || [];
+  if (!all.length) {
+    console.log(`\n■ Search Console — 推移（直近${DAYS}日）`);
+    console.log('  （データなし。反映まで2〜3日かかります）');
+    return;
+  }
+
+  const byDate = new Map();      // 日 → 全クエリの行
+  const brandByDate = new Map(); // 日 → 指名クエリの行
+  const byQuery = new Map();     // クエリ → 行
+  for (const r of all) {
+    const [date, query] = r.keys;
+    (byDate.get(date) || byDate.set(date, []).get(date)).push(r);
+    if (BRAND.test(query)) {
+      (brandByDate.get(date) || brandByDate.set(date, []).get(date)).push(r);
+      (byQuery.get(query) || byQuery.set(query, []).get(query)).push({ ...r, date });
+    }
+  }
+  const dates = [...byDate.keys()].sort();
+
+  const daily = (map) => dates.map((d) => {
+    const rows = map.get(d) || [];
+    const pos = weightedPosition(rows);
+    return [
+      d,
+      rows.reduce((a, r) => a + r.clicks, 0),
+      rows.reduce((a, r) => a + r.impressions, 0),
+      pos == null ? '-' : pos.toFixed(1),
+    ];
+  });
+
+  console.log(`\n■ Search Console — 日ごとの推移：サイト全体`);
+  console.log(table(daily(byDate), ['日付', 'クリック', '表示回数', '平均掲載順位']));
+
+  console.log(`\n■ Search Console — 日ごとの推移：指名検索だけ（${BRAND.source} に一致）`);
+  console.log(table(daily(brandByDate), ['日付', 'クリック', '表示回数', '平均掲載順位']));
+
+  // 日ごとだと表示が数件しかなく振れるので、期間を半分に割って前後で比べる
+  const half = Math.ceil(dates.length / 2);
+  const first = new Set(dates.slice(0, half));
+  const rows = [...byQuery.entries()]
+    .map(([q, rs]) => {
+      const a = rs.filter((r) => first.has(r.date));
+      const b = rs.filter((r) => !first.has(r.date));
+      const pa = weightedPosition(a);
+      const pb = weightedPosition(b);
+      return {
+        q,
+        imp: rs.reduce((x, r) => x + r.impressions, 0),
+        row: [q, rs.reduce((x, r) => x + r.impressions, 0),
+              pa == null ? '-' : pa.toFixed(1),
+              pb == null ? '-' : pb.toFixed(1),
+              arrow(pa, pb)],
+      };
+    })
+    .sort((x, y) => y.imp - x.imp)
+    .map((x) => x.row);
+
+  console.log(`\n■ Search Console — 指名クエリ：前半（${dates[0]}〜）と後半（${dates[half]}〜）の比較`);
+  console.log(table(rows, ['クエリ', '表示回数', '前半の順位', '後半の順位', '向き']));
+  console.log('  ※ 順位は表示回数で重みづけした平均。表示が数件のクエリは大きく振れます。');
+  console.log('  ※ Search Console は ozaken.ai の順位しか持っていません。旧サイトの順位は含みません。');
+}
+
 function isoDaysAgo(n) {
   const d = new Date();
   d.setUTCDate(d.getUTCDate() - n);
@@ -193,6 +285,7 @@ const RUN = {
   },
   queries: gscQueries,
   'search-pages': gscPages,
+  trend: gscTrend,
 };
 RUN.all = async () => {
   await gaPages();
@@ -201,6 +294,7 @@ RUN.all = async () => {
   await RUN['events-detail']();
   await gscQueries();
   await gscPages();
+  await gscTrend();
 };
 
 const job = RUN[CMD];
