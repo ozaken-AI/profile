@@ -16,7 +16,7 @@ on:
       report:
         description: '見たいもの'
         type: choice
-        options: ['all', 'pages', 'sources', 'events', 'events-detail', 'queries', 'search-pages']
+        options: ['all', 'pages', 'sources', 'events', 'events-detail', 'queries', 'search-pages', 'trend']
         default: 'all'
       days:
         description: '直近何日ぶん'
