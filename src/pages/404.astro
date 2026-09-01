@@ -1,0 +1,43 @@
+---
+import Base from '../layouts/Base.astro';
+
+const title = 'ページが見つかりません | 小澤健祐（おざけん）';
+const description = 'お探しのページは移動したか、削除された可能性があります。';
+---
+<Base {title} {description} railInitial="404">
+
+<section class="phead wrap" data-rail="404">
+  <div class="phead-glow" aria-hidden="true"></div>
+  <p class="label rv">404</p>
+  <h1 class="phead-h1 rv rv-d1">お探しのページは<br />見つかりませんでした。</h1>
+  <p class="phead-lede rv rv-d2">
+    移動したか、削除された可能性があります。下からお探しください。
+  </p>
+</section>
+
+<section class="contact wrap" data-rail="行き先">
+  <div class="contact-grid stg">
+    <a class="cc" href="/">
+      <span class="cc-k">Top</span>
+      <span class="cc-v">トップページ</span>
+      <span class="cc-n">はじめから見る。</span>
+    </a>
+    <a class="cc" href="/speaking/">
+      <span class="cc-k">Speaking</span>
+      <span class="cc-v">依頼できること</span>
+      <span class="cc-n">講演・研修・伴走支援・アドバイザリー。</span>
+    </a>
+    <a class="cc" href="/news/">
+      <span class="cc-k">News</span>
+      <span class="cc-v">お知らせ</span>
+      <span class="cc-n">登壇の報告とメディア掲載。</span>
+    </a>
+    <a class="cc" href="/contact/">
+      <span class="cc-k">Contact</span>
+      <span class="cc-v">お問い合わせ</span>
+      <span class="cc-n">ご依頼・ご相談はこちらから。</span>
+    </a>
+  </div>
+</section>
+
+</Base>

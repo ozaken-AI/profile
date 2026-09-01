@@ -21,11 +21,35 @@ const others = MENU.filter((m) => m.slug !== item.slug);
 
 const photo = item.slug === 'keynote' || item.slug === 'training' ? speakingStanding : speakingSeated;
 
-const title = `${item.kind}（${item.title}）のご依頼 | 小澤健祐（おざけん）`;
-const description = `${item.body} ${item.spec}。${item.forWhom}。生成AI・AIエージェントの${item.kind}のご依頼はこちらから。`;
+// 検索結果に出るのは全角30字ほど。「研修（生成AIリテラシー研修・実装ワークショップ）の
+// ご依頼 | 小澤健祐（おざけん）」は42字あり、肝心の「ご依頼」まで表示されていなかった。
+// 探されている語（生成AI＋依頼の形）を頭に置き、細かい副題は h1 と本文に任せる。
+const title = `生成AIの${item.kind}のご依頼 | 小澤健祐（おざけん）`;
+// 検索結果に出るのは全角110字ほど。探している人がまず知りたい順
+// （何の依頼か → 時間と形式 → 誰向けか → 中身）に並べ、末尾で切る。
+// 以前は「ご依頼はこちらから」を最後に置いていたが、そこは表示されていなかった。
+const clamp = (s: string, n: number) =>
+  [...s].length <= n ? s : [...s].slice(0, n - 1).join('') + '…';
+const description = clamp(
+  `生成AI・AIエージェントの${item.kind}のご依頼。${item.spec}。${item.forWhom}。${item.body}`,
+  110,
+);
+
+const crumbs = [
+  { name: 'ホーム', item: SITE.url + '/' },
+  { name: '依頼できること', item: SITE.url + '/speaking/' },
+  { name: `${item.kind}のご依頼`, item: `${SITE.url}/speaking/${item.slug}/` },
+];
+const jsonLd = [{
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: crumbs.map((c, i) => ({
+    '@type': 'ListItem', position: i + 1, name: c.name, item: c.item,
+  })),
+}];
 ---
 <Base
-  {title} {description}
+  {title} {description} {jsonLd}
   ogImage="/ogp-speaking.png"
   ogImageAlt="小澤健祐（おざけん）｜生成AI・AIエージェントの講演・研修・アドバイザリー"
   railInitial={item.kind}

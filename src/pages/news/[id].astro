@@ -31,9 +31,38 @@ const title = `${item.title} | 小澤健祐（おざけん）`;
 const description =
   lead ||
   `${formatDate(item.publishedDate)}｜${cat}。${item.eventName ?? ''} 小澤健祐（おざけん）のお知らせ。`;
+
+// 検索から直接入ってくるのは、いまのところ記事ページが多い。
+// 記事であること・書いた人・日付を機械に読める形で置き、パンくずも添える。
+const base = new URL('/', Astro.site).href.replace(/\/$/, '');
+const here = `${base}/news/${item.id}/`;
+const author = { '@type': 'Person', name: '小澤健祐', alternateName: 'おざけん', url: base };
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: item.title,
+    description,
+    datePublished: item.publishedDate,
+    author,
+    publisher: author,
+    mainEntityOfPage: here,
+    ...(item.thumbnail?.url ? { image: `${item.thumbnail.url}?fm=jpg&w=1200` } : {}),
+    ...(item.eventName ? { about: item.eventName } : {}),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'ホーム', item: `${base}/` },
+      { '@type': 'ListItem', position: 2, name: 'お知らせ', item: `${base}/news/` },
+      { '@type': 'ListItem', position: 3, name: item.title, item: here },
+    ],
+  },
+];
 ---
 <Base
-  {title} {description} {...(ogImage ? { ogImage } : {})}
+  {title} {description} {jsonLd} {...(ogImage ? { ogImage } : {})}
   ogType="article" publishedTime={item.publishedDate}
   railInitial={cat}
 >

@@ -17,10 +17,12 @@ interface Props {
   publishedTime?: string;
   /** 左レールに出す既定の現在地 */
   railInitial?: string;
+  /** このページ固有の構造化データ。トップの身元情報とは別に足される */
+  jsonLd?: Record<string, unknown>[];
 }
 const {
   title, description, ogImage, ogImageAlt, ogType = 'website', publishedTime,
-  railInitial = '現在地',
+  railInitial = '現在地', jsonLd: pageJsonLd = [],
 } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const isTop = Astro.url.pathname === '/';
@@ -41,7 +43,7 @@ const gaId = import.meta.env.PUBLIC_GA_ID as string | undefined;
 // 検索エンジン向けの身元情報。トップにだけ置く（Googleはサイト名をトップから読む）。
 // 指名検索で旧プロフィールページと競合しているので、sameAs で同一人物だと明示する。
 const abs = (path: string) => new URL(path, Astro.site).href;
-const jsonLd = !isTop ? null : [
+const identityJsonLd = !isTop ? [] : [
   {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
@@ -61,6 +63,7 @@ const jsonLd = !isTop ? null : [
     sameAs: IDENTITY.sameAs,
   },
 ];
+const jsonLd = [...identityJsonLd, ...pageJsonLd];
 ---
 <!DOCTYPE html>
 <html lang="ja">
@@ -70,7 +73,7 @@ const jsonLd = !isTop ? null : [
 <title>{title}</title>
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical} />
-{jsonLd && (
+{jsonLd.length > 0 && (
   <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
 )}
 <meta name="google-site-verification" content="VoBfvx8Rc4nEPbgtcl-kKaD4QOb7tVEqZIur9A2NV5o" />
