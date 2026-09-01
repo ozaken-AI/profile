@@ -23,9 +23,11 @@ const news = (await getNews(4)).slice(0, 4);
 const STRIP = Array.from({ length: 20 }, (_, i) => i % 10);
 const fmt = (v: number, comma: boolean) => (comma ? v.toLocaleString('en-US') : String(v));
 
-const title = '小澤健祐（おざけん）| 生成AI・AIエージェントの講演・研修・アドバイザリー';
+// 指名検索（おざけん／小澤健祐）で戦うページなので、探されている呼び名を先頭に置く。
+// 検索結果で全角30字ほどしか出ないため、肩書きや実績は description に回した。
+const title = 'おざけん（小澤健祐）｜人間とAIが共存する社会をつくる';
 const description =
-  '一般社団法人AICX協会 代表理事。年間300回を超える登壇と1,500本超の記事執筆で、生成AIとAIエージェントの導入を、経営の意思決定と現場の実装の両側から支えています。講演・研修・顧問のご依頼はこちら。';
+  '一般社団法人AICX協会 代表理事、小澤健祐（おざけん）のプロフィールです。生成AI・AIエージェントの講演、研修、伴走支援、アドバイザリーのご依頼はこちらから。年間300回を超えて登壇しています。';
 ---
 <Base {title} {description} railInitial="小澤健祐">
 

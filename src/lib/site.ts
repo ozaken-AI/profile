@@ -14,6 +14,25 @@ export const SITE = {
   line: 'https://line.me/ti/p/gmxEFjBHs4',
 } as const;
 
+/**
+ * 検索エンジンに「このサイトは誰のものか」を明示するための情報。
+ * 指名検索で旧サイトと競合しているので、同一人物であることを sameAs でつなぐ。
+ */
+export const IDENTITY = {
+  /** 検索結果に出るサイト名。探されている呼び名を出す */
+  siteName: 'おざけん',
+  legalName: '小澤健祐',
+  alternateNames: ['おざけん', 'Kensuke Ozawa'],
+  /** 顔写真。プレスキットで配っているものと同じ */
+  image: '/press/ozaken-portrait-front.jpg',
+  /** 本人だと分かる他所のページ。旧プロフィールページも含める */
+  sameAs: [
+    'https://x.com/ozaken_AI',
+    'https://ozaken-ai.studio.site',
+    'https://content.ozaken.ai/',
+  ],
+} as const;
+
 /** 関与している組織。ヒーロー下のティッカーに流す。 */
 export const AFFILIATIONS = [
   'AICX協会', 'シンシアリー', 'Cinematorico', '生成AI活用普及協会',

@@ -2,7 +2,7 @@
 import '../styles/global.css';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
-import { SITE } from '../lib/site';
+import { SITE, IDENTITY } from '../lib/site';
 
 interface Props {
   title: string;
@@ -37,6 +37,30 @@ const ogAlt = ogImageAlt ?? '小澤健祐（おざけん）｜人間とAIが共�
 // アクセス解析。IDは Cloudflare Pages の環境変数 PUBLIC_GA_ID に入れる。
 // 未設定ならタグを出さない（開発中やプレビューで数字を汚さないため）。
 const gaId = import.meta.env.PUBLIC_GA_ID as string | undefined;
+
+// 検索エンジン向けの身元情報。トップにだけ置く（Googleはサイト名をトップから読む）。
+// 指名検索で旧プロフィールページと競合しているので、sameAs で同一人物だと明示する。
+const abs = (path: string) => new URL(path, Astro.site).href;
+const jsonLd = !isTop ? null : [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: IDENTITY.siteName,
+    alternateName: SITE.name,
+    url: SITE.url,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: IDENTITY.legalName,
+    alternateName: IDENTITY.alternateNames,
+    url: SITE.url,
+    image: abs(IDENTITY.image),
+    jobTitle: SITE.role.replace(/\u3000/g, ' '),
+    description,
+    sameAs: IDENTITY.sameAs,
+  },
+];
 ---
 <!DOCTYPE html>
 <html lang="ja">
@@ -46,6 +70,9 @@ const gaId = import.meta.env.PUBLIC_GA_ID as string | undefined;
 <title>{title}</title>
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical} />
+{jsonLd && (
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
+)}
 <meta name="google-site-verification" content="VoBfvx8Rc4nEPbgtcl-kKaD4QOb7tVEqZIur9A2NV5o" />
 <meta property="og:type" content={ogType} />
 <meta property="og:url" content={canonical} />
