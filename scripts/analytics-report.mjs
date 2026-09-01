@@ -114,7 +114,9 @@ async function gaEvents() {
     dimensionFilter: {
       filter: {
         fieldName: 'eventName',
-        inListFilter: { values: ['contact_submit', 'contact_cta', 'outbound_click'] },
+        // line_click は隠しコマンドの到達数。ここに入れ忘れると、誰も見つけて
+        // いないのか、そもそも数えていないのかが区別できない。
+        inListFilter: { values: ['contact_submit', 'contact_cta', 'outbound_click', 'line_click'] },
       },
     },
     orderBys: [{ metric: { metricName: 'eventCount' }, desc: true }],
@@ -187,6 +189,7 @@ const RUN = {
   'events-detail': async () => {
     await gaEventDetail('contact_cta', 'from', 'お問い合わせへの入口（どのページから）');
     await gaEventDetail('contact_submit', 'result', 'フォーム送信の結果');
+    await gaEventDetail('line_click', 'place', 'LINEへの入口（どこから開いたか）');
   },
   queries: gscQueries,
   'search-pages': gscPages,
