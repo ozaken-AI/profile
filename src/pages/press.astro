@@ -13,6 +13,15 @@ const photos = [
   { img: portraitFront, file: '/press/ozaken-portrait-front.jpg', label: 'ポートレート・正面', spec: '縦 1334×2000', alt: '正面を向いて笑う小澤健祐' },
   { img: portrait,      file: '/press/ozaken-portrait.jpg',       label: 'ポートレート・斜め', spec: '縦 3211×4814', alt: '小澤健祐のポートレート' },
 ];
+
+const logos = [
+  { file: '/press/logos/aicx-logo-color.png', vector: '/press/logos/aicx-logo.ai', label: 'AICX協会・ロゴ', spec: 'カラー・横組み', alt: 'AICX協会 ロゴ（カラー）', bg: 'paper' },
+  { file: '/press/logos/aicx-logo-white.png', vector: '/press/logos/aicx-logo.ai', label: 'AICX協会・ロゴ', spec: '白抜き・横組み', alt: 'AICX協会 ロゴ（白抜き）', bg: 'ink' },
+  { file: '/press/logos/aicx-mark-color.png', vector: '/press/logos/aicx-logo.ai', label: 'AICX協会・シンボル', spec: 'カラー', alt: 'AICX協会 シンボルマーク（カラー）', bg: 'paper' },
+  { file: '/press/logos/aicx-mark-white.png', vector: '/press/logos/aicx-logo.ai', label: 'AICX協会・シンボル', spec: '白抜き', alt: 'AICX協会 シンボルマーク（白抜き）', bg: 'ink' },
+  { file: '/press/logos/ai-agent-day-2025-logo-black.png', vector: '/press/logos/ai-agent-day-2025-logo.ai', label: 'AI Agent Day 2025', spec: '黒・横組み', alt: 'AI Agent Day 2025 ロゴ（黒）', bg: 'paper' },
+  { file: '/press/logos/ai-agent-day-2025-logo-white.png', vector: '/press/logos/ai-agent-day-2025-logo.ai', label: 'AI Agent Day 2025', spec: '白抜き・横組み', alt: 'AI Agent Day 2025 ロゴ（白抜き）', bg: 'ink' },
+];
 ---
 <Base {title} {description} railInitial="素材">
 
@@ -81,6 +90,30 @@ const photos = [
     ))}
   </div>
 
+</section>
+
+<section class="band band--paper" data-rail="ロゴ">
+  <div class="wrap">
+    <p class="label rv">Logos</p>
+    <h2 class="h2 rv rv-d1">ロゴ</h2>
+    <p class="lede rv rv-d2">
+      代表理事を務める一般社団法人AICX協会と、主催する「AI Agent Day」のロゴです。
+      背景の色に合わせてカラー版・白抜き版をお使いください。ベクターデータ（.ai）が必要な場合はご連絡ください。
+    </p>
+
+    <div class="press-grid stg">
+      {logos.map((l) => (
+        <a class={`press-item press-item--${l.bg}`} href={l.file} download>
+          <img src={l.file} alt={l.alt} class="press-img press-img--logo" loading="lazy" />
+          <div class="press-meta">
+            <span class="press-label">{l.label}</span>
+            <span class="press-spec">{l.spec}</span>
+            <span class="press-dl">Download <span aria-hidden="true">↓</span></span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
 </section>
 
 <section class="contact wrap" data-rail="連絡先">
