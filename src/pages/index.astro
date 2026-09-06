@@ -4,6 +4,7 @@ import Base from '../layouts/Base.astro';
 import Ticker from '../components/Ticker.astro';
 import NewsList from '../components/NewsList.astro';
 import HeroDust from '../components/HeroDust.astro';
+import SiteEntrance from '../components/SiteEntrance.astro';
 import { getNews } from '../lib/microcms';
 import { SITE, NUMBERS, ROLES, HERO_ROLES, MENU, STEPS, FAQ, PROFILE } from '../lib/site';
 
@@ -49,6 +50,7 @@ const description =
     <div class="spot-pool"></div>
     <HeroDust />
   </div>
+  <SiteEntrance />
 
   <div class="hero-inner">
     <div class="hero-stage">
