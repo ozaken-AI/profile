@@ -113,10 +113,6 @@ const jsonLd = [...identityJsonLd, ...pageJsonLd];
   href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Shippori+Mincho+B1:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap"
   rel="stylesheet"
 />
-<script is:inline>
-  /* 2回目以降は幕を出さない。描画より先に決める必要があるのでここに置く。 */
-  try { if (sessionStorage.getItem('ozaken:entered')) document.documentElement.dataset.entered = '1'; } catch (e) {}
-</script>
 {gaId && (
   <>
     <link rel="preconnect" href="https://www.googletagmanager.com" />
@@ -138,31 +134,14 @@ const jsonLd = [...identityJsonLd, ...pageJsonLd];
 <noscript><style>
   /* JSが動かない環境でも、出現アニメーション待ちで中身が消えないようにする */
   .rv,.stg>*{opacity:1!important;transform:none!important}
+  .hero-eyebrow,.hero-sub,.hero-actions,.hero-foot{opacity:1!important;transform:none!important}
   .phead-h1,.h2,.contact-h{clip-path:none!important;opacity:1!important}
   .line>span{transform:none!important}
-  .hero-actor,.spot-pool,.hero-glow{opacity:1!important;animation:none!important}
+  .hero-actor,.spot-pool{opacity:1!important;animation:none!important}
   .hero-vert{opacity:1!important}
-  .sys-badge{opacity:1!important}
-  .spot-dust{opacity:.8!important}
 </style></noscript>
 </head>
 <body>
-
-{isTop && (
-  <div class="curtain" id="curtain" aria-hidden="true">
-    <div class="curtain-bg">
-      <i class="curtain-half curtain-half--l"></i>
-      <i class="curtain-half curtain-half--r"></i>
-      <i class="curtain-split"></i>
-    </div>
-    <div class="curtain-seal">
-      <i class="curtain-ripple"></i>
-      <b class="curtain-stamp"></b>
-    </div>
-    <p class="curtain-mark">OZAKEN.AI</p>
-    <div class="curtain-bar"><i></i></div>
-  </div>
-)}
 
 <div class="rail" aria-hidden="true">
   <div class="rail-mark">OZAKEN.AI</div>
@@ -204,9 +183,6 @@ const jsonLd = [...identityJsonLd, ...pageJsonLd];
 
   const ANIMATED = '.rv, .stg, .h2, .phead-h1, .contact-h';
 
-  // 見出しを確定させる処理。中身は下で入れる（幕の開きに合わせて呼ぶため）
-  let startScramble = () => {};
-
   try {
     const io = new IntersectionObserver((es) => {
       es.forEach((e) => {
@@ -217,96 +193,13 @@ const jsonLd = [...identityJsonLd, ...pageJsonLd];
     }, { threshold: 0, rootMargin: '0px 0px -12% 0px' });
     document.querySelectorAll(ANIMATED).forEach((el) => io.observe(el));
 
-    /* 幕が上がるのに合わせて、最初の画面を出す。
-       幕は CSS だけで上がるので、JSが動かなくてもページは開く。 */
     const hero = document.querySelector('.hero');
-    const curtain = document.getElementById('curtain');
-    const showHero = () => { if (hero) hero.classList.add('on'); startScramble(); };
-    const skip = !curtain || reduce || document.documentElement.dataset.entered === '1';
-    if (skip) {
-      curtain?.remove();
-      if (hero) requestAnimationFrame(showHero);
-    } else {
-      try { sessionStorage.setItem('ozaken:entered', '1'); } catch (e) {}
-      // 幕が上がりはじめる時刻。CSS の animation-delay と合わせる。
-      // 幕が割れはじめるのが 1.28s。少し先に出して、隙間から字が確定するのを見せる。
-      setTimeout(showHero, 1150);
-      setTimeout(() => curtain.remove(), 2500);
-    }
+    if (hero) requestAnimationFrame(() => hero.classList.add('on'));
   } catch (e) {
     // 出現の仕掛けが動かなかったときに、中身が隠れたままにならないようにする
     document.querySelectorAll(ANIMATED).forEach((el) => el.classList.add('on'));
     document.querySelector('.hero')?.classList.add('on');
     console.error('[reveal]', e);
-  }
-
-  /* 見出しが「確定していく」ように出す。
-     文字は最初ランダムに入れ替わり、左から順に本来の字に落ち着く。
-     塗りの見出しと輪郭の見出しは同じ文字列を書き込むので、継ぎ目はずれない。 */
-  const CJK = '知能情報生成学習演算推論記憶構造意味言語共存社会人間未来創造変革設計実装対話理解';
-  const LAT = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const pick = (c: string) =>
-    c.charCodeAt(0) < 128 ? LAT[(Math.random() * LAT.length) | 0] : CJK[(Math.random() * CJK.length) | 0];
-
-  function textNodes(root: Element) {
-    const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-    const out: Text[] = [];
-    let n: Node | null;
-    while ((n = w.nextNode())) out.push(n as Text);
-    return out;
-  }
-  function paint(nodes: Text[], lens: number[], s: string) {
-    let k = 0;
-    for (let i = 0; i < nodes.length; i++) { nodes[i].nodeValue = s.slice(k, k + lens[i]); k += lens[i]; }
-  }
-
-  try {
-    const solid = document.getElementById('heroH1');
-    const outline = document.getElementById('heroH1o');
-    if (solid && !reduce) {
-      const gl = outline ? Array.from(outline.querySelectorAll('.ln')) : [];
-      const jobs = Array.from(solid.querySelectorAll('.ln')).map((ln, i) => {
-        const a = textNodes(ln);
-        const b = gl[i] ? textNodes(gl[i]) : [];
-        return { i, a, b, lens: a.map((n) => (n.nodeValue || '').length), chars: a.map((n) => n.nodeValue || '').join('').split('') };
-      }).filter((j) => j.chars.length);
-
-      if (jobs.length) {
-        // 幕が割れはじめる瞬間に呼ぶ。開いていく隙間から、字が確定していくのが見える。
-        startScramble = () => {
-        const t0 = performance.now();
-        let lastRoll = 0;
-        let cur: string[] = jobs.map(() => '');
-        const frame = (t: number) => {
-          const el = t - t0;
-          const roll = t - lastRoll > 46;
-          if (roll) lastRoll = t;
-          let pending = false;
-          jobs.forEach((j, ji) => {
-            let out = '';
-            const prev = cur[ji];
-            for (let k = 0; k < j.chars.length; k++) {
-              // 光の当たる2行目から確定させる（スポットライトの理屈に合わせる）
-              const LINE_OFF = [420, 160, 560];
-              const lock = (LINE_OFF[j.i] ?? 300 + j.i * 140) + k * 72;
-              if (el >= lock) { out += j.chars[k]; continue; }
-              pending = true;
-              out += roll || !prev[k] ? pick(j.chars[k]) : prev[k];
-            }
-            if (out !== prev) {
-              cur[ji] = out;
-              paint(j.a, j.lens, out);
-              if (j.b.length) paint(j.b, j.lens, out);
-            }
-          });
-          if (pending) requestAnimationFrame(frame);
-        };
-        requestAnimationFrame(frame);
-        };
-      }
-    }
-  } catch (e) {
-    console.error('[scramble]', e);
   }
 
   /* 桁の窓は overflow:hidden なので、外には「箱の下辺」をベースラインとして
@@ -359,28 +252,10 @@ const jsonLd = [...identityJsonLd, ...pageJsonLd];
     }
   }
 
-  /* ヒーローのにじみを、ポインタのほうへゆっくり寄せる。
-     指で操作する端末と、動きを減らす設定では何もしない。 */
-  const glow = document.querySelector<HTMLElement>('.hero-glow');
-  const fine = window.matchMedia('(pointer: fine)').matches;
-  if (glow && fine && !reduce) {
-    const hero = glow.parentElement!;
-    let raf = 0;
-    hero.addEventListener('pointermove', (e) => {
-      if (raf) return;
-      raf = requestAnimationFrame(() => {
-        raf = 0;
-        const r = hero.getBoundingClientRect();
-        glow.style.setProperty('--gx', `${((e.clientX - r.left) / r.width) * 100}%`);
-        glow.style.setProperty('--gy', `${((e.clientY - r.top) / r.height) * 100}%`);
-      });
-    });
-  }
-
-  /* トップは巨大タイポを邪魔しないよう、1画面ぶんスクロールしてからヘッダーを出す */
+  /* トップは見出しから読み始め、少しスクロールしたらナビゲーションを出す */
   const head = document.querySelector('.site-head--top');
   if (head) {
-    const onScroll = () => head.classList.toggle('is-shown', window.scrollY > window.innerHeight * 0.7);
+    const onScroll = () => head.classList.toggle('is-shown', window.scrollY > window.innerHeight * 0.45);
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
   }

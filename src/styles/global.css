@@ -9,11 +9,11 @@
   --ink:      #0A0D13;   /* 地：青緑に寄せた墨 */
   --ink-2:    #10151F;   /* 一段持ち上げた面 */
   --ink-3:    #161C29;   /* カード */
-  --rule:     #252D3D;   /* 罫 */
-  --rule-2:   #1B2231;
+  --rule:     #30394A;   /* 罫 */
+  --rule-2:   #222B3B;
   --fg:       #ECEEF3;
-  --fg-mid:   #A8B0C0;
-  --fg-mute:  #6E7889;
+  --fg-mid:   #B9C0CD;
+  --fg-mute:  #8994A7;
   --paper:    #EDE9E0;   /* 反転面：生成り紙 */
   --paper-fg: #14161C;
   --paper-mute:#5C5A54;
@@ -47,7 +47,7 @@ body{
 /* 粒子：全面に薄く敷く。地の平坦さを殺す */
 body::before{
   /* 動かしても端が画面に入らないよう、一回り大きく敷く */
-  content:'';position:fixed;inset:-4%;z-index:60;pointer-events:none;opacity:.055;
+  content:'';position:fixed;inset:-4%;z-index:60;pointer-events:none;opacity:.035;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
@@ -95,12 +95,12 @@ img{max-width:100%;height:auto;display:block}
 .wrap{max-width:var(--maxw);margin:0 auto;padding-inline:var(--pad)}
 
 section{position:relative}
-.band{padding-block:clamp(4.5rem,11vw,9rem)}
+.band{padding-block:clamp(4.5rem,9vw,7.75rem)}
 .band--paper{background:var(--paper);color:var(--paper-fg)}
 
 /* ---------- 共通：ラベルと見出し ---------- */
 .label{
-  font-family:var(--f-en);font-size:11px;font-weight:700;
+  font-family:var(--f-en);font-size:12px;font-weight:700;
   letter-spacing:.22em;text-transform:uppercase;color:var(--fg-mute);
   display:flex;align-items:center;gap:.75rem;
 }
@@ -155,10 +155,10 @@ section{position:relative}
 .line{display:block;overflow:hidden}
 .line>span{display:block;transform:translateY(105%);transition:transform 1.15s var(--ease)}
 .hero.on .line>span{transform:none}
-/* スポットライトの理屈に合わせて、光の当たる2行目 → 1行目 → 3行目の順で立てる */
-.hero.on .l2>span{transition-delay:.3s}
-.hero.on .l1>span{transition-delay:.55s}
-.hero.on .l3>span{transition-delay:.72s}
+/* 読み順に沿って、短い間隔で3行を立ち上げる */
+.hero.on .l1>span{transition-delay:.08s}
+.hero.on .l2>span{transition-delay:.15s}
+.hero.on .l3>span{transition-delay:.22s}
 
 /* 粒子をコマ送りで漂わせる。膜は inset:-4% で大きめに敷いてあるので、
    ±2% 動かしても端が画面に入らない（以前は端が露出して、枠がチカチカして見えた）。 */
@@ -205,9 +205,7 @@ section{position:relative}
       from{transform:translate3d(0,0,0);opacity:1}
       to{transform:translate3d(0,-12%,0);opacity:0}
     }
-    /* 舞台装置は本文より少しだけ長く残る。照明が最後に落ちる。
-       .hero-glow は入場を transition で持っているので、ここには足さない
-       （animation が transition に勝って、最初から点いてしまう）。 */
+    /* 舞台装置は本文より少しだけ長く残る。照明が最後に落ちる。 */
     .hero-fx{
       animation:fxout linear both;
       animation-timeline:scroll(root block);
@@ -227,24 +225,24 @@ section{position:relative}
   .phead-h1,.h2,.contact-h{clip-path:none!important;opacity:1!important}
   .ticker-track,body::before{animation:none!important}
 }
-/* ---------- HERO：開演の振り付け ----------
-   暗転 → 点灯 → 発話 → 開場。名前 → 見出し → 補足 → 足元の順に出す。 */
-.hero-eyebrow,.hero-sub,.hero-foot{
+/* ---------- HERO：宣言 → 補足 → 導線を短いフェードで見せる ---------- */
+.hero-eyebrow,.hero-sub,.hero-actions,.hero-foot{
   opacity:0;transform:translateY(16px);
-  transition:opacity .95s var(--ease),transform .95s var(--ease);
+  transition:opacity .72s var(--ease),transform .72s var(--ease);
 }
-.hero.on .hero-eyebrow,.hero.on .hero-sub,.hero.on .hero-foot{opacity:1;transform:none}
-.hero.on .hero-eyebrow{transition-delay:.1s}
+.hero.on .hero-eyebrow,.hero.on .hero-sub,.hero.on .hero-actions,.hero.on .hero-foot{opacity:1;transform:none}
+.hero.on .hero-eyebrow{transition-delay:.04s}
 /* 見出しの3行はここで出る（.line の項を参照）*/
-.hero.on .hero-sub{transition-delay:1s}
-.hero.on .hero-foot{transition-delay:1.25s}
+.hero.on .hero-sub{transition-delay:.34s}
+.hero.on .hero-actions{transition-delay:.44s}
+.hero.on .hero-foot{transition-delay:.54s}
 
 /* 「共存する社会」は行が着地したあと、照り返しを受けて白く立つ */
 .hero-h1 em{color:var(--fg-mid);transition:color 1.4s ease 1s,text-shadow 1.4s ease 1s}
 .hero.on .hero-h1 em{color:#fff;text-shadow:0 0 34px rgba(190,210,255,.26)}
 
 @media(prefers-reduced-motion:reduce){
-  .hero-eyebrow,.hero-sub,.hero-foot{
+  .hero-eyebrow,.hero-sub,.hero-actions,.hero-foot{
     opacity:1!important;transform:none!important;transition:none!important;
   }
   .hero-h1 em{color:#fff!important}
@@ -254,49 +252,19 @@ section{position:relative}
   min-height:100svh;display:flex;flex-direction:column;justify-content:center;
   padding-block:clamp(5rem,11vh,7rem) clamp(2rem,4vh,3rem);position:relative;overflow:hidden;
 }
-/* マウスに追従する第2の照明。screen合成なので、下にある写真も文字も明るくなる。
-   --gx / --gy はポインタの位置。JSが動かなければ人物の上に据えたまま。 */
-.hero-glow{
-  position:absolute;inset:0;pointer-events:none;z-index:4;
-  background:radial-gradient(clamp(210px,23vw,330px) clamp(210px,23vw,330px) at var(--gx,66%) var(--gy,40%),rgba(190,210,255,.17),transparent 70%);
-  mix-blend-mode:screen;
-  opacity:0;transition:opacity 1.2s ease .8s;
-}
-.hero.on .hero-glow{opacity:1}
 .hero-inner{position:relative;z-index:3}
 
-/* 左上のシステムバッジ。コンテンツ管理システム側の左上のピルと同じ作りにして、
-   2つのサイトが同じ家系だと分かるようにする */
-.sys-badge{
-  position:absolute;top:clamp(1.4rem,3.5vh,2.2rem);left:var(--pad);z-index:5;
-  display:inline-flex;align-items:center;gap:.55rem;
-  padding:.42rem .95rem;border:1px solid var(--rule);border-radius:999px;
-  background:rgba(10,13,19,.5);backdrop-filter:blur(8px);
-  font-family:var(--f-gothic);font-size:10.5px;letter-spacing:.14em;color:var(--fg-mid);
-  white-space:nowrap;
-  opacity:0;transition:opacity .9s ease .35s;
-}
-.hero.on .sys-badge{opacity:1}
-.sys-badge i{width:6px;height:6px;border-radius:50%;background:var(--seal);flex:none}
-.sys-badge span{font-family:var(--f-en);font-weight:700;font-size:9.5px;letter-spacing:.18em;color:var(--fg-mute);margin-left:.15rem}
-@media(prefers-reduced-motion:no-preference){
-  .sys-badge i{animation:syspulse 2.8s ease-in-out infinite}
-}
-@keyframes syspulse{0%,100%{opacity:1}50%{opacity:.35}}
-@media(prefers-reduced-motion:reduce){.sys-badge{opacity:1!important;transition:none!important}}
-@media(max-width:600px){.sys-badge span{display:none}}
-
 /* ---- 舞台装置 --------------------------------
-   光の錐・人物・床あかり・塵。人物はスポットの楕円の中にだけ存在して、
+   人物と床あかり。人物はスポットの楕円の中にだけ存在して、
    闇と地続きになる。四角い「写真の素材」は置かない。 */
 .hero-stage{position:relative;min-width:0}
 .hero-fx{position:absolute;inset:0;pointer-events:none;z-index:0}
 
 /* 人物。スポットの楕円の中だけ見える */
 .hero-actor{
-  position:absolute;left:36%;right:0;top:0;bottom:0;overflow:hidden;
-  -webkit-mask-image:radial-gradient(ellipse clamp(230px,23vw,330px) clamp(330px,33vw,480px) at 47% 42%,#000 0%,rgba(0,0,0,.9) 44%,transparent 72%);
-          mask-image:radial-gradient(ellipse clamp(230px,23vw,330px) clamp(330px,33vw,480px) at 47% 42%,#000 0%,rgba(0,0,0,.9) 44%,transparent 72%);
+  position:absolute;left:47%;right:0;top:0;bottom:0;overflow:hidden;
+  -webkit-mask-image:radial-gradient(ellipse clamp(230px,23vw,330px) clamp(330px,33vw,480px) at 52% 42%,#000 0%,rgba(0,0,0,.9) 44%,transparent 72%);
+          mask-image:radial-gradient(ellipse clamp(230px,23vw,330px) clamp(330px,33vw,480px) at 52% 42%,#000 0%,rgba(0,0,0,.9) 44%,transparent 72%);
 }
 .hero-actor-img{
   width:100%;height:100%;object-fit:cover;object-position:30% 12%;
@@ -305,91 +273,25 @@ section{position:relative}
 
 /* スポットの床あかり */
 .spot-pool{
-  position:absolute;left:calc(66% - clamp(220px,21vw,300px));bottom:2%;
+  position:absolute;left:calc(74% - clamp(220px,21vw,300px));bottom:2%;
   width:clamp(440px,42vw,600px);height:120px;
   background:radial-gradient(50% 50% at 50% 50%,rgba(190,205,240,.12),transparent 70%);
   filter:blur(8px);
 }
 
-/* 塵。光の当たっているあたりだけを、ゆっくり漂う */
-.spot-dust{
-  position:absolute;left:36%;right:0;top:0;bottom:0;
-  -webkit-mask-image:radial-gradient(ellipse clamp(280px,28vw,400px) clamp(380px,38vw,560px) at 47% 42%,#000 0%,transparent 78%);
-          mask-image:radial-gradient(ellipse clamp(280px,28vw,400px) clamp(380px,38vw,560px) at 47% 42%,#000 0%,transparent 78%);
-  opacity:.8;
-}
-/* 手前・中・奥の三層。層ごとに別の要素にしてあるのは、落ちる速さと
-   横に流れる周期を、層ごとに変えるため。一枚に重ねると背景の位置は
-   ひとつしか動かせず、全部が同じ速さで、まっすぐ落ちる。 */
-.spot-dust>i{position:absolute;inset:0;display:block}
-.spot-dust>i:nth-child(1){
-  background-image:
-    radial-gradient(3.5px 3.5px at 24% 30%,rgba(238,245,255,.95),rgba(238,245,255,.25) 60%,transparent 100%),
-    radial-gradient(3px 3px at 70% 64%,rgba(238,245,255,.8),rgba(238,245,255,.2) 60%,transparent 100%),
-    radial-gradient(2.8px 2.8px at 48% 6%,rgba(238,245,255,.7),transparent 100%);
-  background-size:200px 200px;
-}
-.spot-dust>i:nth-child(2){
-  background-image:
-    radial-gradient(2.2px 2.2px at 30% 22%,rgba(235,242,255,.9),transparent 100%),
-    radial-gradient(1.8px 1.8px at 62% 48%,rgba(235,242,255,.7),transparent 100%),
-    radial-gradient(2px 2px at 44% 74%,rgba(235,242,255,.55),transparent 100%),
-    radial-gradient(1.6px 1.6px at 82% 12%,rgba(235,242,255,.6),transparent 100%);
-  background-size:240px 240px;
-}
-.spot-dust>i:nth-child(3){
-  background-image:
-    radial-gradient(1.2px 1.2px at 18% 40%,rgba(220,232,255,.55),transparent 100%),
-    radial-gradient(1px 1px at 72% 68%,rgba(220,232,255,.45),transparent 100%),
-    radial-gradient(1.2px 1.2px at 50% 8%,rgba(220,232,255,.5),transparent 100%),
-    radial-gradient(1px 1px at 8% 86%,rgba(220,232,255,.4),transparent 100%);
-  background-size:340px 340px;
-}
-
-/* ---- 点灯：暗転から、照明が「コッ」と入って据わる。
-        明滅は光そのものではなく、照らされた人物の見え方に乗せる ---- */
-.hero-actor,.spot-pool,.spot-dust{opacity:0}
-.hero.on .hero-actor{transition:opacity 1.2s ease .45s;opacity:1}
-.hero.on .spot-pool{transition:opacity 1.6s ease .7s;opacity:1}
+/* ---- 人物と床あかりを、短いフェードで静かに立ち上げる ---- */
+.hero-actor,.spot-pool{opacity:0}
+.hero.on .hero-actor{transition:opacity .9s ease .12s;opacity:1}
+.hero.on .spot-pool{transition:opacity 1s ease .24s;opacity:1}
 @media(prefers-reduced-motion:no-preference){
-  .hero.on .hero-actor{transition:none;animation:lighton 1.25s ease-out .35s both,actorbreathe 8s ease-in-out 2.4s infinite}
-  .hero.on .spot-pool{animation:poolbreathe 8s ease-in-out 2.4s infinite}
-  .hero.on .hero-glow{animation:glowbreathe 9s ease-in-out 3s infinite}
-  .hero.on .spot-dust{animation:dustin 1.4s ease 1s both}
-  /* 縦の落下と横の流れは、わざと周期をずらしてある（34と19、30と23、62と27）。
-     割り切れないので二つが揃うことがなく、軌跡が直線にならない。 */
-  .hero.on .spot-dust>i:nth-child(1){animation:dustfallA 34s linear 1s infinite,dustswayA 19s ease-in-out 1s infinite alternate}
-  .hero.on .spot-dust>i:nth-child(2){animation:dustfallB 30s linear 1s infinite,dustswayB 23s ease-in-out 1s infinite alternate}
-  .hero.on .spot-dust>i:nth-child(3){animation:dustfallC 62s linear 1s infinite,dustswayC 27s ease-in-out 1s infinite alternate}
+  .hero.on .hero-actor{transition:none;animation:actorin .9s ease-out .12s both}
+  .hero.on .spot-pool{animation:poolin 1s ease-out .24s both}
 }
-/* 照明の呼吸。据わったあと、ごくゆっくり明滅し続ける */
-@keyframes actorbreathe{0%,100%{opacity:1}50%{opacity:.87}}
-@keyframes poolbreathe{0%,100%{opacity:1}50%{opacity:.6}}
-@keyframes glowbreathe{0%,100%{opacity:1}50%{opacity:.62}}
+@keyframes actorin{from{opacity:0;transform:scale(1.02)}to{opacity:1;transform:scale(1)}}
+@keyframes poolin{from{opacity:0}to{opacity:1}}
 @media(prefers-reduced-motion:reduce){
   .hero-actor,.spot-pool{opacity:1!important;transition:none!important}
-  .spot-dust{opacity:.8!important}
 }
-/* 素早い明滅のあと、据わる */
-@keyframes lighton{
-  0%{opacity:0}
-  10%{opacity:.85}
-  16%{opacity:.08}
-  28%{opacity:1}
-  42%{opacity:.9}
-  100%{opacity:1}
-}
-@keyframes dustin{from{opacity:0}to{opacity:.8}}
-/* 落下。移動量はそれぞれのタイルの整数倍なので、一周してもつなぎ目が出ない。
-   秒あたり 12 / 8 / 5.5px。手前ほど速く、奥ほど遅い。 */
-@keyframes dustfallA{from{background-position:0 0}to{background-position:0 -400px}}
-@keyframes dustfallB{from{background-position:0 0}to{background-position:0 -240px}}
-@keyframes dustfallC{from{background-position:0 0}to{background-position:0 -340px}}
-/* 横の流れ。行って戻る（alternate）ので、端でいったん緩む。
-   手前の層だけ縦にも少し振って、落ちる速さそのものを揺らしている。 */
-@keyframes dustswayA{from{transform:translate3d(-15px,3px,0)}to{transform:translate3d(15px,-3px,0)}}
-@keyframes dustswayB{from{transform:translate3d(-10px,0,0)}to{transform:translate3d(10px,0,0)}}
-@keyframes dustswayC{from{transform:translate3d(-6px,0,0)}to{transform:translate3d(6px,0,0)}}
 
 .hero-h1wrap{position:relative;z-index:2}
 
@@ -425,29 +327,29 @@ section{position:relative}
 /* 画面が狭いときは、小さくても濃いスポットを人物に当てる。
    薄い写真を全面に敷くより、暗いなりに「人がいる」画面になる。 */
 @media(max-width:860px){
-  .spot-pool{left:calc(64% - 38vw);width:76vw}
-  .spot-dust{
-    left:0;
-    -webkit-mask-image:radial-gradient(ellipse 58vw 76vw at 64% 28%,#000 0%,transparent 80%);
-            mask-image:radial-gradient(ellipse 58vw 76vw at 64% 28%,#000 0%,transparent 80%);
+  .hero{justify-content:flex-start;padding-top:3.25rem}
+  .hero::after{
+    content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
+    background:linear-gradient(180deg,rgba(10,13,19,.06) 0%,rgba(10,13,19,.22) 30%,rgba(10,13,19,.92) 58%,var(--ink) 82%);
   }
+  .hero-stage{padding-top:clamp(10rem,28svh,14rem)}
+  .spot-pool{left:calc(64% - 38vw);width:76vw}
   .hero-actor{
     left:0;
     -webkit-mask-image:radial-gradient(ellipse 46vw 62vw at 64% 28%,#000 0%,rgba(0,0,0,.92) 46%,transparent 74%);
             mask-image:radial-gradient(ellipse 46vw 62vw at 64% 28%,#000 0%,rgba(0,0,0,.92) 46%,transparent 74%);
   }
-  .hero-actor-img{object-position:23% 0}
-  .hero-glow{background:radial-gradient(38vw 38vw at var(--gx,64%) var(--gy,30%),rgba(190,210,255,.16),transparent 70%)}
+  .hero-actor-img{object-position:26% 0}
 }
 
 .hero-eyebrow{position:relative;z-index:2}
 .hero-eyebrow{
-  font-family:var(--f-en);font-size:11.5px;font-weight:700;letter-spacing:.28em;
+  font-family:var(--f-en);font-size:12px;font-weight:700;letter-spacing:.28em;
   text-transform:uppercase;color:var(--fg-mute);margin-bottom:clamp(1.5rem,4vh,2.75rem);
 }
 .hero-h1{
   font-family:var(--f-mincho);font-weight:500;
-  font-size:clamp(2.9rem,9.6vw,7.4rem);
+  font-size:clamp(2.85rem,7.7vw,6.35rem);
   line-height:1.08;letter-spacing:-.015em;
 }
 .hero-h1 em{font-style:normal;font-weight:700}
@@ -462,10 +364,39 @@ section{position:relative}
 .hero-sub span{display:block}
 .hero-sub b{color:var(--fg);font-weight:700}
 
+.hero-actions{
+  position:relative;z-index:3;margin-top:clamp(1.35rem,3vh,2rem);
+  display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap;
+}
+.hero-cta{
+  display:inline-flex;align-items:center;justify-content:center;gap:1rem;
+  min-height:48px;padding:.72rem 1.15rem .76rem 1.25rem;
+  border:1px solid rgba(236,238,243,.62);background:rgba(10,13,19,.48);
+  backdrop-filter:blur(8px);font-size:.88rem;font-weight:700;letter-spacing:.05em;
+  transition:background .3s ease,color .3s ease,border-color .3s ease;
+}
+.hero-cta:hover{background:var(--fg);border-color:var(--fg);color:var(--ink)}
+.hero-cta span{transition:transform .3s var(--ease)}
+.hero-cta:hover span{transform:translateX(4px)}
+.hero-link{
+  padding:.65rem 0;border-bottom:1px solid var(--rule);color:var(--fg-mid);
+  font-size:.84rem;letter-spacing:.04em;transition:color .3s ease,border-color .3s ease;
+}
+.hero-link:hover{color:var(--fg);border-color:var(--fg)}
+
 /* ポートレート */
 .hero-foot{
-  position:relative;z-index:3;margin-top:clamp(1.75rem,4vh,2.75rem);
+  position:relative;z-index:3;margin-top:clamp(1.35rem,3vh,2rem);
   display:flex;align-items:center;justify-content:flex-start;gap:clamp(1.2rem,3vw,2.5rem);flex-wrap:wrap;
+}
+/* 共通指定の後に置き、狭い画面でも見出しと相談導線を収める。 */
+@media(max-width:520px){
+  .hero-h1{font-size:clamp(2rem,12.2vw,3.7rem);line-height:1.1}
+  .hero-sub{font-size:1rem;line-height:1.8}
+  .hero-actions{gap:.85rem}
+  .hero-cta{width:100%}
+  .hero-link{margin-inline:auto}
+  .hero-foot{margin-top:1.15rem}
 }
 .portrait{
   width:clamp(96px,13vw,148px);aspect-ratio:3/4;flex:none;
@@ -803,7 +734,7 @@ section{position:relative}
   }
 }
 @keyframes inkread{to{--read:100%}}
-.profile-body p{font-size:.97rem;line-height:2.15;color:#3A3A38;max-width:34em}
+.profile-body p{font-size:1rem;line-height:2;color:#333431;max-width:40em}
 .profile-body p+p{margin-top:1.3rem}
 .profile-body b{color:var(--paper-fg);font-weight:700}
 .shots{display:grid;grid-template-columns:minmax(0,.72fr) minmax(0,1fr);gap:1rem;margin-top:2.4rem;align-items:stretch}
@@ -961,7 +892,7 @@ footer{border-top:1px solid var(--rule-2);padding-block:2.5rem;font-size:.78rem;
 }
 /* トップは巨大タイポを邪魔しないよう、少しスクロールしてから出す */
 .site-head--top{transform:translateY(-100%);opacity:0;pointer-events:none}
-.site-head--top.is-shown{transform:none;opacity:1;pointer-events:auto}
+.site-head--top.is-shown,.site-head--top:focus-within{transform:none;opacity:1;pointer-events:auto}
 @media(max-width:860px){.site-head{left:0}}
 
 .site-mark{display:flex;align-items:baseline;gap:.6rem;flex:none}
@@ -980,6 +911,10 @@ footer{border-top:1px solid var(--rule-2);padding-block:2.5rem;font-size:.78rem;
 }
 .site-nav a:hover{color:var(--fg);border-bottom-color:var(--rule)}
 .site-nav a[aria-current="page"]{color:var(--fg);border-bottom-color:var(--seal)}
+.site-nav .site-nav-cta{
+  margin-block:-.35rem;padding:.35rem .75rem .42rem;border:1px solid var(--rule);
+}
+.site-nav .site-nav-cta:hover{border-color:var(--fg)}
 /* 5項目あるので狭い画面では折り返さず、はみ出すぶんだけ横に流す。
    折り返すとヘッダーが2段になって、下のコンテンツに重なる。 */
 @media(max-width:640px){
@@ -987,10 +922,12 @@ footer{border-top:1px solid var(--rule-2);padding-block:2.5rem;font-size:.78rem;
   .site-mark-ja{font-size:.94rem;letter-spacing:.04em}
   .site-nav{
     flex-wrap:nowrap;overflow-x:auto;gap:.62rem;justify-content:flex-start;
+    padding-block:.35rem;margin-block:-.35rem;
     scrollbar-width:none;-webkit-overflow-scrolling:touch;
   }
   .site-nav::-webkit-scrollbar{display:none}
-  .site-nav a{font-size:.72rem}
+  .site-nav a{font-size:.76rem}
+  .site-nav .site-nav-cta{margin-block:-.28rem;padding:.28rem .56rem .34rem}
 }
 
 .site-foot{background:var(--ink);border-top:1px solid var(--rule-2);padding-block:clamp(2.5rem,5vw,4rem)}
@@ -1210,116 +1147,6 @@ footer{border-top:1px solid var(--rule-2);padding-block:2.5rem;font-size:.78rem;
 .press-item--paper .press-spec,
 .press-item--paper .press-dl{color:#6B7284}
 .press-item--paper:hover .press-dl{color:var(--ink)}
-
-/* ---------- 入り口の幕 ----------
-   トップを開いたときだけ。落款が降りて捺され、幕が左右に引かれ、
-   その印はそのまま左レールの定位置へ飛ぶ（＝サイトの落款に入れ替わる）。
-   幕が引かれるところまで CSS だけで完結しているので、JSが動かなくてもページは開く。
-   2回目以降（同じタブの中）と、動きを減らす設定では出さない。 */
-.curtain{position:fixed;inset:0;z-index:200;pointer-events:none}
-:root[data-entered] .curtain{display:none}
-@media(prefers-reduced-motion:reduce){.curtain{display:none}}
-
-/* 幕。中央で2枚に分かれて、左右へ引かれる */
-.curtain-bg{position:absolute;inset:0;overflow:hidden}
-.curtain-half{
-  position:absolute;top:0;bottom:0;width:50.2%;background:var(--ink);
-  animation:1.05s cubic-bezier(.74,0,.2,1) 1.28s both;
-}
-.curtain-half--l{left:0;animation-name:partl}
-.curtain-half--r{right:0;animation-name:partr;animation-delay:1.34s}
-@keyframes partl{from{transform:translateX(0)}to{transform:translateX(-100.5%)}}
-@keyframes partr{from{transform:translateX(0)}to{transform:translateX(100.5%)}}
-
-/* 裂け目に朱の線が1本走ってから、幕が割れる */
-.curtain-split{
-  position:absolute;left:50%;top:0;bottom:0;width:1px;margin-left:-.5px;
-  background:linear-gradient(180deg,
-    transparent 0,var(--seal) 16%,var(--seal) 38%,
-    transparent 41%,transparent 59%,
-    var(--seal) 62%,var(--seal) 84%,transparent 100%);
-  transform:scaleY(0);
-  animation:splitline 1s var(--ease) 1.06s both;
-}
-@keyframes splitline{
-  0%{transform:scaleY(0);opacity:0}
-  30%{transform:scaleY(1);opacity:1}
-  42%{opacity:1}
-  72%{transform:scaleY(1);opacity:0}
-  100%{transform:scaleY(1);opacity:0}
-}
-
-/* ---- 中央に置くもの。位置を絶対値で決めて、印の飛び先を計算できるようにする ---- */
-.curtain-seal{
-  position:absolute;left:50%;top:50%;width:44px;height:44px;margin:-22px 0 0 -22px;
-  /* レールの落款の中心＝(32px, 100vh - 37px)。そこへ縮みながら移す */
-  animation:sealfly .95s cubic-bezier(.72,0,.18,1) 1.3s both;
-}
-@keyframes sealfly{
-  from{transform:translate(0,0) scale(1)}
-  to{transform:translate(calc(32px - 50vw),calc(50vh - 38px)) scale(.636)}
-}
-/* レールが出ない幅では、飛ばさずその場で引く */
-@media(max-width:860px){
-  .curtain-seal{animation:sealout .5s var(--ease) 1.4s both}
-  @keyframes sealout{from{transform:scale(1);opacity:1}to{transform:scale(.88);opacity:0}}
-}
-
-/* 印が上から降りて、着地でわずかに沈む */
-.curtain-stamp{
-  position:absolute;inset:0;border-radius:50%;
-  background:url('/favicon-96.png?v=3') center/cover no-repeat;
-  border:2px solid var(--seal);
-  animation:stampdrop .62s cubic-bezier(.3,1.35,.5,1) .08s both;
-}
-@keyframes stampdrop{
-  0%{transform:translateY(-42px) scale(.82);opacity:0}
-  45%{opacity:1}
-  100%{transform:translateY(0) scale(1);opacity:1}
-}
-/* 捺した瞬間の波紋。印と同じ角丸で広げる */
-.curtain-ripple{
-  position:absolute;inset:0;border:1px solid var(--seal);border-radius:50%;opacity:0;
-  animation:ripple .9s cubic-bezier(.18,.7,.3,1) .56s both;
-}
-@keyframes ripple{
-  0%{transform:scale(1);opacity:.8}
-  62%{opacity:0}
-  100%{transform:scale(3.4);opacity:0}
-}
-
-/* 字間が詰まりながら出る */
-.curtain-mark{
-  position:absolute;left:0;right:0;top:calc(50% + 42px);text-align:center;
-  font-family:var(--f-en);font-size:11.5px;font-weight:800;text-transform:uppercase;
-  color:var(--fg-mid);opacity:0;letter-spacing:.62em;text-indent:.62em;
-  animation:markin .95s var(--ease) .38s both,markout .4s ease 1.18s both;
-}
-@keyframes markin{
-  from{opacity:0;letter-spacing:.62em;text-indent:.62em}
-  to{opacity:1;letter-spacing:.24em;text-indent:.24em}
-}
-@keyframes markout{from{opacity:1}to{opacity:0}}
-
-/* 読み込みの目安。幕が割れる直前に満ちる */
-.curtain-bar{
-  position:absolute;left:50%;top:calc(50% + 76px);margin-left:-66px;
-  width:132px;height:1px;background:var(--rule);overflow:hidden;
-  animation:markout .4s ease 1.18s both;
-}
-.curtain-bar>i{
-  display:block;width:100%;height:100%;background:var(--fg-mid);
-  transform:scaleX(0);transform-origin:left;
-  animation:barfill 1.02s cubic-bezier(.62,.02,.34,1) .18s both;
-}
-@keyframes barfill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-
-/* 幕が割れるのに合わせて、最初の画面がほんの少し引いて落ち着く。
-   カメラが据わるような間をつくるだけなので、動きは 3.5% に留める。 */
-@media(prefers-reduced-motion:no-preference){
-  :root:not([data-entered]) .hero{animation:heroin 1.5s var(--ease) 1.2s both}
-}
-@keyframes heroin{from{transform:scale(1.035)}to{transform:scale(1)}}
 
 /* フッターの規約リンク。著作権表示と同じ列に、控えめに置く */
 .foot-legal a{border-bottom:1px solid var(--rule);transition:color .3s ease,border-color .3s ease}
