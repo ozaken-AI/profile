@@ -30,8 +30,12 @@ const description =
       <div class="profile-body rv rv-d1">
         {PROFILE.map((t) => <p>{t}</p>)}
         <div class="shots">
-          <Image src={portrait} alt="小澤健祐" width={1600} widths={[420, 840, 1200, 1600]} quality={84} sizes="(max-width:600px) 100vw, 30vw" class="shot shot--tall" />
-          <Image src={panel} alt="対談に登壇する小澤健祐" width={2200} widths={[600, 1200, 1600, 2200]} quality={84} sizes="(max-width:600px) 100vw, 42vw" class="shot shot--wide" />
+          <div class="photo-frame photo-frame--tall">
+            <Image src={portrait} alt="小澤健祐" width={1600} widths={[420, 840, 1200, 1600]} quality={84} sizes="(max-width:600px) 100vw, 30vw" class="shot shot--tall" />
+          </div>
+          <div class="photo-frame photo-frame--wide">
+            <Image src={panel} alt="対談に登壇する小澤健祐" width={2200} widths={[600, 1200, 1600, 2200]} quality={84} sizes="(max-width:600px) 100vw, 42vw" class="shot shot--wide" />
+          </div>
         </div>
       </div>
     </div>
