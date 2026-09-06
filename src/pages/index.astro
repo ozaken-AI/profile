@@ -6,7 +6,6 @@ import NewsList from '../components/NewsList.astro';
 import HeroDust from '../components/HeroDust.astro';
 import SiteEntrance from '../components/SiteEntrance.astro';
 import SpeakingFocus from '../components/SpeakingFocus.astro';
-import SpeakerEvidence from '../components/SpeakerEvidence.astro';
 import { getNews } from '../lib/microcms';
 import { SITE, NUMBERS, ROLES, HERO_ROLES, MENU, STEPS, FAQ, PROFILE } from '../lib/site';
 
@@ -18,7 +17,7 @@ import speakingSeated from '../assets/photos/speaking-seated.jpg';
 import heroPhoto from '../assets/photos/speaking-closeup.jpg';
 import lineQr from '../assets/line-qr.svg?raw';
 
-const news = (await getNews(4)).slice(0, 4);
+const news = (await getNews(8)).slice(0, 8);
 
 // 実績の数字は、ビルド時に「桁の帯」へ分解する。0〜9を2周ぶん並べた帯を狙いの桁まで
 // 送って止めるので、走っている最中も本物の字形が出る。textContent を書き換える方式だと、
@@ -93,6 +92,15 @@ const description =
   </div>
 </section>
 
+<!-- ============ NEWS ============ -->
+<section class="band wrap" id="s-news" data-rail="お知らせ">
+  <p class="label rv">News</p>
+  <h2 class="h2 rv rv-d1">お知らせ</h2>
+  <p class="lede rv rv-d2">カンファレンスや企業・団体での登壇、メディア出演、リリースなど、日々の活動を更新しています。</p>
+  <div class="rv rv-d2"><NewsList items={news} /></div>
+  <a class="more" href="/news/">お知らせ一覧 <span>→</span></a>
+</section>
+
 <SpeakingFocus />
 
 <!-- ============ NUMBERS ============ -->
@@ -123,8 +131,6 @@ const description =
     </div>
   </div>
 </section>
-
-<SpeakerEvidence />
 
 <!-- ============ SPEAKING ============ -->
 <section class="band wrap" id="s-speaking" data-rail="依頼できること">
@@ -186,15 +192,6 @@ const description =
 </section>
 
 <Ticker />
-
-<!-- ============ NEWS ============ -->
-<section class="band wrap" id="s-news" data-rail="お知らせ">
-  <p class="label rv">News</p>
-  <h2 class="h2 rv rv-d1">お知らせ</h2>
-  <p class="lede rv rv-d2">登壇の報告、メディア出演、リリースを更新しています。</p>
-  <div class="rv rv-d2"><NewsList items={news} /></div>
-  <a class="more" href="/news/">お知らせ一覧 <span>→</span></a>
-</section>
 
 <!-- ============ RESOURCES ============ -->
 <section class="band wrap" id="s-resources" data-rail="資料">

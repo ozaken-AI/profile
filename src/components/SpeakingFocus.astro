@@ -1,23 +1,23 @@
 ---
-const themes = [
-  { n: '01', title: 'AI投資の、次の一手を決める。', body: '生成AI・AIエージェントが事業をどう変えるのか。自社で優先する業務と、投資を判断する軸を整理します。', audience: '経営会議・役員合宿・業界団体の講演会' },
-  { n: '02', title: '導入を、組織の変化につなぐ。', body: 'ツールを配った先で、誰が担い、誰が承認するのか。経営・人事・現場の役割と、定着を阻む構造を考えます。', audience: '経営層・DX推進・人事の合同企画' },
-  { n: '03', title: '全社で、AI活用の一歩を。', body: 'AIを安全に使うための線引きと、自分の仕事で試せること。全社の理解をそろえ、実践の入口をつくります。', audience: '全社キックオフ・部門別の研修' },
+const activities = [
+  { n: '01', title: '経営の意思決定を支える。', body: 'AIが事業に与える影響を捉え、投資の順番や組織のあり方を考える。事業会社の経営に関わりながら、経営陣への助言も行っています。', field: 'AI戦略・経営・アドバイザリー' },
+  { n: '02', title: '現場で動くまで、伴走する。', body: '導入の順番、担う人、承認と責任。経営と現場の間に入り、AIを業務に組み込むための判断と進め方を一緒に整理します。', field: '導入支援・業務設計・組織への定着' },
+  { n: '03', title: '知見を、社会にひらく。', body: '現場で得た知見を、講演・研修・書籍・記事へ。協会での活動や人材育成を通じて、人とAIが共存する社会の土台をつくります。', field: '講演・研修・執筆・協会活動' },
 ];
 ---
-<section class="band wrap speaking-focus" id="s-focus" data-rail="経営とAI">
-  <p class="label rv">For business leaders</p>
-  <h2 class="h2 rv rv-d1">AIの変化を、<br /><span>自社の意思決定に</span><span>つなぐ講演。</span></h2>
-  <p class="lede rv rv-d2">経営層・企画担当者の皆さまへ。技術と経営、経営と現場の両方に立ってきた経験から、聞き手が自社に持ち帰れる論点を組み立てます。</p>
+<section class="band wrap speaking-focus" id="s-focus" data-rail="活動の領域">
+  <p class="label rv">What I do</p>
+  <h2 class="h2 rv rv-d1">AIの変化を、<br /><span>経営と現場の</span><span>前進に。</span></h2>
+  <p class="lede rv rv-d2">技術と経営、経営と現場の間をつなぐ。事業会社の経営、企業への助言と導入支援、協会での活動、講演・執筆。それぞれの立場で得た知見を、次の現場へつなげています。</p>
   <div class="focus-grid stg">
-    {themes.map((t) => <article class="focus-item">
+    {activities.map((t) => <article class="focus-item">
       <span class="focus-n">{t.n}</span>
-      <h3>{t.title}</h3><p>{t.body}</p><p class="focus-audience">{t.audience}</p>
+      <h3>{t.title}</h3><p>{t.body}</p><p class="focus-audience">{t.field}</p>
     </article>)}
   </div>
   <div class="booking-strip rv">
-    <p><b>基調講演 60〜90分・質疑応答つき</b><br />会場／オンライン／ハイブリッドに対応。費用は個別見積もり。</p>
-    <a class="btn" href="/speaking/keynote/">講演の内容・依頼方法 <span aria-hidden="true">→</span></a>
+    <p><b>ご相談の目的に合わせて、関わり方から。</b><br />講演・研修、導入の伴走、経営陣へのアドバイザリーに対応しています。</p>
+    <a class="btn" href="/speaking/">ご依頼・ご相談について <span aria-hidden="true">→</span></a>
   </div>
   <div class="authority-links rv">
     <a href="https://aicx.jp/" target="_blank" rel="noopener noreferrer"><span>業界団体</span>AICX協会 代表理事 ↗</a>
