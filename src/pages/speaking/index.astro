@@ -1,14 +1,14 @@
 ---
 import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
+import SpeakerEvidence from '../../components/SpeakerEvidence.astro';
 import { SITE, MENU, STEPS, FAQ, TOPICS, SPEAKING_TRACK } from '../../lib/site';
 import speakingStanding from '../../assets/photos/speaking-standing.jpg';
 import speakingSeated from '../../assets/photos/speaking-seated.jpg';
-import speakingCloseup from '../../assets/photos/speaking-closeup.jpg';
 
-const title = '生成AIの講演・研修のご依頼 | 小澤健祐（おざけん）';
+const title = '生成AI・AIエージェントの講演・研修 | 小澤健祐（おざけん）';
 const description =
-  '生成AI・AIエージェントの講演、社内研修、伴走支援、顧問のご依頼。年間300回超の登壇実績。経営層向けの基調講演から全社リテラシー研修まで、聞き手と目的に合わせて構成します。';
+  '生成AI・AIエージェントの講演、社内研修、伴走支援、顧問のご依頼。2025年の登壇300回超。経営層向けの基調講演から全社リテラシー研修まで、聞き手と目的に合わせて構成します。';
 ---
 <Base
   {title} {description}
@@ -22,25 +22,48 @@ const description =
   <p class="label rv">Speaking</p>
   <h1 class="phead-h1 rv rv-d1">生成AI・AIエージェントの<br />講演・研修・アドバイザリー</h1>
   <p class="phead-lede rv rv-d2">
-    ご相談の多くは「AIの話をしてほしい」から始まります。
-    ただ、聞き手が誰で、終わったあと何をしていてほしいか。
-    この2つをうかがえると、どんな形がよさそうかをご提案しやすくなります。
+    経営会議、役員合宿、業界団体の講演会、全社研修。
+    AIへの投資判断、組織への定着、現場での活用まで、
+    参加者に持ち帰ってほしい論点から構成を組み立てます。
   </p>
+  <div class="booking-strip rv rv-d2">
+    <p><b>基調講演 60〜90分・質疑応答つき</b><br />会場／オンライン／ハイブリッド。費用は個別見積もり。</p>
+    <a class="btn" href="/contact/?kind=keynote">講演の日程・内容を相談する <span aria-hidden="true">→</span></a>
+  </div>
+  <nav class="section-links rv" aria-label="講演・研修ページ内">
+    <a href="#topics">講演テーマ</a><a href="#selected-speaking">代表的な登壇</a><a href="#formats">依頼の形式</a><a href="#conditions">費用・開催条件</a>
+  </nav>
 </section>
 
-<figure class="stage" data-rail="登壇の現場">
-  <Image src={speakingCloseup} alt="生成AIについて講演する小澤健祐" width={4000} widths={[1200, 1800, 2600, 3400, 4000]} quality={84} sizes="100vw" loading="eager" class="stage-img" />
-  <figcaption class="stage-cap">
-    <div class="stage-cap-inner">
-      <p>その日、その場の人たちに向けて話す。</p>
-      <span>Speaking · 300+ times a year</span>
-    </div>
-  </figcaption>
-</figure>
+<section class="band band--paper" id="topics" data-rail="話せるテーマ">
+  <div class="wrap">
+    <p class="label rv">Topics</p>
+    <h2 class="h2 rv rv-d1">講演・研修で扱うテーマ</h2>
+    <p class="lede rv rv-d2">下のテーマはあくまで出発点です。実際は業種・職種・すでに使っているツールに合わせて毎回組み直します。</p>
 
-<section class="band wrap" data-rail="依頼の例">
+    <div class="topics stg">
+      {TOPICS.map((t, i) => (
+        <article class="topic">
+          <p class="topic-n">{String(i + 1).padStart(2, '0')}</p>
+          <div>
+            <h3 class="topic-h">{t.title}</h3>
+            <p class="topic-lead">{t.lead}</p>
+            <ul class="topic-points">
+              {t.points.map((pt) => <li>{pt}</li>)}
+            </ul>
+            <p class="topic-for">対象：{t.forWhom}</p>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<SpeakerEvidence />
+
+<section class="band wrap" id="formats" data-rail="依頼の形式">
   <p class="label rv">Examples</p>
-  <h2 class="h2 rv rv-d1">ご依頼の例</h2>
+  <h2 class="h2 rv rv-d1">目的に合わせて選ぶ、4つの形式</h2>
   <p class="lede rv rv-d2">よくある形を並べています。ここに当てはまらなくても構いません。目的だけ伝えてもらえれば、こちらから形を提案します。</p>
 
   <div class="menu stg">
@@ -63,35 +86,11 @@ const description =
   </div>
 </section>
 
-<section class="band band--paper" id="topics" data-rail="話せるテーマ">
-  <div class="wrap">
-    <p class="label rv">Topics</p>
-    <h2 class="h2 rv rv-d1">よく依頼されるテーマ</h2>
-    <p class="lede rv rv-d2">下のテーマはあくまで出発点です。実際は業種・職種・すでに使っているツールに合わせて毎回組み直します。</p>
-
-    <div class="topics stg">
-      {TOPICS.map((t, i) => (
-        <article class="topic">
-          <p class="topic-n">{String(i + 1).padStart(2, '0')}</p>
-          <div>
-            <h3 class="topic-h">{t.title}</h3>
-            <p class="topic-lead">{t.lead}</p>
-            <ul class="topic-points">
-              {t.points.map((pt) => <li>{pt}</li>)}
-            </ul>
-            <p class="topic-for">対象：{t.forWhom}</p>
-          </div>
-        </article>
-      ))}
-    </div>
-  </div>
-</section>
-
 <section class="band wrap" id="track" data-rail="登壇実績">
   <p class="label rv">Track record</p>
   <h2 class="h2 rv rv-d1">これまでの登壇・支援</h2>
   <p class="lede rv rv-d2">
-    展示会の特別講演から、社内向けの研修、顧問として関わっている先まで。規模の目安として、名前を出せるものを挙げています。
+    展示会の特別講演から、社内向けの研修、顧問として関わっている先まで。役割ごとに公開できる実績をまとめています。
   </p>
   <div class="track stg">
     {SPEAKING_TRACK.map((g) => (
@@ -120,10 +119,11 @@ const description =
   </div>
 </section>
 
-<section class="band band--paper" data-rail="よくある質問">
+<section class="band band--paper" id="conditions" data-rail="費用・開催条件">
   <div class="wrap">
     <p class="label rv">FAQ</p>
-    <h2 class="h2 rv rv-d1">よく聞かれること</h2>
+    <h2 class="h2 rv rv-d1">費用・開催条件</h2>
+    <p class="lede rv">費用は個別見積もりです。内容・時間・形式をうかがい、交通・宿泊費や録画・配信の条件を含めてご案内します。</p>
     <div class="faq stg">
       {FAQ.map((f) => (
         <details>

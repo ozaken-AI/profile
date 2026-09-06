@@ -1,0 +1,23 @@
+---
+import { SPEAKING_EVIDENCE } from '../lib/site';
+interface Props { id?: string; }
+const { id = 'selected-speaking' } = Astro.props;
+---
+<section class="band wrap" {id} data-rail="代表的な登壇">
+  <p class="label rv">Selected speaking</p>
+  <h2 class="h2 rv rv-d1">代表的な登壇</h2>
+  <p class="lede rv rv-d2">経営・プロジェクト推進から人事領域まで。講演とモデレーション、それぞれの役割で現場の知見を届けています。</p>
+  <div class="evidence-grid stg">
+    {SPEAKING_EVIDENCE.map((e) => <article class="evidence-item">
+      <p class="evidence-meta"><time datetime={e.date.replaceAll('.', '-')}>{e.date}</time><span>{e.role}</span></p>
+      <h3>{e.event}</h3>
+      <p class="evidence-host">主催：{e.host}</p>
+      <h4>{e.title}</h4><p class="evidence-detail">{e.detail}</p>
+      <a class="source-link" href={e.source} target="_blank" rel="noopener noreferrer">{e.sourceLabel} <span aria-hidden="true">↗</span></a>
+    </article>)}
+  </div>
+  <div class="evidence-next rv">
+    <a href="/speaking/#track">登壇・支援実績の一覧 →</a>
+    <a href="/press/">社内の企画書・告知に使えるプロフィールと写真 →</a>
+  </div>
+</section>

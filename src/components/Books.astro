@@ -1,0 +1,16 @@
+---
+import { BOOKS } from '../lib/site';
+---
+<section class="band wrap" id="books" data-rail="著書">
+  <p class="label rv">Books</p>
+  <h2 class="h2 rv rv-d1">著書</h2>
+  <p class="lede rv rv-d2">現場で得た知見を、導入と活用を考えるための教科書に。いずれもワン・パブリッシング刊。</p>
+  <div class="book-list stg">
+    {BOOKS.map((b) => <article class="book-item">
+      <p class="book-date">{b.upcoming && <span class="book-upcoming">刊行予定</span>}{b.date}</p>
+      <div><h3>{b.title}</h3><p>{b.detail}</p>
+        <a class="source-link" href={b.url} target="_blank" rel="noopener noreferrer">{b.label} <span aria-hidden="true">↗</span></a>
+      </div>
+    </article>)}
+  </div>
+</section>

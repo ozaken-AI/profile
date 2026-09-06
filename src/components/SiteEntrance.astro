@@ -93,7 +93,7 @@
     root.dataset.intro = 'running';
     // 初回の読み込み時間に左右されず、CSSとCanvasを同じ時刻から進める。
     // CSS自体にも終点を持たせ、スクリプトが読み込めない場合は通常表示へ戻す。
-    const sequence = new Set(['opening-darkness', 'portrait-unfold', 'portrait-slats', 'word-unfold', 'dust-handoff', 'entrance-clear']);
+    const sequence = new Set(['opening-darkness', 'portrait-unfold', 'portrait-slats', 'word-unfold', 'intro-details', 'dust-handoff', 'entrance-clear']);
     for (const animation of document.getAnimations()) {
       if (animation instanceof CSSAnimation && sequence.has(animation.animationName)) animation.currentTime = 0;
     }
@@ -238,11 +238,11 @@
     html[data-intro='pending'] body::after,
     html[data-intro='running'] body::after{
       content:'';position:fixed;inset:0;z-index:80;pointer-events:none;background:#000;
-      animation:opening-darkness 1.7s ease-in-out both;
+      animation:opening-darkness 2.8s ease-in-out both;
     }
     html[data-intro='pending'] .site-entrance,
     html[data-intro='running'] .site-entrance{
-      display:block;position:absolute;inset:0;z-index:81;pointer-events:none;overflow:hidden;
+      display:block;position:absolute;inset:0;z-index:82;pointer-events:none;overflow:hidden;
       animation:entrance-clear 3.5s step-end both;
     }
     .entrance-field{
@@ -250,10 +250,12 @@
       mask-image:linear-gradient(90deg,transparent,#000 16px,#000 calc(100% - 16px),transparent);
     }
     /* CSSだけでも最終表示まで進む。Canvasと実際の見出しの開く方向を揃える。 */
+    html[data-intro='pending'] .hero-inner,
+    html[data-intro='running'] .hero-inner{z-index:81}
     html[data-intro='pending'] .hero .hero-actor,
-    .hero.intro-reveal.on .hero-actor{animation:portrait-unfold 1.85s var(--ease) both}
+    .hero.intro-reveal.on .hero-actor{animation:portrait-unfold 1.85s var(--ease) .9s both}
     html[data-intro='pending'] .hero .hero-actor-img,
-    .hero.intro-reveal.on .hero-actor-img{animation:portrait-slats 1.65s var(--ease) both}
+    .hero.intro-reveal.on .hero-actor-img{animation:portrait-slats 1.65s var(--ease) 1s both}
     html[data-intro='pending'] .hero .line>span,
     .hero.intro-reveal.on .line>span{transition:none;transform:none;animation:word-unfold .72s ease-in-out .5s both}
     html[data-intro='pending'] .hero .l2>span,
@@ -262,16 +264,24 @@
     .hero.intro-reveal.on .l3>span{animation-delay:.7s}
     html[data-intro='pending'] .hero .hero-h1 em,
     .hero.intro-reveal.on .hero-h1 em{transition:none;color:#fff}
+    html[data-intro='pending'] .hero :is(.hero-eyebrow,.hero-sub,.hero-actions,.hero-vert),
+    .hero.intro-reveal.on :is(.hero-eyebrow,.hero-sub,.hero-actions,.hero-vert){
+      transition:none;animation:intro-details .65s ease 1.95s both;
+    }
+    html[data-intro='pending'] .hero .hero-actions,
+    .hero.intro-reveal.on .hero-actions{animation-delay:2.15s}
     html[data-intro='pending'] .hero .spot-dust,
     .hero.intro-reveal .spot-dust{animation:dust-handoff 3.15s ease both}
   }
   .hero.intro-complete.on .hero-actor,.hero.intro-complete.on .hero-actor-img{animation:none;opacity:1;transform:none;clip-path:none}
   .hero.intro-complete.on .hero-h1 em{animation:none;opacity:1;color:#fff}
+  .hero.intro-complete.on .hero-vert{animation:none;opacity:1}
   .hero.intro-complete .spot-dust{animation:none;opacity:.95}
   .hero.intro-complete.on .hero-eyebrow,.hero.intro-complete.on .line>span,
   .hero.intro-complete.on .hero-sub,.hero.intro-complete.on .hero-actions,.hero.intro-complete.on .hero-foot{animation:none;transition:none;opacity:1;transform:none;clip-path:none}
   @keyframes entrance-clear{to{visibility:hidden;opacity:0}}
-  @keyframes opening-darkness{0%,20%{opacity:.98}45%{opacity:.93}72%{opacity:.28}100%{opacity:0;visibility:hidden}}
+  @keyframes opening-darkness{0%,60%{opacity:.98}69%{opacity:.9}100%{opacity:0;visibility:hidden}}
+  @keyframes intro-details{from{opacity:0}to{opacity:1}}
   @keyframes word-unfold{from{clip-path:inset(50% 0);opacity:.15}to{clip-path:inset(0);opacity:1}}
   @keyframes portrait-unfold{0%,20%{opacity:.08;transform:scale(1.014)}65%{opacity:.85}100%{opacity:1;transform:none}}
   @keyframes portrait-slats{

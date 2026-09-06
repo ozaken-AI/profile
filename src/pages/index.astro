@@ -5,10 +5,11 @@ import Ticker from '../components/Ticker.astro';
 import NewsList from '../components/NewsList.astro';
 import HeroDust from '../components/HeroDust.astro';
 import SiteEntrance from '../components/SiteEntrance.astro';
+import SpeakingFocus from '../components/SpeakingFocus.astro';
+import SpeakerEvidence from '../components/SpeakerEvidence.astro';
 import { getNews } from '../lib/microcms';
 import { SITE, NUMBERS, ROLES, HERO_ROLES, MENU, STEPS, FAQ, PROFILE } from '../lib/site';
 
-import stageWide from '../assets/photos/portrait-full.jpg';
 import panel from '../assets/photos/panel.jpg';
 import venue from '../assets/photos/venue.jpg';
 import portrait from '../assets/photos/portrait.jpg';
@@ -25,17 +26,13 @@ const news = (await getNews(4)).slice(0, 4);
 const STRIP = Array.from({ length: 20 }, (_, i) => i % 10);
 const fmt = (v: number, comma: boolean) => (comma ? v.toLocaleString('en-US') : String(v));
 
-// 指名検索（おざけん／小澤健祐）で戦うページなので、探されている呼び名を先頭に置く。
-// 検索結果で全角30字ほどしか出ないため、肩書きや実績は description に回した。
-const title = 'おざけん（小澤健祐）｜人間とAIが共存する社会をつくる';
-// 営業文ではなく、何をしてきた人で、このサイトに何が置いてあるかを書く。
-// 依頼の案内は /speaking/ と /contact/ のディスクリプションが持っている。
+const title = 'おざけん（小澤健祐）｜生成AI・AIエージェントの講演・研修';
 const description =
-  '小澤健祐（おざけん）のポートフォリオ。一般社団法人AICX協会 代表理事。生成AI・AIエージェントを軸に、年間300回超の登壇と1,500本超の記事執筆。活動の記録、経歴、講演テーマ、告知用の素材をまとめています。';
+  '小澤健祐（おざけん）公式サイト。AICX協会代表理事。経営層向けの生成AI・AIエージェント講演から社内研修まで、目的に合わせて構成。2025年の登壇300回超。講演テーマ、公開実績、著書、依頼方法をご案内します。';
 ---
 <Base {title} {description} railInitial="小澤健祐">
 
-<!-- ============ HERO：宣言と人物を一度に見せる ============ -->
+<!-- ============ HERO：宣言を先に読み、人物と依頼導線へ ============ -->
 <section class="hero wrap" id="s-hero" data-rail="小澤健祐">
   <!-- 人物のまわりに、床あかりとゆっくり舞う粒子を重ねる -->
   <div class="hero-fx" aria-hidden="true">
@@ -75,7 +72,7 @@ const description =
 
       <div class="hero-actions">
         <a class="hero-cta" href="/contact/">講演・研修の相談 <span aria-hidden="true">→</span></a>
-        <a class="hero-link" href="/about/">プロフィールを見る</a>
+        <a class="hero-link" href="/speaking/">講演テーマ・実績を見る</a>
       </div>
     </div>
 
@@ -96,22 +93,7 @@ const description =
   </div>
 </section>
 
-<!-- ============ STAGE：主張の直後に証拠を置く ============ -->
-<figure class="stage stage--top" id="s-stage" data-rail="現場">
-  <Image
-    src={stageWide} alt="登壇する小澤健祐"
-    width={4000} widths={[1200, 1800, 2600, 3400, 4000]} quality={84}
-    sizes="100vw" loading="eager" fetchpriority="high" class="stage-img"
-  />
-  <figcaption class="stage-cap">
-    <div class="stage-cap-inner">
-      <p>今日も、どこかで話している。</p>
-      <span>Speaking · 300+ times a year</span>
-    </div>
-  </figcaption>
-</figure>
-
-<Ticker />
+<SpeakingFocus />
 
 <!-- ============ NUMBERS ============ -->
 <section id="s-num" data-rail="実績の輪郭">
@@ -135,46 +117,14 @@ const description =
           </div>
           <p class="num-k">{n.key}</p>
           <p class="num-n">{n.note[0]}<br />{n.note[1]}</p>
+          {n.source && <a class="num-source" href={n.source} target="_blank" rel="noopener noreferrer">公開情報 ↗</a>}
         </div>
       ))}
     </div>
   </div>
 </section>
 
-<!-- ============ NEWS ============ -->
-<section class="band wrap" id="s-news" data-rail="お知らせ">
-  <p class="label rv">News</p>
-  <h2 class="h2 rv rv-d1">お知らせ</h2>
-  <p class="lede rv rv-d2">登壇の報告、メディア出演、リリースを更新しています。</p>
-  <div class="rv rv-d2"><NewsList items={news} /></div>
-  <a class="more" href="/news/">お知らせ一覧 <span>→</span></a>
-</section>
-
-<!-- ============ PROFILE（紙の面） ============ -->
-<section class="band band--paper" id="s-profile" data-rail="人物">
-  <div class="wrap">
-    <p class="label rv">Profile</p>
-    <div class="profile-grid">
-      <p class="profile-vert rv">目指してきたのは、<br />分断をこえること</p>
-      <div class="profile-body rv rv-d1">
-        {PROFILE.slice(0, 2).map((t) => <p>{t}</p>)}
-
-        <div class="shots">
-          <Image src={portrait} alt="小澤健祐" width={1600} widths={[420, 840, 1200, 1600]} quality={84} sizes="(max-width:600px) 100vw, 30vw" class="shot shot--tall" />
-          <Image src={panel} alt="対談に登壇する小澤健祐" width={2200} widths={[600, 1200, 1600, 2200]} quality={84} sizes="(max-width:600px) 100vw, 42vw" class="shot shot--wide" />
-        </div>
-
-        <div class="credits stg">
-          {ROLES.slice(0, 6).map((r) => (
-            <div class="credit"><b>{r.org}</b><span>{r.title}</span></div>
-          ))}
-        </div>
-        <p class="credits-etc">ほか、活動歴と役職はプロフィールにまとめています。</p>
-        <a class="more" href="/about/">詳しい経歴 <span>→</span></a>
-      </div>
-    </div>
-  </div>
-</section>
+<SpeakerEvidence />
 
 <!-- ============ SPEAKING ============ -->
 <section class="band wrap" id="s-speaking" data-rail="依頼できること">
@@ -207,6 +157,43 @@ const description =
   </p>
 
   <a class="more" href="/speaking/">ご依頼について <span>→</span></a>
+</section>
+
+<!-- ============ PROFILE（紙の面） ============ -->
+<section class="band band--paper" id="s-profile" data-rail="人物">
+  <div class="wrap">
+    <p class="label rv">Profile</p>
+    <div class="profile-grid">
+      <p class="profile-vert rv">目指してきたのは、<br />分断をこえること</p>
+      <div class="profile-body rv rv-d1">
+        {PROFILE.slice(0, 2).map((t) => <p>{t}</p>)}
+
+        <div class="shots">
+          <Image src={portrait} alt="小澤健祐" width={1600} widths={[420, 840, 1200, 1600]} quality={84} sizes="(max-width:600px) 100vw, 30vw" class="shot shot--tall" />
+          <Image src={panel} alt="対談に登壇する小澤健祐" width={2200} widths={[600, 1200, 1600, 2200]} quality={84} sizes="(max-width:600px) 100vw, 42vw" class="shot shot--wide" />
+        </div>
+
+        <div class="credits stg">
+          {ROLES.slice(0, 6).map((r) => (
+            <div class="credit"><b>{r.org}</b><span>{r.title}</span></div>
+          ))}
+        </div>
+        <p class="credits-etc">ほか、著書・活動歴・役職はプロフィールにまとめています。</p>
+        <a class="more" href="/about/">著書・詳しい経歴 <span>→</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<Ticker />
+
+<!-- ============ NEWS ============ -->
+<section class="band wrap" id="s-news" data-rail="お知らせ">
+  <p class="label rv">News</p>
+  <h2 class="h2 rv rv-d1">お知らせ</h2>
+  <p class="lede rv rv-d2">登壇の報告、メディア出演、リリースを更新しています。</p>
+  <div class="rv rv-d2"><NewsList items={news} /></div>
+  <a class="more" href="/news/">お知らせ一覧 <span>→</span></a>
 </section>
 
 <!-- ============ RESOURCES ============ -->
