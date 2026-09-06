@@ -3,6 +3,7 @@ import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import Ticker from '../components/Ticker.astro';
 import NewsList from '../components/NewsList.astro';
+import HeroDust from '../components/HeroDust.astro';
 import { getNews } from '../lib/microcms';
 import { SITE, NUMBERS, ROLES, HERO_ROLES, MENU, STEPS, FAQ, PROFILE } from '../lib/site';
 
@@ -35,7 +36,7 @@ const description =
 
 <!-- ============ HERO：宣言と人物を一度に見せる ============ -->
 <section class="hero wrap" id="s-hero" data-rail="小澤健祐">
-  <!-- 人物と床あかりだけに絞り、見出しとの競合を抑える -->
+  <!-- 人物のまわりに、床あかりとゆっくり舞う粒子を重ねる -->
   <div class="hero-fx" aria-hidden="true">
     <div class="hero-actor">
       <Image
@@ -46,6 +47,7 @@ const description =
       />
     </div>
     <div class="spot-pool"></div>
+    <HeroDust />
   </div>
 
   <div class="hero-inner">
