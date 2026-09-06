@@ -23,7 +23,18 @@
     ctx.scale(dpr, dpr);
 
     const smooth = (v: number) => { const t = Math.max(0, Math.min(1, v)); return t * t * (3 - 2 * t); };
-    type InkLine = { x: number; y: number; width: number; height: number; outline: HTMLCanvasElement; pixels: { x: number; y: number }[] };
+    // ぼかしは初期化時に描き、毎フレームの粒子には同じ小さな画像を使う。
+    const mote = document.createElement('canvas');
+    mote.width = mote.height = 32;
+    const light = mote.getContext('2d')!;
+    const glow = light.createRadialGradient(16, 16, 0, 16, 16, 16);
+    glow.addColorStop(0, 'rgba(245,248,255,1)');
+    glow.addColorStop(.2, 'rgba(216,233,255,.6)');
+    glow.addColorStop(.55, 'rgba(177,209,248,.16)');
+    glow.addColorStop(1, 'rgba(177,209,248,0)');
+    light.fillStyle = glow; light.fillRect(0, 0, 32, 32);
+
+    type InkLine = { x: number; y: number; width: number; height: number; outline: HTMLCanvasElement; bloom: HTMLCanvasElement; pixels: { x: number; y: number }[] };
     function traceLines(): InkLine[] {
       return lines.map(line => {
         const rect = line.getBoundingClientRect();
@@ -32,9 +43,10 @@
         range.selectNodeContents(content);
         const lineWidth = Math.min(rect.width, range.getBoundingClientRect().width);
         const outline = document.createElement('canvas');
+        const bloom = document.createElement('canvas');
         const fill = document.createElement('canvas');
-        outline.width = fill.width = Math.ceil(lineWidth * dpr);
-        outline.height = fill.height = Math.ceil(rect.height * dpr);
+        outline.width = bloom.width = fill.width = Math.ceil(lineWidth * dpr);
+        outline.height = bloom.height = fill.height = Math.ceil(rect.height * dpr);
         const stroke = outline.getContext('2d');
         const ink = fill.getContext('2d', { willReadFrequently: true });
         const pixels: { x: number; y: number }[] = [];
@@ -55,7 +67,7 @@
             const descent = metrics.fontBoundingBoxDescent || size * .12;
             const baseline = (rect.height - ascent - descent) / 2 + ascent;
             const x = textRect.left - rect.left;
-            stroke.strokeStyle = '#e1eafa'; stroke.lineWidth = .65;
+            stroke.strokeStyle = '#edf4ff'; stroke.lineWidth = .85;
             stroke.strokeText(node.textContent, x, baseline);
             ink.fillText(node.textContent, x, baseline);
           }
@@ -67,7 +79,12 @@
             }
           }
         }
-        return { x: rect.left - box.left, y: rect.top - box.top, width: lineWidth, height: rect.height, outline, pixels };
+        const halo = bloom.getContext('2d');
+        if (halo) {
+          halo.shadowColor = 'rgba(173,209,255,.8)'; halo.shadowBlur = 7 * dpr;
+          halo.drawImage(outline, 0, 0);
+        }
+        return { x: rect.left - box.left, y: rect.top - box.top, width: lineWidth, height: rect.height, outline, bloom, pixels };
       });
     }
     let inkLines = traceLines();
@@ -114,6 +131,7 @@
         const connect = smooth((time - .32) / .4);
         const open = smooth((time - .5) / .72);
         const fade = 1 - smooth((time - 1.02) / .55);
+        const crest = smooth((time - .46) / .28) * (1 - smooth((time - .9) / .42));
         const centerY = line.y + line.height * .53;
         const edge = line.height * .53 * open;
         const alpha = extend * fade;
@@ -124,7 +142,7 @@
           gradient.addColorStop(0, `rgba(243,231,211,${alpha * .8})`);
           gradient.addColorStop(1, `rgba(174,206,246,${alpha * .8})`);
           ctx!.strokeStyle = gradient;
-          ctx!.lineWidth = .7;
+          ctx!.lineWidth = .85;
           for (const side of [-1, 1]) {
             for (let segment = 0; segment < 8; segment++) {
               const segmentWidth = line.width / 8;
@@ -142,37 +160,69 @@
             ctx!.beginPath(); ctx!.moveTo(x, centerY - 3); ctx!.lineTo(x, centerY + 3); ctx!.stroke();
           }
           ctx!.globalAlpha = 1;
+
+          // 接続した線を一方向へ走る光。短い発光域で、見出しの外へは広げない。
+          const pulse = smooth((time - .28) / .18) * (1 - smooth((time - .95) / .32));
+          if (pulse > .01) {
+            const travel = smooth((time - .27) / .85);
+            const head = line.x + line.width * travel;
+            const length = Math.min(150, line.width * .32);
+            const sheen = ctx!.createLinearGradient(head - length, 0, head + 12, 0);
+            sheen.addColorStop(0, 'rgba(165,204,253,0)');
+            sheen.addColorStop(.72, `rgba(187,218,255,${pulse * .5})`);
+            sheen.addColorStop(.93, `rgba(249,246,233,${pulse})`);
+            sheen.addColorStop(1, 'rgba(249,246,233,0)');
+            ctx!.save();
+            ctx!.strokeStyle = sheen;
+            ctx!.shadowColor = 'rgba(179,215,255,.65)'; ctx!.shadowBlur = 10;
+            ctx!.lineWidth = 1.5;
+            for (const side of [-1, 1]) {
+              ctx!.beginPath();
+              ctx!.moveTo(Math.max(line.x, head - length), centerY + side * edge);
+              ctx!.lineTo(Math.min(line.x + line.width, head + 12), centerY + side * edge);
+              ctx!.stroke();
+            }
+            ctx!.restore();
+          }
         }
         if (open > 0 && fade > 0) {
           ctx!.save();
           ctx!.beginPath(); ctx!.rect(line.x - 1, centerY - edge, line.width + 2, edge * 2); ctx!.clip();
-          ctx!.globalAlpha = fade * .8;
+          ctx!.globalAlpha = fade * (.2 + crest * .5);
+          ctx!.drawImage(line.bloom, line.x, line.y, line.width, line.height);
+          ctx!.globalAlpha = fade * (.75 + crest * .25);
           ctx!.drawImage(line.outline, line.x, line.y, line.width, line.height);
           ctx!.restore();
         }
 
         // 下2行から光の余韻だけが外へ散る。固定の外向き速度で吸着・折り返しを防ぐ。
         if (row === 0) return;
-        const count = Math.min(line.pixels.length, compact ? 115 : 190);
+        const count = Math.min(line.pixels.length, compact ? 140 : 230);
         for (let i = 0; i < count; i++) {
           const point = line.pixels[Math.floor(i * line.pixels.length / count)];
           const seed = (i * .618034 + row * .27) % 1;
           const depth = .3 + (i % 9) / 12;
+          const foreground = i % 13 === 0;
           const age = t - (1.13 + row * .09 + seed * .3);
           if (age <= 0 || age >= 1.55) continue;
           const direction = point.x < line.width * .38 ? -1 : 1;
-          const vx = direction * (24 + seed * (compact ? 70 : 125));
-          const vy = 18 + depth * 65;
+          const vx = direction * (30 + seed * (compact ? 90 : 165)) * (foreground ? 1.25 : 1);
+          const vy = (20 + depth * 75) * (foreground ? 1.2 : 1);
           const x = line.x + point.x + vx * age;
           const y = line.y + point.y + vy * age + 10 * age * age;
-          const opacity = smooth(age / .13) * (1 - smooth((age - .15) / 1.4)) * (.22 + depth * .32);
+          const opacity = smooth(age / .13) * (1 - smooth((age - .15) / 1.4)) * (.3 + depth * .36);
           ctx!.fillStyle = `rgba(225,235,250,${opacity})`;
-          const size = .65 + depth * 1.05;
-          ctx!.fillRect(x, y, size, size);
-          if (i % 9 === 0) {
-            ctx!.strokeStyle = `rgba(199,218,245,${opacity * .35})`;
+          const size = .75 + depth * 1.4;
+          if (foreground) {
+            const diameter = 9 + depth * 7;
+            ctx!.globalAlpha = opacity * .8;
+            ctx!.drawImage(mote, x - diameter / 2, y - diameter / 2, diameter, diameter);
+            ctx!.globalAlpha = 1;
+          } else ctx!.fillRect(x, y, size, size);
+          if (i % 7 === 0 && !foreground) {
+            ctx!.strokeStyle = `rgba(199,218,245,${opacity * .45})`;
             ctx!.lineWidth = .65;
-            ctx!.beginPath(); ctx!.moveTo(x - vx * .025, y - vy * .025); ctx!.lineTo(x, y); ctx!.stroke();
+            ctx!.beginPath(); ctx!.moveTo(x - vx * .04, y - vy * .04); ctx!.lineTo(x, y); ctx!.stroke();
           }
         }
       });
