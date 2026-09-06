@@ -3,18 +3,17 @@
 </div>
 
 <script>
-  // 余白を流れる光の糸 → 実際の見出しの字形 → 継続するホコリ。
-  // すべてヒーロー内の同じ座標で描き、別画面への切り替えを作らない。
+  // 「分断を超え、つなぐ」。途切れた線がつながり、その場でことばが開く。
+  // 後半の粒子は字形から外へ流れるだけ。収束先や背景粒子への吸着は作らない。
   const entrance = document.querySelector<HTMLElement>('.site-entrance');
   const hero = entrance?.closest<HTMLElement>('.hero');
   const canvas = entrance?.querySelector<HTMLCanvasElement>('canvas');
-  const headline = hero?.querySelector<HTMLElement>('.hero-h1 em');
-  const line = headline?.closest<HTMLElement>('.line');
+  const lines = [...(hero?.querySelectorAll<HTMLElement>('.hero-h1 .line') || [])];
   const root = document.documentElement;
   const media = window.matchMedia('(prefers-reduced-motion: reduce)');
   const ctx = canvas?.getContext('2d');
 
-  if (entrance && hero && canvas && ctx && headline && line && !media.matches && !document.hidden && window.scrollY < 80) {
+  if (entrance && hero && canvas && ctx && lines.length && !media.matches && !document.hidden && window.scrollY < 80) {
     const box = hero.getBoundingClientRect();
     const width = box.width, height = box.height;
     const compact = window.innerWidth <= 860;
@@ -23,191 +22,212 @@
     canvas.height = Math.round(height * dpr);
     ctx.scale(dpr, dpr);
 
-    const mask = document.createElement('canvas');
-    const ink = mask.getContext('2d', { willReadFrequently: true });
-    if (ink) {
-      let letterBox = { left: 0, top: 0, width: 0, height: 0 };
-      function sampleHeadline() {
-        const style = getComputedStyle(headline!);
-        const lineBox = line!.getBoundingClientRect();
-        const heroBox = hero!.getBoundingClientRect();
-        const size = parseFloat(style.fontSize);
-        const lineHeight = parseFloat(style.lineHeight) || size * 1.08;
-        letterBox = { left: lineBox.left - heroBox.left, top: lineBox.top - heroBox.top,
-          width: headline!.getBoundingClientRect().width, height: lineHeight };
-        const padding = Math.ceil(size * .4);
-        mask.width = Math.ceil(lineBox.width + padding * 2);
-        mask.height = Math.ceil(lineHeight + padding * 2);
-        ink!.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
-        if ('letterSpacing' in ink!) ink!.letterSpacing = style.letterSpacing;
-        const word = headline!.textContent || '';
-        const metrics = ink!.measureText(word);
-        const ascent = metrics.fontBoundingBoxAscent || size * .88;
-        const descent = metrics.fontBoundingBoxDescent || size * .12;
-        const baseline = (lineHeight - ascent - descent) / 2 + ascent;
-        ink!.fillText(word, padding, padding + baseline);
-        const pixels = ink!.getImageData(0, 0, mask.width, mask.height).data;
-        const targets: { x: number; y: number }[] = [];
-        const spacing = compact ? 2 : 3;
-        for (let y = padding; y < padding + lineHeight; y += spacing) {
-          for (let x = padding; x < mask.width - padding; x += spacing) {
-            if (pixels[(y * mask.width + x) * 4 + 3] > 128) {
-              targets.push({ x: lineBox.left - heroBox.left + x - padding,
-                y: lineBox.top - heroBox.top + y - padding });
+    const smooth = (v: number) => { const t = Math.max(0, Math.min(1, v)); return t * t * (3 - 2 * t); };
+    type InkLine = { x: number; y: number; width: number; height: number; outline: HTMLCanvasElement; pixels: { x: number; y: number }[] };
+    function traceLines(): InkLine[] {
+      return lines.map(line => {
+        const rect = line.getBoundingClientRect();
+        const content = line.querySelector<HTMLElement>('.ln')!;
+        const range = document.createRange();
+        range.selectNodeContents(content);
+        const lineWidth = Math.min(rect.width, range.getBoundingClientRect().width);
+        const outline = document.createElement('canvas');
+        const fill = document.createElement('canvas');
+        outline.width = fill.width = Math.ceil(lineWidth * dpr);
+        outline.height = fill.height = Math.ceil(rect.height * dpr);
+        const stroke = outline.getContext('2d');
+        const ink = fill.getContext('2d', { willReadFrequently: true });
+        const pixels: { x: number; y: number }[] = [];
+        if (stroke && ink) {
+          stroke.scale(dpr, dpr); ink.scale(dpr, dpr);
+          const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT);
+          let node: Node | null;
+          while ((node = walker.nextNode())) {
+            if (!node.textContent?.trim()) continue;
+            const style = getComputedStyle(node.parentElement!);
+            range.selectNodeContents(node);
+            const textRect = range.getBoundingClientRect();
+            stroke.font = ink.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+            if ('letterSpacing' in ink) stroke.letterSpacing = ink.letterSpacing = style.letterSpacing;
+            const size = parseFloat(style.fontSize);
+            const metrics = ink.measureText(node.textContent);
+            const ascent = metrics.fontBoundingBoxAscent || size * .88;
+            const descent = metrics.fontBoundingBoxDescent || size * .12;
+            const baseline = (rect.height - ascent - descent) / 2 + ascent;
+            const x = textRect.left - rect.left;
+            stroke.strokeStyle = '#e1eafa'; stroke.lineWidth = .65;
+            stroke.strokeText(node.textContent, x, baseline);
+            ink.fillText(node.textContent, x, baseline);
+          }
+          const data = ink.getImageData(0, 0, fill.width, fill.height).data;
+          const spacing = Math.max(2, Math.round((compact ? 3 : 4) * dpr));
+          for (let y = 0; y < fill.height; y += spacing) {
+            for (let x = 0; x < fill.width; x += spacing) {
+              if (data[(y * fill.width + x) * 4 + 3] > 128) pixels.push({ x: x / dpr, y: y / dpr });
             }
           }
         }
-        return targets;
-      }
-      let targets = sampleHeadline();
-      const count = Math.min(targets.length, compact ? 650 : 1000);
-      const points = Array.from({ length: count }, (_, i) => ({
-        lane: i % 6, seed: (i * .618034) % 1,
-        depth: .3 + (i % 11) / 15,
-      }));
-      const dust = [...hero.querySelectorAll<HTMLElement>('.spot-dust b')];
-      let driftDust: HTMLElement[] | null = null;
-      // 見出し付近の余白に6本の流れを置く。顔のある上部へは描かない。
-      function threadPoint(u: number, lane: number, time: number) {
-        const margin = Math.min(90, width * .2);
-        const amplitude = Math.min(40, letterBox.height * .42);
-        return {
-          x: letterBox.left - margin + u * (letterBox.width + margin * 2),
-          y: letterBox.top + letterBox.height * .85
-            + Math.sin(u * 4.4 + lane * .66 - time * 1.9) * amplitude
-            + (lane - 2.5) * amplitude * .28,
-        };
-      }
-      const smooth = (v: number) => { const t = Math.max(0, Math.min(1, v)); return t * t * (3 - 2 * t); };
-      let raf = 0, ended = false;
-      // 黒の中に写真と文字がうっすら見える間を置き、既存の光の流れへつなぐ。
-      const start = performance.now() + 300;
-      hero.classList.add('intro-reveal');
-      root.dataset.intro = 'running';
-      const events = new AbortController();
-      function finish() {
-        if (ended) return;
-        ended = true;
-        cancelAnimationFrame(raf);
-        clearTimeout(failsafe);
-        events.abort();
-        root.dataset.intro = 'done';
-        entrance!.remove();
-        hero!.classList.add('intro-complete');
-      }
-      const failsafe = window.setTimeout(finish, 3600);
-      for (const event of ['pointerdown', 'keydown', 'wheel', 'touchstart']) {
-        window.addEventListener(event, finish, { once: true, passive: true, signal: events.signal });
-      }
-      window.addEventListener('resize', finish, { signal: events.signal });
-      window.addEventListener('pagehide', finish, { signal: events.signal });
-      document.addEventListener('visibilitychange', finish, { signal: events.signal });
-      media.addEventListener('change', finish, { signal: events.signal });
-      // 初期フォントの差し替えを吸収。文字へ集まり始めたあとは位置を跳ばさない。
-      document.fonts.ready.then(() => {
-        if (!ended && performance.now() - start < 700) targets = sampleHeadline();
+        return { x: rect.left - box.left, y: rect.top - box.top, width: lineWidth, height: rect.height, outline, pixels };
       });
+    }
+    let inkLines = traceLines();
+    let raf = 0, ended = false;
+    hero.classList.add('on', 'intro-reveal');
+    root.dataset.intro = 'running';
+    // 初回の読み込み時間に左右されず、CSSとCanvasを同じ時刻から進める。
+    // CSS自体にも終点を持たせ、スクリプトが読み込めない場合は通常表示へ戻す。
+    const sequence = new Set(['opening-darkness', 'portrait-unfold', 'portrait-slats', 'word-unfold', 'dust-handoff', 'entrance-clear']);
+    for (const animation of document.getAnimations()) {
+      if (animation instanceof CSSAnimation && sequence.has(animation.animationName)) animation.currentTime = 0;
+    }
+    const start = performance.now();
+    const events = new AbortController();
+    function finish() {
+      if (ended) return;
+      ended = true;
+      cancelAnimationFrame(raf);
+      clearTimeout(failsafe);
+      events.abort();
+      root.dataset.intro = 'done';
+      entrance!.remove();
+      hero!.classList.add('intro-complete');
+    }
+    const failsafe = window.setTimeout(finish, 3500);
+    for (const event of ['pointerdown', 'keydown', 'wheel', 'touchstart']) {
+      window.addEventListener(event, finish, { once: true, passive: true, signal: events.signal });
+    }
+    window.addEventListener('resize', finish, { signal: events.signal });
+    window.addEventListener('pagehide', finish, { signal: events.signal });
+    document.addEventListener('visibilitychange', finish, { signal: events.signal });
+    media.addEventListener('change', finish, { signal: events.signal });
+    document.fonts.ready.then(() => {
+      if (!ended && performance.now() - start < 600) inkLines = traceLines();
+    });
 
-      function draw(now: number) {
-        const t = (now - start) / 1000;
-        if (t < 0) { raf = requestAnimationFrame(draw); return; }
-        if (t >= 2.9 || !targets.length) { finish(); return; }
-        ctx!.clearRect(0, 0, width, height);
-        const appear = smooth(t / .2);
-        const release = smooth((t - 1.75) / 1.05);
-        // 文字より下にある粒子へ渡し、ほどけた光も顔の上を横切らない。
-        if (release > 0 && !driftDust) {
-          driftDust = dust.filter(el => el.getBoundingClientRect().top - box.top >= letterBox.top + letterBox.height * .4);
-        }
-        const destinations = (driftDust || []).map(el => {
-          const rect = el.getBoundingClientRect();
-          return { x: rect.left - box.left + rect.width / 2, y: rect.top - box.top + rect.height / 2 };
-        });
-        const projected = points.map((p, i) => {
-          const target = targets[Math.floor(i * targets.length / count)];
-          const gather = smooth((t - .5 - (i % 7) * .016) / .83);
-          const arc = Math.sin(gather * Math.PI);
-          const u = p.seed * 1.2 - .25 + t * (.2 + p.depth * .12);
-          const source = threadPoint(u, p.lane, t);
-          const tail = threadPoint(u - .018 - p.depth * .012, p.lane, t);
-          let px = source.x * (1 - gather) + target.x * gather;
-          let py = source.y * (1 - gather) + target.y * gather + arc * letterBox.height * .16 * p.seed;
-          if (destinations.length) {
-            const end = destinations[i % destinations.length];
-            px = px * (1 - release) + end.x * release;
-            py = py * (1 - release) + end.y * release;
-          }
-          return { x: px, y: py, tailX: px + (tail.x - source.x) * (1 - gather),
-            tailY: py + (tail.y - source.y) * (1 - gather),
-            alpha: appear * (1 - release) * (.2 + p.depth * .6), depth: p.depth, gather };
-        });
-        const threads = appear * (1 - smooth((t - .45) / .8));
-        if (threads > .01) {
-          ctx!.lineWidth = .6;
-          ctx!.strokeStyle = `rgba(190,210,240,${.2 * threads})`;
-          for (let lane = 0; lane < 6; lane++) {
-            ctx!.beginPath();
-            for (let step = 0; step <= 64; step++) {
-              const point = threadPoint(step / 64, lane, t);
-              if (step === 0) ctx!.moveTo(point.x, point.y);
-              else ctx!.lineTo(point.x, point.y);
+    function draw(now: number) {
+      const t = (now - start) / 1000;
+      if (t >= 3.15) { finish(); return; }
+      ctx!.clearRect(0, 0, width, height);
+      inkLines.forEach((line, row) => {
+        const time = t - row * .1;
+        const extend = smooth((time - .05) / .45);
+        const connect = smooth((time - .32) / .4);
+        const open = smooth((time - .5) / .72);
+        const fade = 1 - smooth((time - 1.02) / .55);
+        const centerY = line.y + line.height * .53;
+        const edge = line.height * .53 * open;
+        const alpha = extend * fade;
+
+        // 8つの切れ目がつながる。線は文字の上下に開き、字形をその場で現す。
+        if (alpha > .01) {
+          const gradient = ctx!.createLinearGradient(line.x, 0, line.x + line.width, 0);
+          gradient.addColorStop(0, `rgba(243,231,211,${alpha * .8})`);
+          gradient.addColorStop(1, `rgba(174,206,246,${alpha * .8})`);
+          ctx!.strokeStyle = gradient;
+          ctx!.lineWidth = .7;
+          for (const side of [-1, 1]) {
+            for (let segment = 0; segment < 8; segment++) {
+              const segmentWidth = line.width / 8;
+              const x = line.x + segmentWidth * segment;
+              const gap = Math.min(14, segmentWidth * .32) * (1 - connect);
+              ctx!.beginPath();
+              ctx!.moveTo(x, centerY + side * edge);
+              ctx!.lineTo(x + (segmentWidth - gap) * extend, centerY + side * edge);
+              ctx!.stroke();
             }
-            ctx!.stroke();
+          }
+          ctx!.globalAlpha = (1 - open) * .6;
+          for (let segment = 1; segment < 8; segment++) {
+            const x = line.x + line.width / 8 * segment;
+            ctx!.beginPath(); ctx!.moveTo(x, centerY - 3); ctx!.lineTo(x, centerY + 3); ctx!.stroke();
+          }
+          ctx!.globalAlpha = 1;
+        }
+        if (open > 0 && fade > 0) {
+          ctx!.save();
+          ctx!.beginPath(); ctx!.rect(line.x - 1, centerY - edge, line.width + 2, edge * 2); ctx!.clip();
+          ctx!.globalAlpha = fade * .8;
+          ctx!.drawImage(line.outline, line.x, line.y, line.width, line.height);
+          ctx!.restore();
+        }
+
+        // 下2行から光の余韻だけが外へ散る。固定の外向き速度で吸着・折り返しを防ぐ。
+        if (row === 0) return;
+        const count = Math.min(line.pixels.length, compact ? 115 : 190);
+        for (let i = 0; i < count; i++) {
+          const point = line.pixels[Math.floor(i * line.pixels.length / count)];
+          const seed = (i * .618034 + row * .27) % 1;
+          const depth = .3 + (i % 9) / 12;
+          const age = t - (1.13 + row * .09 + seed * .3);
+          if (age <= 0 || age >= 1.55) continue;
+          const direction = point.x < line.width * .38 ? -1 : 1;
+          const vx = direction * (24 + seed * (compact ? 70 : 125));
+          const vy = 18 + depth * 65;
+          const x = line.x + point.x + vx * age;
+          const y = line.y + point.y + vy * age + 10 * age * age;
+          const opacity = smooth(age / .13) * (1 - smooth((age - .15) / 1.4)) * (.22 + depth * .32);
+          ctx!.fillStyle = `rgba(225,235,250,${opacity})`;
+          const size = .65 + depth * 1.05;
+          ctx!.fillRect(x, y, size, size);
+          if (i % 9 === 0) {
+            ctx!.strokeStyle = `rgba(199,218,245,${opacity * .35})`;
+            ctx!.lineWidth = .65;
+            ctx!.beginPath(); ctx!.moveTo(x - vx * .025, y - vy * .025); ctx!.lineTo(x, y); ctx!.stroke();
           }
         }
-        projected.forEach((p, i) => {
-          if (i % 6 === 0 && p.gather < .98) {
-            ctx!.lineWidth = .6 + p.depth * .4;
-            ctx!.strokeStyle = `rgba(210,223,244,${p.alpha * .6})`;
-            ctx!.beginPath(); ctx!.moveTo(p.tailX, p.tailY); ctx!.lineTo(p.x, p.y); ctx!.stroke();
-          }
-          ctx!.fillStyle = `rgba(235,243,255,${p.alpha})`;
-          const size = .65 + p.depth * 1.1;
-          ctx!.fillRect(p.x, p.y, size, size);
-        });
-        raf = requestAnimationFrame(draw);
-      }
+      });
       raf = requestAnimationFrame(draw);
-    } else { root.dataset.intro = 'done'; entrance.remove(); }
+    }
+    raf = requestAnimationFrame(draw);
   } else { root.dataset.intro = 'done'; entrance?.remove(); }
 </script>
 
 <style is:global>
   .site-entrance{display:none}
   @media(prefers-reduced-motion:no-preference){
-    /* 同じトップの上で暗さだけをほどく。操作を始めたら即座に消える。 */
     html[data-intro='pending'] body::after,
     html[data-intro='running'] body::after{
       content:'';position:fixed;inset:0;z-index:80;pointer-events:none;background:#000;
-      animation:opening-darkness 1.35s ease-in-out both;
+      animation:opening-darkness 1.7s ease-in-out both;
     }
     html[data-intro='pending'] .site-entrance,
     html[data-intro='running'] .site-entrance{
-      display:block;position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden;
-      animation:entrance-clear 3.6s step-end both;
+      display:block;position:absolute;inset:0;z-index:81;pointer-events:none;overflow:hidden;
+      animation:entrance-clear 3.5s step-end both;
     }
     .entrance-field{
       position:absolute;inset:0;width:100%;height:100%;
       mask-image:linear-gradient(90deg,transparent,#000 16px,#000 calc(100% - 16px),transparent);
     }
-    /* JSの読み込みが失敗しても、写真と本文はCSSだけで最終表示になる。 */
+    /* CSSだけでも最終表示まで進む。Canvasと実際の見出しの開く方向を揃える。 */
     html[data-intro='pending'] .hero .hero-actor,
-    .hero.intro-reveal.on .hero-actor{animation:portrait-awaken 2.5s var(--ease) both}
+    .hero.intro-reveal.on .hero-actor{animation:portrait-unfold 1.85s var(--ease) both}
+    html[data-intro='pending'] .hero .hero-actor-img,
+    .hero.intro-reveal.on .hero-actor-img{animation:portrait-slats 1.65s var(--ease) both}
     html[data-intro='pending'] .hero .line>span,
-    .hero.intro-reveal.on .line>span{transition:none;transform:none}
+    .hero.intro-reveal.on .line>span{transition:none;transform:none;animation:word-unfold .72s ease-in-out .5s both}
+    html[data-intro='pending'] .hero .l2>span,
+    .hero.intro-reveal.on .l2>span{animation-delay:.6s}
+    html[data-intro='pending'] .hero .l3>span,
+    .hero.intro-reveal.on .l3>span{animation-delay:.7s}
     html[data-intro='pending'] .hero .hero-h1 em,
-    .hero.intro-reveal.on .hero-h1 em{transition:none;animation:headline-ignite 2.9s ease .3s both}
+    .hero.intro-reveal.on .hero-h1 em{transition:none;color:#fff}
     html[data-intro='pending'] .hero .spot-dust,
-    .hero.intro-reveal .spot-dust{animation:dust-handoff 2.9s ease .3s both}
+    .hero.intro-reveal .spot-dust{animation:dust-handoff 3.15s ease both}
   }
-  .hero.intro-complete.on .hero-actor{animation:none;opacity:1;transform:none}
+  .hero.intro-complete.on .hero-actor,.hero.intro-complete.on .hero-actor-img{animation:none;opacity:1;transform:none;clip-path:none}
   .hero.intro-complete.on .hero-h1 em{animation:none;opacity:1;color:#fff}
   .hero.intro-complete .spot-dust{animation:none;opacity:.95}
   .hero.intro-complete.on .hero-eyebrow,.hero.intro-complete.on .line>span,
-  .hero.intro-complete.on .hero-sub,.hero.intro-complete.on .hero-actions,.hero.intro-complete.on .hero-foot{transition:none;opacity:1;transform:none}
+  .hero.intro-complete.on .hero-sub,.hero.intro-complete.on .hero-actions,.hero.intro-complete.on .hero-foot{animation:none;transition:none;opacity:1;transform:none;clip-path:none}
   @keyframes entrance-clear{to{visibility:hidden;opacity:0}}
-  @keyframes opening-darkness{0%{opacity:.96}22%{opacity:.94}65%{opacity:.3}100%{opacity:0;visibility:hidden}}
-  @keyframes portrait-awaken{0%{opacity:.35;transform:scale(1.018)}50%{opacity:.85}100%{opacity:1;transform:none}}
-  @keyframes headline-ignite{0%,30%{opacity:.25;color:var(--fg-mid);text-shadow:none}54%{opacity:.4}72%,100%{opacity:1;color:#fff;text-shadow:0 0 34px rgba(190,210,255,.26)}}
-  @keyframes dust-handoff{0%,45%{opacity:.08}100%{opacity:.95}}
+  @keyframes opening-darkness{0%,20%{opacity:.98}45%{opacity:.93}72%{opacity:.28}100%{opacity:0;visibility:hidden}}
+  @keyframes word-unfold{from{clip-path:inset(50% 0);opacity:.15}to{clip-path:inset(0);opacity:1}}
+  @keyframes portrait-unfold{0%,20%{opacity:.08;transform:scale(1.014)}65%{opacity:.85}100%{opacity:1;transform:none}}
+  @keyframes portrait-slats{
+    0%,25%{clip-path:polygon(100% 0,100% 0,100% 100%,100% 100%,100% 80%,100% 80%,100% 60%,100% 60%,100% 40%,100% 40%,100% 20%,100% 20%)}
+    65%{clip-path:polygon(32% 0,100% 0,100% 100%,3% 100%,3% 80%,18% 80%,18% 60%,0 60%,0 40%,22% 40%,22% 20%,32% 20%)}
+    100%{clip-path:polygon(0 0,100% 0,100% 100%,0 100%,0 80%,0 80%,0 60%,0 60%,0 40%,0 40%,0 20%,0 20%)}
+  }
+  @keyframes dust-handoff{0%,40%{opacity:.02}100%{opacity:.95}}
 </style>
