@@ -39,7 +39,9 @@ const motes = Array.from({ length: 8 }, (_, i) => ({
     };
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
-        if (entry.isIntersecting && entry.intersectionRect.height > 0) visible.add(entry.target);
+        // threshold:0 では境界で交差した後、面積が増えても通知されないことがある。
+        // 面積を追加条件にせず、ブラウザの交差判定に合わせて再生を始める。
+        if (entry.isIntersecting) visible.add(entry.target);
         else visible.delete(entry.target);
       });
       sync();
