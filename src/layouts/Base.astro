@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
+import SiteEntrance from '../components/SiteEntrance.astro';
 import { SITE, IDENTITY } from '../lib/site';
 
 interface Props {
@@ -70,6 +71,11 @@ const jsonLd = [...identityJsonLd, ...pageJsonLd];
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+{isTop && <script is:inline>
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.documentElement.dataset.intro = 'pending';
+  }
+</script>}
 <title>{title}</title>
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical} />
@@ -143,6 +149,8 @@ const jsonLd = [...identityJsonLd, ...pageJsonLd];
 </head>
 <body>
 
+{isTop && <SiteEntrance />}
+
 <div class="rail" aria-hidden="true">
   <div class="rail-mark">OZAKEN.AI</div>
   <div class="rail-now" id="railNow">{railInitial}</div>
@@ -159,7 +167,6 @@ const jsonLd = [...identityJsonLd, ...pageJsonLd];
 
 <script>
   /* 出現アニメーション ＋ 左レールの現在地表示 */
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // 見出しとまとまりも同じ仕組みで出す。取りこぼすと出たまま隠れるので、まとめて拾う。
   /* 計測イベント。タグが無い環境では何もしない。 */
@@ -234,11 +241,12 @@ const jsonLd = [...identityJsonLd, ...pageJsonLd];
 
   /* ヒーローの肩書きを順に入れ替える */
   const roleBox = document.getElementById('heroRole');
-  if (roleBox && !reduce) {
+  if (roleBox) {
     const items = Array.from(roleBox.querySelectorAll<HTMLElement>('.hero-role-i'));
     if (items.length > 1) {
       let i = 0;
       setInterval(() => {
+        if (document.hidden || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
         const cur = items[i];
         i = (i + 1) % items.length;
         const next = items[i];

@@ -6,7 +6,6 @@ const nav = [
   { href: '/news/',     label: 'お知らせ', en: 'News' },
   { href: '/about/',    label: 'プロフィール', en: 'About' },
   { href: '/press/',    label: '素材',     en: 'Press' },
-  { href: '/contact/',  label: 'お問い合わせ', en: 'Contact' },
 ];
 ---
 <header class:list={['site-head', { 'site-head--top': isTop }]}>
@@ -14,9 +13,35 @@ const nav = [
     <span class="site-mark-ja">小澤健祐</span>
     <span class="site-mark-en">OZAKEN.AI</span>
   </a>
-  <nav class="site-nav" aria-label="サイト内">
-    {nav.map((n) => (
-      <a class:list={{ 'site-nav-cta': n.href === '/contact/' }} href={n.href} aria-current={pathname.startsWith(n.href) ? 'page' : undefined}>{n.label}</a>
-    ))}
-  </nav>
+  <div class="site-head-links">
+    <nav class="site-nav" aria-label="サイト内">
+      {nav.map((n) => (
+        <a href={n.href} aria-current={pathname.startsWith(n.href) ? 'page' : undefined}>{n.label}</a>
+      ))}
+    </nav>
+    <details class="site-menu">
+      <summary>メニュー <span aria-hidden="true">＋</span></summary>
+      <nav class="site-menu-links" aria-label="サイト内メニュー">
+        {nav.map((n) => (
+          <a href={n.href} aria-current={pathname.startsWith(n.href) ? 'page' : undefined}>{n.label}<span aria-hidden="true">→</span></a>
+        ))}
+      </nav>
+    </details>
+    <a class="site-nav-cta" href="/contact/" aria-current={pathname.startsWith('/contact/') ? 'page' : undefined}>お問い合わせ</a>
+  </div>
 </header>
+
+<script>
+  const menu = document.querySelector<HTMLDetailsElement>('.site-menu');
+  if (menu) {
+    document.addEventListener('click', (event) => {
+      if (event.target instanceof Node && !menu.contains(event.target)) menu.open = false;
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && menu.open) {
+        menu.open = false;
+        menu.querySelector('summary')?.focus();
+      }
+    });
+  }
+</script>

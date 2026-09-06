@@ -19,7 +19,11 @@ const description =
 </section>
 
 <section class="band wrap" style="padding-top:0" data-rail="フォーム">
-  <form class="form rv" id="contact-form" novalidate>
+  <form class="form rv" id="contact-form" method="post" action="/api/contact" novalidate>
+    <noscript>
+      <p class="form-foot">フォームの利用にはJavaScriptが必要です。<a href={`mailto:${SITE.email}`}>{SITE.email}</a> までメールでご連絡ください。</p>
+      <style>.form-grid,.form-hp,.form-actions{display:none!important}</style>
+    </noscript>
     <div class="form-grid">
       <div class="form-field">
         <label for="cf-name">Name <span class="ja">お名前</span><span class="req">*</span></label>
@@ -148,7 +152,7 @@ const description =
           body: JSON.stringify(data),
         });
         const body = await r.json();
-        if (body?.ok) {
+        if (r.ok && body?.ok === true) {
           form.reset();
           openedAt = Date.now();
           setMsg('送信しました。2〜3営業日以内にご返信します。', 'ok');

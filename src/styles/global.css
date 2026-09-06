@@ -259,6 +259,19 @@ section{position:relative}
    闇と地続きになる。四角い「写真の素材」は置かない。 */
 .hero-stage{position:relative;min-width:0}
 .hero-fx{position:absolute;inset:0;pointer-events:none;z-index:0}
+.hero-fx::after{
+  content:'';position:absolute;inset:-15% -5% -15% 34%;pointer-events:none;
+  background:linear-gradient(112deg,transparent 32%,rgba(179,205,245,.12) 49%,transparent 64%);
+  mix-blend-mode:screen;opacity:.7;transform-origin:50% 0;
+}
+@media(prefers-reduced-motion:no-preference){
+  .hero-fx::after{animation:light-sweep 7s ease-in-out infinite alternate paused}
+  .hero.fx-active .hero-fx::after{animation-play-state:running}
+}
+@keyframes light-sweep{
+  from{transform:translate3d(-7%,0,0) rotate(-7deg);opacity:.35}
+  to{transform:translate3d(7%,0,0) rotate(7deg);opacity:.85}
+}
 
 /* 人物。スポットの楕円の中だけ見える */
 .hero-actor{
@@ -281,23 +294,29 @@ section{position:relative}
 
 /* 光の中を舞うホコリ。描画を繰り返す背景移動ではなく、各粒の位置と透明度だけを動かす。 */
 .spot-dust{
-  position:absolute;inset:0;pointer-events:none;opacity:.8;
-  -webkit-mask-image:radial-gradient(ellipse 46% 60% at 72% 42%,#000 20%,transparent 85%);
-          mask-image:radial-gradient(ellipse 46% 60% at 72% 42%,#000 20%,transparent 85%);
+  position:absolute;inset:0;pointer-events:none;opacity:.95;
+  -webkit-mask-image:radial-gradient(ellipse 60% 64% at 66% 42%,#000 20%,transparent 88%);
+          mask-image:radial-gradient(ellipse 60% 64% at 66% 42%,#000 20%,transparent 88%);
 }
 .spot-dust i{
   position:absolute;left:var(--x);top:var(--y);width:var(--size);height:var(--size);
-  border-radius:50%;background:rgba(235,243,255,.9);opacity:.5;
+  opacity:.55;
+}
+.spot-dust b{
+  display:block;width:100%;height:100%;border-radius:50%;background:rgba(235,243,255,.95);
+  box-shadow:0 0 5px rgba(190,212,248,.25);
 }
 @media(prefers-reduced-motion:no-preference){
-  .spot-dust i{animation:dust-float var(--duration) ease-in-out var(--delay) infinite alternate paused}
-  .spot-dust.is-active i{animation-play-state:running}
+  .spot-dust i{animation:dust-rise var(--duration) linear var(--delay) infinite paused}
+  .spot-dust b{animation:dust-sway var(--sway) ease-in-out var(--delay) infinite alternate paused}
+  .spot-dust.is-active i,.spot-dust.is-active b{animation-play-state:running}
 }
-@keyframes dust-float{
-  0%{transform:translate3d(0,12px,0);opacity:.15}
-  50%{opacity:.85}
-  100%{transform:translate3d(var(--drift),var(--rise),0);opacity:.25}
+@keyframes dust-rise{
+  0%{transform:translate3d(0,calc(var(--rise) * .5),0);opacity:0}
+  18%,72%{opacity:.85}
+  100%{transform:translate3d(0,calc(var(--rise) * -.5),0);opacity:0}
 }
+@keyframes dust-sway{from{transform:translateX(calc(var(--drift) * -.5))}to{transform:translateX(calc(var(--drift) * .5))}}
 
 /* ---- 人物と床あかりを、短いフェードで静かに立ち上げる ---- */
 .hero-actor,.spot-pool{opacity:0}
@@ -341,9 +360,6 @@ section{position:relative}
 .hero-h1 .l2{color:var(--fg)}
 .hero-h1 .l3{color:rgba(236,238,243,.6)}
 
-/* 見出しの「。」だけ、LINEへの入口にしてある。
-   見た目は本文のまま。触れたときだけ朱が差す。 */
-
 /* 画面が狭いときは、小さくても濃いスポットを人物に当てる。
    薄い写真を全面に敷くより、暗いなりに「人がいる」画面になる。 */
 @media(max-width:860px){
@@ -368,9 +384,12 @@ section{position:relative}
 
 .hero-eyebrow{position:relative;z-index:2}
 .hero-eyebrow{
-  font-family:var(--f-en);font-size:12px;font-weight:700;letter-spacing:.28em;
-  text-transform:uppercase;color:var(--fg-mute);margin-bottom:clamp(1.5rem,4vh,2.75rem);
+  margin-bottom:clamp(1.25rem,3vh,2rem);
+  text-shadow:0 2px 16px var(--ink);
 }
+.hero-name{font-family:var(--f-gothic);font-size:clamp(1.2rem,2.1vw,1.65rem);font-weight:700;letter-spacing:.08em;color:var(--fg)}
+.hero-primary-role{font-size:.875rem;color:var(--fg-mid);line-height:1.7;margin-top:.15rem}
+.hero-name-en{font-family:var(--f-en);font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--fg-mute);margin-top:.3rem}
 .hero-h1{
   font-family:var(--f-mincho);font-weight:500;
   font-size:clamp(2.85rem,7.7vw,6.35rem);
@@ -916,7 +935,7 @@ footer{border-top:1px solid var(--rule-2);padding-block:2.5rem;font-size:.78rem;
 }
 /* トップは巨大タイポを邪魔しないよう、少しスクロールしてから出す */
 .site-head--top{transform:translateY(-100%);opacity:0;pointer-events:none}
-.site-head--top.is-shown,.site-head--top:focus-within{transform:none;opacity:1;pointer-events:auto}
+.site-head--top.is-shown,.site-head--top:focus-within,.site-head--top:has(.site-menu[open]){transform:none;opacity:1;pointer-events:auto}
 @media(max-width:860px){.site-head{left:0}}
 
 .site-mark{display:flex;align-items:baseline;gap:.6rem;flex:none}
@@ -927,7 +946,8 @@ footer{border-top:1px solid var(--rule-2);padding-block:2.5rem;font-size:.78rem;
 }
 @media(max-width:520px){.site-mark-en{display:none}}
 
-.site-nav{display:flex;gap:clamp(.7rem,2vw,1.6rem);flex-wrap:wrap;justify-content:flex-end}
+.site-head-links{display:flex;align-items:center;gap:clamp(.75rem,2vw,1.6rem);min-width:0}
+.site-nav{display:flex;align-items:center;gap:clamp(.7rem,2vw,1.6rem);justify-content:flex-end}
 .site-nav a{
   font-size:.82rem;color:var(--fg-mid);padding-bottom:2px;
   border-bottom:1px solid transparent;transition:color .3s ease,border-color .3s ease;
@@ -935,23 +955,38 @@ footer{border-top:1px solid var(--rule-2);padding-block:2.5rem;font-size:.78rem;
 }
 .site-nav a:hover{color:var(--fg);border-bottom-color:var(--rule)}
 .site-nav a[aria-current="page"]{color:var(--fg);border-bottom-color:var(--seal)}
-.site-nav .site-nav-cta{
-  margin-block:-.35rem;padding:.35rem .75rem .42rem;border:1px solid var(--rule);
+.site-nav-cta{
+  display:inline-flex;align-items:center;justify-content:center;flex:none;min-height:44px;
+  padding:.35rem .75rem .42rem;border:1px solid var(--rule);font-size:.875rem;white-space:nowrap;
 }
-.site-nav .site-nav-cta:hover{border-color:var(--fg)}
-/* 5項目あるので狭い画面では折り返さず、はみ出すぶんだけ横に流す。
-   折り返すとヘッダーが2段になって、下のコンテンツに重なる。 */
-@media(max-width:640px){
-  .site-head{gap:.75rem;padding-inline:.85rem}
+.site-nav-cta:hover{border-color:var(--fg);background:var(--ink-3)}
+.site-nav-cta[aria-current="page"]{border-bottom-color:var(--seal)}
+.site-menu{display:none}
+@media(max-width:960px){
+  .site-head{gap:.5rem;padding:.5rem .85rem}
+  .site-head-links{gap:.65rem}
   .site-mark-ja{font-size:.94rem;letter-spacing:.04em}
-  .site-nav{
-    flex-wrap:nowrap;overflow-x:auto;gap:.62rem;justify-content:flex-start;
-    padding-block:.35rem;margin-block:-.35rem;
-    scrollbar-width:none;-webkit-overflow-scrolling:touch;
+  .site-mark-en,.site-nav{display:none}
+  .site-menu{display:block}
+  .site-menu summary{display:flex;align-items:center;gap:.4rem;min-height:44px;cursor:pointer;list-style:none;font-size:.875rem;color:var(--fg-mid)}
+  .site-menu summary::-webkit-details-marker{display:none}
+  .site-menu[open] summary span{transform:rotate(45deg)}
+  .site-menu-links{
+    position:absolute;top:100%;left:0;right:0;padding:.5rem var(--pad) 1rem;
+    display:grid;background:var(--ink-2);border-bottom:1px solid var(--rule);box-shadow:0 16px 30px rgba(0,0,0,.25);
   }
-  .site-nav::-webkit-scrollbar{display:none}
-  .site-nav a{font-size:.76rem}
-  .site-nav .site-nav-cta{margin-block:-.28rem;padding:.28rem .56rem .34rem}
+  .site-menu-links a{display:flex;justify-content:space-between;align-items:center;min-height:48px;border-bottom:1px solid var(--rule-2);font-size:1rem}
+  .site-menu-links a[aria-current="page"]{color:#fff;border-bottom-color:var(--seal)}
+}
+@media(max-width:640px){
+  .site-head--top{transform:none;opacity:1;pointer-events:auto}
+  .hero{padding-top:4.75rem}
+  .hero-stage{padding-top:clamp(6.5rem,18svh,10rem)}
+  .hero-name{font-size:1.2rem}
+  .hero-primary-role{font-size:.8125rem}
+}
+@media(max-width:520px) and (max-height:700px){
+  .hero-stage{padding-top:5.5rem}
 }
 
 .site-foot{background:var(--ink);border-top:1px solid var(--rule-2);padding-block:clamp(2.5rem,5vw,4rem)}
@@ -975,7 +1010,7 @@ footer{border-top:1px solid var(--rule-2);padding-block:2.5rem;font-size:.78rem;
 }
 
 /* 固定ヘッダーぶんの逃げ。トップ以外のページで使う */
-.has-head{padding-top:56px}
+.has-head{padding-top:72px}
 
 /* ============================================================
    下層ページ共通のページヘッダー
@@ -1179,11 +1214,13 @@ footer{border-top:1px solid var(--rule-2);padding-block:2.5rem;font-size:.78rem;
 /* ---------- 隠しコマンドで出すLINEの面 ----------
    名前 → 見出し → SCROLL の順にたたくと開く。墨の面で、サイトと同じ調子。
    QRだけは読み取りのために紙色を敷く。 */
-.lpanel[hidden]{display:none}
+.lpanel:not([open]){display:none}
 .lpanel{
   position:fixed;inset:0;z-index:120;overflow:auto;
+  width:100%;max-width:none;height:100%;max-height:none;border:0;background:transparent;color:var(--fg);
   display:flex;align-items:center;justify-content:center;padding:1.75rem 1.25rem;
 }
+.lpanel::backdrop{background:transparent}
 .lpanel-scrim{
   position:absolute;inset:0;background:rgba(4,6,10,.78);backdrop-filter:blur(8px);
   opacity:0;transition:opacity .32s var(--ease);

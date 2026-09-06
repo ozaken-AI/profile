@@ -1,0 +1,189 @@
+<div class="site-entrance" aria-hidden="true">
+  <div class="entrance-shade"></div>
+  <div class="entrance-grid"></div>
+  <canvas class="entrance-field"></canvas>
+  <div class="entrance-orbit"><i></i><i></i><i></i></div>
+  <div class="entrance-caption">
+    <span>HUMAN <b>×</b> ARTIFICIAL INTELLIGENCE</span>
+    <span class="entrance-coordinates">OZAKEN.AI <i></i> BEYOND THE DIVIDE</span>
+  </div>
+  <div class="entrance-scan"></div>
+  <div class="entrance-frame"><i></i><i></i><i></i><i></i></div>
+</div>
+
+<script>
+  // 球面の光点を立体投影し、文字のピクセルへ収束させてから奥行き方向へ解く。
+  // 外部ライブラリ・通信は不要。終了時に描画とイベントをすべて解放する。
+  const entrance = document.querySelector<HTMLElement>('.site-entrance');
+  const canvas = entrance?.querySelector<HTMLCanvasElement>('canvas');
+  const root = document.documentElement;
+  const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const ctx = canvas?.getContext('2d');
+  if (entrance && canvas && ctx && !media.matches && !document.hidden && window.scrollY < 80) {
+    const width = window.innerWidth, height = window.innerHeight;
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    canvas.width = Math.round(width * dpr);
+    canvas.height = Math.round(height * dpr);
+    ctx.scale(dpr, dpr);
+
+    const mask = document.createElement('canvas');
+    mask.width = Math.min(width, 1000);
+    mask.height = 180;
+    const ink = mask.getContext('2d', { willReadFrequently: true });
+    if (ink) {
+      const fontSize = Math.min(122, width * .135);
+      ink.font = `700 ${fontSize}px Arial, sans-serif`;
+      ink.textAlign = 'center';
+      ink.textBaseline = 'middle';
+      ink.fillText('OZAKEN.AI', mask.width / 2, 90);
+      const pixels = ink.getImageData(0, 0, mask.width, mask.height).data;
+      const targets: { x: number; y: number }[] = [];
+      const spacing = width < 600 ? 3 : 5;
+      for (let y = 0; y < mask.height; y += spacing) {
+        for (let x = 0; x < mask.width; x += spacing) {
+          if (pixels[(y * mask.width + x) * 4 + 3] > 128) {
+            targets.push({ x: x - mask.width / 2, y: y - 90 });
+          }
+        }
+      }
+      const count = Math.min(targets.length, width < 600 ? 650 : 1100);
+      const radius = Math.min(width * .34, height * .29, 275);
+      const points = Array.from({ length: count }, (_, i) => {
+        const y = 1 - 2 * (i + .5) / count;
+        const r = Math.sqrt(1 - y * y), angle = i * 2.399963;
+        const target = targets[Math.floor(i * targets.length / count)];
+        return { x: Math.cos(angle) * r, y, z: Math.sin(angle) * r, target };
+      });
+      const smooth = (v: number) => { const t = Math.max(0, Math.min(1, v)); return t * t * (3 - 2 * t); };
+      let raf = 0, ended = false;
+      const start = performance.now();
+      const hero = document.querySelector('.hero');
+      hero?.classList.add('intro-reveal');
+      root.dataset.intro = 'running';
+      const events = new AbortController();
+      function finish() {
+        if (ended) return;
+        ended = true;
+        cancelAnimationFrame(raf);
+        clearTimeout(failsafe);
+        events.abort();
+        root.dataset.intro = 'done';
+        entrance!.remove();
+        // 途中で操作したときも、見出しや人物を待たせない。
+        hero?.classList.add('intro-complete');
+      }
+      const failsafe = window.setTimeout(finish, 3200);
+      for (const event of ['pointerdown', 'keydown', 'wheel', 'touchstart']) {
+        window.addEventListener(event, finish, { once: true, passive: true, signal: events.signal });
+      }
+      window.addEventListener('resize', finish, { signal: events.signal });
+      window.addEventListener('pagehide', finish, { signal: events.signal });
+      document.addEventListener('visibilitychange', finish, { signal: events.signal });
+      media.addEventListener('change', finish, { signal: events.signal });
+
+      function draw(now: number) {
+        const t = (now - start) / 1000;
+        if (t >= 2.75) { finish(); return; }
+        ctx!.clearRect(0, 0, width, height);
+        const gather = smooth((t - .38) / .88);
+        const release = smooth((t - 1.55) / 1.05);
+        const appear = smooth(t / .22);
+        const turn = t * .65;
+        const cos = Math.cos(turn), sin = Math.sin(turn);
+        const cx = width / 2, cy = height * .46;
+        const projected = points.map((p, i) => {
+          const x = p.x * cos + p.z * sin;
+          const z = -p.x * sin + p.z * cos;
+          const perspective = 1 / (1 - z * .32);
+          const sx = x * radius * perspective, sy = p.y * radius * perspective;
+          const tx = p.target.x, ty = p.target.y;
+          const dx = sx * (1 - gather) + tx * gather;
+          const dy = sy * (1 - gather) + ty * gather;
+          const spread = 1 + release * (3 + (i % 7) * .7);
+          return { x: cx + dx * spread, y: cy + dy * spread + p.y * release * height * .3,
+            alpha: appear * (1 - release) * (.35 + (z + 1) * .3), z };
+        });
+        // 球面の近接点だけを結ぶ。文字が定着するにつれて線を消す。
+        if (gather < .98) {
+          ctx!.lineWidth = .6;
+          for (let i = 0; i < projected.length; i += 3) {
+            const a = projected[i];
+            for (const offset of [13, 21, 34]) {
+              const b = projected[(i + offset) % projected.length];
+              if (Math.hypot(a.x - b.x, a.y - b.y) > radius * .35) continue;
+              ctx!.strokeStyle = `rgba(105,218,240,${.2 * (1 - gather) * appear})`;
+              ctx!.beginPath(); ctx!.moveTo(a.x, a.y); ctx!.lineTo(b.x, b.y); ctx!.stroke();
+            }
+          }
+        }
+        projected.forEach((p, i) => {
+          ctx!.fillStyle = i % 9 === 0 ? `rgba(186,173,255,${p.alpha})` : `rgba(166,242,255,${p.alpha})`;
+          const size = (.8 + (p.z + 1) * .5) * (1 + release);
+          ctx!.fillRect(p.x, p.y, size, size);
+        });
+        raf = requestAnimationFrame(draw);
+      }
+      raf = requestAnimationFrame(draw);
+    } else { root.dataset.intro = 'done'; entrance.remove(); }
+  } else { root.dataset.intro = 'done'; entrance?.remove(); }
+</script>
+
+<style is:global>
+  .site-entrance{display:none}
+  @media(prefers-reduced-motion:no-preference){
+    html[data-intro='pending'] .site-entrance,
+    html[data-intro='running'] .site-entrance{
+      display:block;position:fixed;inset:0;z-index:90;pointer-events:none;overflow:hidden;
+      color:#a6f2ff;animation:entrance-clear 3.2s step-end both;
+    }
+    .entrance-shade{position:absolute;inset:0;background:#060b12}
+    .entrance-grid{
+      position:absolute;inset:-20%;opacity:.14;
+      background-image:linear-gradient(#63bfd729 1px,transparent 1px),linear-gradient(90deg,#63bfd729 1px,transparent 1px);
+      background-size:64px 64px;
+      mask-image:radial-gradient(ellipse at center,#000,transparent 66%);
+    }
+    .entrance-field{position:absolute;inset:0;width:100%;height:100%}
+    .entrance-orbit{position:absolute;left:50%;top:46%;width:min(64vw,520px);aspect-ratio:1;transform:translate(-50%,-50%);perspective:600px}
+    .entrance-orbit i{position:absolute;inset:0;border:1px solid #93eaff38;border-radius:50%;box-shadow:0 0 18px #6ac8ff0a}
+    .entrance-orbit i:nth-child(1){transform:rotateX(68deg) rotateZ(-28deg)}
+    .entrance-orbit i:nth-child(2){transform:rotateY(63deg) rotateZ(36deg)}
+    .entrance-orbit i:nth-child(3){inset:-12%;border-style:dashed;border-color:#b2abff26;transform:rotateX(28deg) rotateY(-35deg)}
+    .entrance-caption{position:absolute;top:calc(46% + min(32vw,260px) + 32px);left:0;width:100%;text-align:center;font:500 clamp(8px,1.1vw,11px)/1.8 var(--f-en);letter-spacing:.22em}
+    .entrance-caption b{font-weight:400;color:#b8adff;margin-inline:.45em}
+    .entrance-coordinates{display:flex;align-items:center;justify-content:center;gap:12px;font-size:8px;letter-spacing:.18em;color:#708e9c;margin-top:10px}
+    .entrance-coordinates i{height:1px;width:30px;background:#6594a0}
+    .entrance-frame{position:absolute;inset:clamp(20px,4vw,60px);opacity:.5}
+    .entrance-frame i{position:absolute;width:22px;height:22px;border-color:#8de5f8;border-style:solid;border-width:0}
+    .entrance-frame i:nth-child(1){top:0;left:0;border-top-width:1px;border-left-width:1px}
+    .entrance-frame i:nth-child(2){top:0;right:0;border-top-width:1px;border-right-width:1px}
+    .entrance-frame i:nth-child(3){bottom:0;left:0;border-bottom-width:1px;border-left-width:1px}
+    .entrance-frame i:nth-child(4){bottom:0;right:0;border-bottom-width:1px;border-right-width:1px}
+    .entrance-scan{position:absolute;top:0;left:0;right:0;height:1px;opacity:0;background:linear-gradient(90deg,transparent,#9af0ff 30%,#e5faff 65%,transparent);box-shadow:0 0 12px #6de6ff,0 -24px 60px 12px #6dd4ff20}
+    html[data-intro='running'] .entrance-shade{animation:entrance-unveil 2.65s ease both}
+    html[data-intro='running'] .entrance-grid{animation:entrance-grid 2.65s ease both}
+    html[data-intro='running'] .entrance-orbit{animation:entrance-orbits 1.6s ease both}
+    html[data-intro='running'] .entrance-caption{animation:entrance-caption 2s ease both}
+    html[data-intro='running'] .entrance-frame{animation:entrance-frame 2.6s ease both}
+    html[data-intro='running'] .entrance-scan{animation:entrance-scan 1.3s cubic-bezier(.4,0,.3,1) 1.25s both}
+    .hero.intro-reveal.on .hero-actor{animation:actor-materialize 1.5s var(--ease) 1s both}
+    .hero.intro-reveal.on .hero-eyebrow{transition-delay:1.15s}
+    .hero.intro-reveal.on .line:nth-child(1)>span{transition-delay:1.3s}
+    .hero.intro-reveal.on .line:nth-child(2)>span{transition-delay:1.42s}
+    .hero.intro-reveal.on .line:nth-child(3)>span{transition-delay:1.54s}
+    .hero.intro-reveal.on .hero-sub{transition-delay:1.65s}
+    .hero.intro-reveal.on .hero-actions{transition-delay:1.78s}
+    .hero.intro-reveal.on .hero-foot{transition-delay:1.9s}
+  }
+  .hero.intro-complete.on .hero-actor{animation:none;opacity:1;transform:none;clip-path:none}
+  .hero.intro-complete.on .hero-eyebrow,.hero.intro-complete.on .line>span,
+  .hero.intro-complete.on .hero-sub,.hero.intro-complete.on .hero-actions,.hero.intro-complete.on .hero-foot{transition:none;opacity:1;transform:none}
+  @keyframes entrance-clear{to{visibility:hidden;opacity:0}}
+  @keyframes entrance-unveil{0%,46%{opacity:1;clip-path:inset(0)}85%,100%{opacity:0;clip-path:inset(100% 0 0)}}
+  @keyframes entrance-grid{0%{transform:scale(1.1);opacity:0}20%,48%{opacity:.3}100%{transform:scale(1.8);opacity:0}}
+  @keyframes entrance-orbits{0%{opacity:0;transform:translate(-50%,-50%) scale(.65) rotate(-25deg)}24%,60%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1.2) rotate(25deg)}}
+  @keyframes entrance-caption{0%,12%{opacity:0;transform:translateY(8px)}28%,72%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-6px)}}
+  @keyframes entrance-frame{0%{opacity:0;transform:scale(.97)}18%,68%{opacity:.5}100%{opacity:0;transform:scale(1.015)}}
+  @keyframes entrance-scan{0%{transform:translateY(0);opacity:0}10%,72%{opacity:.8}100%{transform:translateY(100vh);opacity:0}}
+  @keyframes actor-materialize{from{opacity:0;clip-path:inset(0 0 100%);transform:scale(1.025)}to{opacity:1;clip-path:inset(0);transform:scale(1)}}
+</style>
