@@ -62,6 +62,9 @@ export async function onRequestPost({ request, env }) {
   } catch {
     return json({ ok: false, error: 'リクエストの形式が正しくありません。' }, 400);
   }
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+    return json({ ok: false, error: 'リクエストの形式が正しくありません。' }, 400);
+  }
 
   // ハニーポット：人間には見えない欄が埋まっていれば bot。
   // 成功を返して、弾いたことを気づかせない。
@@ -69,10 +72,10 @@ export async function onRequestPost({ request, env }) {
     return json({ ok: true });
   }
 
-  // フォームを開いてから3秒未満での送信も bot とみなす。
+  // 短時間の送信は受け付けないが、自動入力した利用者にも再送の機会を残す。
   const elapsed = Number(payload.elapsed);
   if (Number.isFinite(elapsed) && elapsed >= 0 && elapsed < 3000) {
-    return json({ ok: true });
+    return json({ ok: false, error: 'まだ送信していません。3秒ほど待ってから、もう一度送信してください。' }, 429);
   }
 
   const data = {};

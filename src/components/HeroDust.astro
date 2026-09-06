@@ -1,19 +1,18 @@
 ---
-// 位置と周期をずらし、同じ軌道を一斉に往復しないようにする。
-const motes = [
-  [42, 24, 2, 19, -4, 18, 46], [48, 67, 1.5, 27, -12, -16, 64],
-  [53, 39, 3, 22, -9, 24, 58], [57, 14, 1.5, 31, -18, -20, 72],
-  [59, 80, 2.5, 24, -7, 16, 62], [63, 53, 2, 29, -21, -26, 52],
-  [66, 29, 3, 21, -13, 20, 66], [69, 70, 1.5, 33, -6, -18, 78],
-  [72, 11, 2, 26, -17, 28, 54], [74, 44, 2.5, 23, -3, -22, 64],
-  [77, 85, 2, 30, -22, 18, 70], [80, 61, 3, 20, -11, -24, 56],
-  [83, 22, 1.5, 32, -25, 16, 80], [86, 48, 2, 25, -14, -20, 62],
-  [89, 76, 2.5, 28, -8, 26, 68], [93, 34, 1.5, 34, -20, -18, 74],
-];
+// 奥・中・手前の3層。上昇と横揺れの周期を分け、流れに奥行きをつくる。
+const motes = Array.from({ length: 36 }, (_, i) => {
+  const depth = i % 3;
+  return {
+    x: 14 + (i * 37) % 80, y: 10 + (i * 29) % 82,
+    size: [1.4, 2.4, 3.8][depth], duration: [17, 12, 8][depth] + i % 4,
+    delay: -(i * 1.73), drift: [18, 32, 48][depth],
+    rise: [160, 220, 280][depth], sway: 3 + (i % 5) * .7,
+  };
+});
 ---
 <div class="spot-dust" aria-hidden="true">
-  {motes.map(([x, y, size, duration, delay, drift, rise]) => (
-    <i style={`--x:${x}%;--y:${y}%;--size:${size}px;--duration:${duration}s;--delay:${delay}s;--drift:${drift}px;--rise:-${rise}px`}></i>
+  {motes.map(({ x, y, size, duration, delay, drift, rise, sway }) => (
+    <i style={`--x:${x}%;--y:${y}%;--size:${size}px;--duration:${duration}s;--delay:${delay}s;--drift:${drift}px;--rise:${rise}px;--sway:${sway}s`}><b></b></i>
   ))}
 </div>
 
@@ -22,7 +21,11 @@ const motes = [
   const hero = dust?.closest('.hero');
   if (dust && hero && 'IntersectionObserver' in window) {
     let inView = false;
-    const update = () => dust.classList.toggle('is-active', inView && !document.hidden);
+    const update = () => {
+      const active = inView && !document.hidden;
+      dust.classList.toggle('is-active', active);
+      hero.classList.toggle('fx-active', active);
+    };
     const observer = new IntersectionObserver(([entry]) => {
       inView = entry.isIntersecting;
       update();

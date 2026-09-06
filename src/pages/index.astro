@@ -41,8 +41,8 @@ const description =
     <div class="hero-actor">
       <Image
         src={heroPhoto} alt=""
-        width={1400} widths={[420, 700, 1000, 1400]} quality={82}
-        sizes="(max-width:860px) 100vw, 64vw"
+        width={1800} widths={[700, 1000, 1400, 1800, 2200]} quality={82}
+        sizes="max(64vw, 150svh)"
         loading="eager" fetchpriority="high" class="hero-actor-img"
       />
     </div>
@@ -52,7 +52,11 @@ const description =
 
   <div class="hero-inner">
     <div class="hero-stage">
-      <p class="hero-eyebrow">Kensuke Ozawa — Ozaken</p>
+      <div class="hero-eyebrow">
+        <p class="hero-name">{SITE.name}</p>
+        <p class="hero-primary-role">{SITE.role}</p>
+        <p class="hero-name-en">Kensuke Ozawa — Ozaken</p>
+      </div>
 
       <div class="hero-h1wrap">
         <h1 class="hero-h1">
@@ -284,19 +288,19 @@ const description =
 <!-- ============ 隠しコマンド（LINE） ============
      ファーストビューを上から順に 名前 → 見出し → SCROLL と3回たたくと開く。
      PCでは ozaken とタイプしても開く。ナビからは辿れない。面は墨で統一。 -->
-<div class="lpanel" id="linePanel" hidden>
+<dialog class="lpanel" id="linePanel" aria-labelledby="lpanelTitle">
   <div class="lpanel-scrim" data-lp-close></div>
-  <div class="lpanel-card" role="dialog" aria-modal="true" aria-labelledby="lpanelTitle" tabindex="-1">
+  <div class="lpanel-card" tabindex="-1">
     <button class="lpanel-x" type="button" data-lp-close aria-label="閉じる">×</button>
     <div class="lpanel-seal" aria-hidden="true"></div>
-    <p class="lpanel-eyebrow">Hidden</p>
+    <p class="lpanel-eyebrow">Access granted</p>
     <h2 class="lpanel-h" id="lpanelTitle">LINEでつながる</h2>
     <p class="lpanel-p">見つけていただき、ありがとうございます。<br />ここからなら直接ご連絡いただけます。</p>
     <div class="lpanel-qr" aria-hidden="true" set:html={lineQr}></div>
     <a class="lpanel-btn" href={SITE.line} target="_blank" rel="noopener noreferrer">友だち追加 <span aria-hidden="true">→</span></a>
     <button class="lpanel-copy" type="button" id="lpanelCopy">リンクをコピー</button>
   </div>
-</div>
+</dialog>
 
 <script is:inline define:vars={{ LINE_URL: SITE.line }}>
   (() => {
@@ -306,22 +310,22 @@ const description =
     let last = null;
 
     function open() {
-      if (!panel.hidden) return;
+      if (panel.open) return;
       last = document.activeElement;
-      panel.hidden = false;
+      panel.showModal();
       requestAnimationFrame(() => panel.classList.add('on'));
       document.documentElement.style.overflow = 'hidden';
       card?.focus();
     }
     function close() {
-      if (panel.hidden) return;
+      if (!panel.open) return;
       panel.classList.remove('on');
       document.documentElement.style.overflow = '';
-      setTimeout(() => { panel.hidden = true; }, 320);
+      panel.close();
       if (last instanceof HTMLElement) last.focus();
     }
     panel.querySelectorAll('[data-lp-close]').forEach((b) => b.addEventListener('click', close));
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+    panel.addEventListener('cancel', (e) => { e.preventDefault(); close(); });
     // カードの中のクリックで閉じないようにする
     card?.addEventListener('click', (e) => e.stopPropagation());
 
@@ -365,7 +369,7 @@ const description =
     document.addEventListener('keydown', (e) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       const t = e.target;
-      if (t instanceof HTMLElement && /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return;
+      if (t instanceof HTMLElement && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
       if (e.key.length !== 1) return;
       buf = (buf + e.key.toLowerCase()).slice(-6);
       if (buf === 'ozaken') { buf = ''; open(); }
