@@ -80,7 +80,8 @@
       }
       const smooth = (v: number) => { const t = Math.max(0, Math.min(1, v)); return t * t * (3 - 2 * t); };
       let raf = 0, ended = false;
-      const start = performance.now();
+      // 黒の中に写真と文字がうっすら見える間を置き、既存の光の流れへつなぐ。
+      const start = performance.now() + 300;
       hero.classList.add('intro-reveal');
       root.dataset.intro = 'running';
       const events = new AbortController();
@@ -94,7 +95,7 @@
         entrance!.remove();
         hero!.classList.add('intro-complete');
       }
-      const failsafe = window.setTimeout(finish, 3200);
+      const failsafe = window.setTimeout(finish, 3600);
       for (const event of ['pointerdown', 'keydown', 'wheel', 'touchstart']) {
         window.addEventListener(event, finish, { once: true, passive: true, signal: events.signal });
       }
@@ -109,6 +110,7 @@
 
       function draw(now: number) {
         const t = (now - start) / 1000;
+        if (t < 0) { raf = requestAnimationFrame(draw); return; }
         if (t >= 2.9 || !targets.length) { finish(); return; }
         ctx!.clearRect(0, 0, width, height);
         const appear = smooth(t / .2);
@@ -173,10 +175,16 @@
 <style is:global>
   .site-entrance{display:none}
   @media(prefers-reduced-motion:no-preference){
+    /* 同じトップの上で暗さだけをほどく。操作を始めたら即座に消える。 */
+    html[data-intro='pending'] body::after,
+    html[data-intro='running'] body::after{
+      content:'';position:fixed;inset:0;z-index:80;pointer-events:none;background:#000;
+      animation:opening-darkness 1.35s ease-in-out both;
+    }
     html[data-intro='pending'] .site-entrance,
     html[data-intro='running'] .site-entrance{
       display:block;position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden;
-      animation:entrance-clear 3.2s step-end both;
+      animation:entrance-clear 3.6s step-end both;
     }
     .entrance-field{
       position:absolute;inset:0;width:100%;height:100%;
@@ -188,9 +196,9 @@
     html[data-intro='pending'] .hero .line>span,
     .hero.intro-reveal.on .line>span{transition:none;transform:none}
     html[data-intro='pending'] .hero .hero-h1 em,
-    .hero.intro-reveal.on .hero-h1 em{transition:none;animation:headline-ignite 2.9s ease both}
+    .hero.intro-reveal.on .hero-h1 em{transition:none;animation:headline-ignite 2.9s ease .3s both}
     html[data-intro='pending'] .hero .spot-dust,
-    .hero.intro-reveal .spot-dust{animation:dust-handoff 2.9s ease both}
+    .hero.intro-reveal .spot-dust{animation:dust-handoff 2.9s ease .3s both}
   }
   .hero.intro-complete.on .hero-actor{animation:none;opacity:1;transform:none}
   .hero.intro-complete.on .hero-h1 em{animation:none;opacity:1;color:#fff}
@@ -198,6 +206,7 @@
   .hero.intro-complete.on .hero-eyebrow,.hero.intro-complete.on .line>span,
   .hero.intro-complete.on .hero-sub,.hero.intro-complete.on .hero-actions,.hero.intro-complete.on .hero-foot{transition:none;opacity:1;transform:none}
   @keyframes entrance-clear{to{visibility:hidden;opacity:0}}
+  @keyframes opening-darkness{0%{opacity:.96}22%{opacity:.94}65%{opacity:.3}100%{opacity:0;visibility:hidden}}
   @keyframes portrait-awaken{0%{opacity:.35;transform:scale(1.018)}50%{opacity:.85}100%{opacity:1;transform:none}}
   @keyframes headline-ignite{0%,30%{opacity:.25;color:var(--fg-mid);text-shadow:none}54%{opacity:.4}72%,100%{opacity:1;color:#fff;text-shadow:0 0 34px rgba(190,210,255,.26)}}
   @keyframes dust-handoff{0%,45%{opacity:.08}100%{opacity:.95}}
