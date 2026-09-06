@@ -1,10 +1,9 @@
 <div class="site-entrance" aria-hidden="true">
-  <div class="entrance-aura"></div>
   <canvas class="entrance-field"></canvas>
 </div>
 
 <script>
-  // 人物の光だまり → 実際の見出しの字形 → 継続するホコリ。
+  // 余白を流れる光の糸 → 実際の見出しの字形 → 継続するホコリ。
   // すべてヒーロー内の同じ座標で描き、別画面への切り替えを作らない。
   const entrance = document.querySelector<HTMLElement>('.site-entrance');
   const hero = entrance?.closest<HTMLElement>('.hero');
@@ -24,23 +23,18 @@
     canvas.height = Math.round(height * dpr);
     ctx.scale(dpr, dpr);
 
-    // 写真の楕円マスクと中心を揃える。スマホでは人物が上へ移る。
-    const cx = width * (compact ? .64 : .7456);
-    const cy = height * (compact ? .26 : .4);
-    const radius = Math.min(width * (compact ? .36 : .235), window.innerHeight * .29, 275);
-    entrance.style.setProperty('--source-x', `${cx}px`);
-    entrance.style.setProperty('--source-y', `${cy}px`);
-    entrance.style.setProperty('--source-size', `${radius * 2.5}px`);
-
     const mask = document.createElement('canvas');
     const ink = mask.getContext('2d', { willReadFrequently: true });
     if (ink) {
+      let letterBox = { left: 0, top: 0, width: 0, height: 0 };
       function sampleHeadline() {
         const style = getComputedStyle(headline!);
         const lineBox = line!.getBoundingClientRect();
         const heroBox = hero!.getBoundingClientRect();
         const size = parseFloat(style.fontSize);
         const lineHeight = parseFloat(style.lineHeight) || size * 1.08;
+        letterBox = { left: lineBox.left - heroBox.left, top: lineBox.top - heroBox.top,
+          width: headline!.getBoundingClientRect().width, height: lineHeight };
         const padding = Math.ceil(size * .4);
         mask.width = Math.ceil(lineBox.width + padding * 2);
         mask.height = Math.ceil(lineHeight + padding * 2);
@@ -67,12 +61,23 @@
       }
       let targets = sampleHeadline();
       const count = Math.min(targets.length, compact ? 650 : 1000);
-      const points = Array.from({ length: count }, (_, i) => {
-        const y = 1 - 2 * (i + .5) / count;
-        const r = Math.sqrt(1 - y * y), angle = i * 2.399963;
-        return { x: Math.cos(angle) * r, y, z: Math.sin(angle) * r };
-      });
+      const points = Array.from({ length: count }, (_, i) => ({
+        lane: i % 6, seed: (i * .618034) % 1,
+        depth: .3 + (i % 11) / 15,
+      }));
       const dust = [...hero.querySelectorAll<HTMLElement>('.spot-dust b')];
+      let driftDust: HTMLElement[] | null = null;
+      // 見出し付近の余白に6本の流れを置く。顔のある上部へは描かない。
+      function threadPoint(u: number, lane: number, time: number) {
+        const margin = Math.min(90, width * .2);
+        const amplitude = Math.min(40, letterBox.height * .42);
+        return {
+          x: letterBox.left - margin + u * (letterBox.width + margin * 2),
+          y: letterBox.top + letterBox.height * .85
+            + Math.sin(u * 4.4 + lane * .66 - time * 1.9) * amplitude
+            + (lane - 2.5) * amplitude * .28,
+        };
+      }
       const smooth = (v: number) => { const t = Math.max(0, Math.min(1, v)); return t * t * (3 - 2 * t); };
       let raf = 0, ended = false;
       const start = performance.now();
@@ -108,52 +113,54 @@
         ctx!.clearRect(0, 0, width, height);
         const appear = smooth(t / .2);
         const release = smooth((t - 1.75) / 1.05);
-        const turn = t * .8;
-        const cos = Math.cos(turn), sin = Math.sin(turn);
-        // 最後は実際に動いている粒子の現在位置へ渡す。読むだけなのでレイアウトは変えない。
-        const destinations = release > 0 ? dust.map(el => {
+        // 文字より下にある粒子へ渡し、ほどけた光も顔の上を横切らない。
+        if (release > 0 && !driftDust) {
+          driftDust = dust.filter(el => el.getBoundingClientRect().top - box.top >= letterBox.top + letterBox.height * .4);
+        }
+        const destinations = (driftDust || []).map(el => {
           const rect = el.getBoundingClientRect();
           return { x: rect.left - box.left + rect.width / 2, y: rect.top - box.top + rect.height / 2 };
-        }) : [];
+        });
         const projected = points.map((p, i) => {
-          const x = p.x * cos + p.z * sin;
-          const z = -p.x * sin + p.z * cos;
-          const perspective = 1 / (1 - z * .28);
           const target = targets[Math.floor(i * targets.length / count)];
           const gather = smooth((t - .5 - (i % 7) * .016) / .83);
           const arc = Math.sin(gather * Math.PI);
-          const sx = cx + x * radius * perspective;
-          const sy = cy + p.y * radius * perspective;
-          let px = sx * (1 - gather) + target.x * gather + arc * radius * .13 * Math.sin(i * .3);
-          let py = sy * (1 - gather) + target.y * gather - arc * radius * (.3 + (i % 3) * .1);
+          const u = p.seed * 1.2 - .25 + t * (.2 + p.depth * .12);
+          const source = threadPoint(u, p.lane, t);
+          const tail = threadPoint(u - .018 - p.depth * .012, p.lane, t);
+          let px = source.x * (1 - gather) + target.x * gather;
+          let py = source.y * (1 - gather) + target.y * gather + arc * letterBox.height * .16 * p.seed;
           if (destinations.length) {
             const end = destinations[i % destinations.length];
             px = px * (1 - release) + end.x * release;
-            py = py * (1 - release) + end.y * release - Math.sin(release * Math.PI) * radius * .15;
+            py = py * (1 - release) + end.y * release;
           }
-          return { x: px, y: py, alpha: appear * (1 - release) * (.28 + (z + 1) * .28), z };
+          return { x: px, y: py, tailX: px + (tail.x - source.x) * (1 - gather),
+            tailY: py + (tail.y - source.y) * (1 - gather),
+            alpha: appear * (1 - release) * (.2 + p.depth * .6), depth: p.depth, gather };
         });
-        const network = appear * (1 - smooth((t - .55) / .75));
-        if (network > .01) {
-          ctx!.lineWidth = .65;
-          for (let i = 0; i < projected.length; i += 3) {
-            const a = projected[i];
-            for (const offset of [13, 21, 34]) {
-              const b = projected[(i + offset) % projected.length];
-              if (Math.hypot(a.x - b.x, a.y - b.y) > radius * .32) continue;
-              ctx!.strokeStyle = `rgba(190,210,240,${.24 * network})`;
-              ctx!.beginPath(); ctx!.moveTo(a.x, a.y); ctx!.lineTo(b.x, b.y); ctx!.stroke();
+        const threads = appear * (1 - smooth((t - .45) / .8));
+        if (threads > .01) {
+          ctx!.lineWidth = .6;
+          ctx!.strokeStyle = `rgba(190,210,240,${.2 * threads})`;
+          for (let lane = 0; lane < 6; lane++) {
+            ctx!.beginPath();
+            for (let step = 0; step <= 64; step++) {
+              const point = threadPoint(step / 64, lane, t);
+              if (step === 0) ctx!.moveTo(point.x, point.y);
+              else ctx!.lineTo(point.x, point.y);
             }
+            ctx!.stroke();
           }
-          // 人物を包む、傾いた一筋の光。画面全体の枠やグリッドは置かない。
-          ctx!.strokeStyle = `rgba(210,223,244,${.18 * network})`;
-          ctx!.beginPath();
-          ctx!.ellipse(cx, cy, radius * 1.16, radius * .42, -.4 + t * .2, 0, Math.PI * 2);
-          ctx!.stroke();
         }
-        projected.forEach(p => {
+        projected.forEach((p, i) => {
+          if (i % 6 === 0 && p.gather < .98) {
+            ctx!.lineWidth = .6 + p.depth * .4;
+            ctx!.strokeStyle = `rgba(210,223,244,${p.alpha * .6})`;
+            ctx!.beginPath(); ctx!.moveTo(p.tailX, p.tailY); ctx!.lineTo(p.x, p.y); ctx!.stroke();
+          }
           ctx!.fillStyle = `rgba(235,243,255,${p.alpha})`;
-          const size = .85 + (p.z + 1) * .5;
+          const size = .65 + p.depth * 1.1;
           ctx!.fillRect(p.x, p.y, size, size);
         });
         raf = requestAnimationFrame(draw);
@@ -175,12 +182,6 @@
       position:absolute;inset:0;width:100%;height:100%;
       mask-image:linear-gradient(90deg,transparent,#000 16px,#000 calc(100% - 16px),transparent);
     }
-    .entrance-aura{
-      position:absolute;left:var(--source-x);top:var(--source-y);width:var(--source-size);aspect-ratio:1;
-      transform:translate(-50%,-50%);border-radius:50%;
-      background:radial-gradient(ellipse,rgba(190,210,240,.09),rgba(190,210,240,.025) 42%,transparent 70%);
-      animation:entrance-aura 2.9s ease both;
-    }
     /* JSの読み込みが失敗しても、写真と本文はCSSだけで最終表示になる。 */
     html[data-intro='pending'] .hero .hero-actor,
     .hero.intro-reveal.on .hero-actor{animation:portrait-awaken 2.5s var(--ease) both}
@@ -197,7 +198,6 @@
   .hero.intro-complete.on .hero-eyebrow,.hero.intro-complete.on .line>span,
   .hero.intro-complete.on .hero-sub,.hero.intro-complete.on .hero-actions,.hero.intro-complete.on .hero-foot{transition:none;opacity:1;transform:none}
   @keyframes entrance-clear{to{visibility:hidden;opacity:0}}
-  @keyframes entrance-aura{0%{opacity:0}22%,48%{opacity:1}100%{opacity:0}}
   @keyframes portrait-awaken{0%{opacity:.35;transform:scale(1.018)}50%{opacity:.85}100%{opacity:1;transform:none}}
   @keyframes headline-ignite{0%,30%{opacity:.25;color:var(--fg-mid);text-shadow:none}54%{opacity:.4}72%,100%{opacity:1;color:#fff;text-shadow:0 0 34px rgba(190,210,255,.26)}}
   @keyframes dust-handoff{0%,45%{opacity:.08}100%{opacity:.95}}
