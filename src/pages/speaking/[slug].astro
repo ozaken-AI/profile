@@ -1,6 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
+import SpeakerEvidence from '../../components/SpeakerEvidence.astro';
 import { SITE, MENU, TOPICS, FAQ, SPEAKING_TRACK } from '../../lib/site';
 import speakingStanding from '../../assets/photos/speaking-standing.jpg';
 import speakingSeated from '../../assets/photos/speaking-seated.jpg';
@@ -16,28 +17,19 @@ const { item } = Astro.props;
 const topics = item.topics.map((i) => TOPICS[i]).filter(Boolean);
 const track = SPEAKING_TRACK.find((g) => g.label === item.trackLabel);
 // 費用・オンライン・リードタイムは、どの形でも同じことを聞かれる
-const faq = FAQ.slice(0, 3);
+const faq = FAQ;
 const others = MENU.filter((m) => m.slug !== item.slug);
 
 const photo = item.slug === 'keynote' || item.slug === 'training' ? speakingStanding : speakingSeated;
 
-// 検索結果に出るのは全角30字ほど。「研修（生成AIリテラシー研修・実装ワークショップ）の
-// ご依頼 | 小澤健祐（おざけん）」は42字あり、肝心の「ご依頼」まで表示されていなかった。
-// 探されている語（生成AI＋依頼の形）を頭に置き、細かい副題は h1 と本文に任せる。
-const title = `生成AIの${item.kind}のご依頼 | 小澤健祐（おざけん）`;
-// 検索結果に出るのは全角110字ほど。探している人がまず知りたい順
-// （何の依頼か → 時間と形式 → 誰向けか → 中身）に並べ、末尾で切る。
-// 以前は「ご依頼はこちらから」を最後に置いていたが、そこは表示されていなかった。
-const clamp = (s: string, n: number) =>
-  [...s].length <= n ? s : [...s].slice(0, n - 1).join('') + '…';
-const description = clamp(
-  `生成AI・AIエージェントの${item.kind}のご依頼。${item.spec}。${item.forWhom}。${item.body}`,
-  110,
-);
+const heading = item.slug === 'keynote' ? '経営層向け 生成AI・AIエージェント講演' : item.title;
+const title = `${item.slug === 'keynote' ? '経営層向け 生成AI・AIエージェント講演' : `生成AIの${item.kind}`}のご依頼 | 小澤健祐（おざけん）`;
+const description = `小澤健祐（おざけん）への生成AI・AIエージェントの${item.kind}のご依頼。${item.spec}。${item.forWhom}に向け、目的に合わせて構成します。内容・実績・進め方をご案内。費用は個別見積もりです。`;
+const contactHref = `/contact/?kind=${item.slug}`;
 
 const crumbs = [
   { name: 'ホーム', item: SITE.url + '/' },
-  { name: '依頼できること', item: SITE.url + '/speaking/' },
+  { name: '講演・研修', item: SITE.url + '/speaking/' },
   { name: `${item.kind}のご依頼`, item: `${SITE.url}/speaking/${item.slug}/` },
 ];
 const jsonLd = [{
@@ -46,6 +38,11 @@ const jsonLd = [{
   itemListElement: crumbs.map((c, i) => ({
     '@type': 'ListItem', position: i + 1, name: c.name, item: c.item,
   })),
+}, {
+  '@context': 'https://schema.org', '@type': 'Service',
+  '@id': `${SITE.url}/speaking/${item.slug}/#service`,
+  name: heading, serviceType: item.kind, description,
+  url: `${SITE.url}/speaking/${item.slug}/`, provider: { '@id': `${SITE.url}/#person` },
 }];
 ---
 <Base
@@ -58,19 +55,62 @@ const jsonLd = [{
 <section class="phead wrap" data-rail={item.kind}>
   <div class="phead-glow" aria-hidden="true"></div>
   <p class="label rv"><a href="/speaking/" style="color:inherit">Speaking</a> ／ {item.idx}</p>
-  <h1 class="phead-h1">{item.kind}</h1>
-  <p class="lp-sub rv rv-d1">{item.title}</p>
+  <h1 class="phead-h1">{heading}</h1>
+  <p class="lp-sub rv rv-d1">小澤健祐（おざけん）／AICX協会 代表理事</p>
   <p class="phead-lede rv rv-d2">{item.lede}</p>
-  <a class="btn rv rv-d3" href="/contact/">この形で相談する <span aria-hidden="true">→</span></a>
+  <a class="btn rv rv-d3" href={contactHref}>日程・内容を相談する <span aria-hidden="true">→</span></a>
 </section>
 
 <section class="band wrap" style="padding-top:0" data-rail="概要">
+  <p class="booking-note rv">費用は個別見積もり。企画段階のご相談にも、通常2〜3営業日以内に返信します。</p>
   <dl class="facts stg">
     {item.facts.map((f) => (
       <div class="fact"><dt>{f.k}</dt><dd>{f.v}</dd></div>
     ))}
   </dl>
 </section>
+
+{topics.length > 0 && (
+  <section class="band band--paper" data-rail="テーマ">
+    <div class="wrap">
+      <p class="label rv">Topics</p>
+      <h2 class="h2">よく依頼されるテーマ</h2>
+      <p class="lede rv rv-d2">出発点です。実際は業種・職種・すでに使っているツールに合わせて毎回組み直します。</p>
+      <div class="topics stg">
+        {topics.map((t, i) => (
+          <article class="topic">
+            <p class="topic-n">{String(i + 1).padStart(2, '0')}</p>
+            <div>
+              <h3 class="topic-h">{t.title}</h3>
+              <p class="topic-lead">{t.lead}</p>
+              <ul class="topic-points">{t.points.map((pt) => <li>{pt}</li>)}</ul>
+              <p class="topic-for">対象：{t.forWhom}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+      <a class="more" href="/speaking/#topics">テーマの一覧 <span>→</span></a>
+    </div>
+  </section>
+)}
+
+{item.slug === 'keynote' && (
+  <>
+    <SpeakerEvidence />
+    <section class="band wrap" data-rail="講演の構成例">
+      <p class="label rv">Program example</p>
+      <h2 class="h2 rv">経営層向け・60分の構成例</h2>
+      <p class="lede rv">テーマ「生成AIとAIエージェントで、事業の何が置き換わるのか」の場合。事前の打ち合わせで業種・目的に合わせて調整します。</p>
+      <ol class="program-list stg">
+        <li><span>10分</span><div><h3>いま何が変わっているか</h3><p>生成AIとAIエージェントの違いを、自社への影響として捉える。</p></div></li>
+        <li><span>20分</span><div><h3>事例から、導入の条件を考える</h3><p>業務・情報・人の役割を分け、導入が進む条件とつまずく要因を整理する。</p></div></li>
+        <li><span>20分</span><div><h3>自社で決めるべきこと</h3><p>着手する業務、投資の優先順位、承認と責任の置き方を考える。</p></div></li>
+        <li><span>10分</span><div><h3>質疑応答</h3><p>参加者の疑問をもとに、意思決定に必要な論点を深める。</p></div></li>
+      </ol>
+      <p class="track-note rv">講演内容を社内で検討する際は、<a href="/about/#books">著書</a>・<a href={SITE.contentSite} target="_blank" rel="noopener noreferrer">公開資料</a>・<a href="/press/">プロフィールと写真</a>もご参照ください。</p>
+    </section>
+  </>
+)}
 
 <section class="band band--paper" data-rail="こんなとき">
   <div class="wrap">
@@ -109,31 +149,7 @@ const jsonLd = [{
   </ul>
 </section>
 
-{topics.length > 0 && (
-  <section class="band band--paper" data-rail="テーマ">
-    <div class="wrap">
-      <p class="label rv">Topics</p>
-      <h2 class="h2">よく依頼されるテーマ</h2>
-      <p class="lede rv rv-d2">出発点です。実際は業種・職種・すでに使っているツールに合わせて毎回組み直します。</p>
-      <div class="topics stg">
-        {topics.map((t, i) => (
-          <article class="topic">
-            <p class="topic-n">{String(i + 1).padStart(2, '0')}</p>
-            <div>
-              <h3 class="topic-h">{t.title}</h3>
-              <p class="topic-lead">{t.lead}</p>
-              <ul class="topic-points">{t.points.map((pt) => <li>{pt}</li>)}</ul>
-              <p class="topic-for">対象：{t.forWhom}</p>
-            </div>
-          </article>
-        ))}
-      </div>
-      <a class="more" href="/speaking/#topics">テーマの一覧 <span>→</span></a>
-    </div>
-  </section>
-)}
-
-{track && (
+{track && item.slug !== 'keynote' && (
   <section class="band wrap" data-rail="実績">
     <p class="label rv">Track record</p>
     <h2 class="h2">これまでの{track.label}</h2>
@@ -185,7 +201,7 @@ const jsonLd = [{
     企画が固まっていない段階のご相談も歓迎です。
   </p>
   <div class="contact-grid stg">
-    <a class="cc" href="/contact/">
+    <a class="cc" href={contactHref}>
       <span class="cc-k">Form</span>
       <span class="cc-v">お問い合わせフォーム</span>
       <span class="cc-n">2〜3営業日以内に返信します。</span>

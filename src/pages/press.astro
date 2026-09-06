@@ -7,7 +7,7 @@ import portraitFront from '../assets/photos/portrait-front.jpg';
 
 const title = 'プレスキット | 小澤健祐（おざけん）';
 const description =
-  '小澤健祐（おざけん）の告知用素材。プロフィール文（約100字・約300字）、高解像度の顔写真、肩書きの正式表記をまとめています。講演の告知ページや記事にご自由にお使いください。';
+  '小澤健祐（おざけん）の告知用素材。プロフィール文（短い版・長い版）、高解像度の顔写真、肩書きの正式表記をまとめています。講演の告知ページや記事にご自由にお使いください。';
 
 const photos = [
   { img: portraitFront, file: '/press/ozaken-portrait-front.jpg', label: 'ポートレート・正面', spec: '縦 1334×2000', alt: '正面を向いて笑う小澤健祐' },
@@ -56,14 +56,14 @@ const logos = [
     <div class="bio rv rv-d2">
       <article class="bio-item">
         <div class="bio-head">
-          <h3>短い版<span>約100字</span></h3>
+          <h3>短い版<span>{[...BIO.short.replace(/\s/g, "")].length}字（空白除く）</span></h3>
           <button type="button" class="copy" data-target="bio-short">コピー</button>
         </div>
         <p id="bio-short">{BIO.short}</p>
       </article>
       <article class="bio-item">
         <div class="bio-head">
-          <h3>長い版<span>約300字</span></h3>
+          <h3>長い版<span>{[...BIO.long.replace(/\s/g, "")].length}字（空白除く）</span></h3>
           <button type="button" class="copy" data-target="bio-long">コピー</button>
         </div>
         <p id="bio-long" style="white-space:pre-line">{BIO.long}</p>

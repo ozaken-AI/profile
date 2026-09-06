@@ -1,20 +1,26 @@
 ---
 import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
+import Books from '../components/Books.astro';
 import { SITE, ROLES, NUMBERS, MEDIA_TRACK, PROFILE } from '../lib/site';
 import portrait from '../assets/photos/portrait.jpg';
 import panel from '../assets/photos/panel.jpg';
 
 const title = 'プロフィール | 小澤健祐（おざけん）';
 const description =
-  '小澤健祐（おざけん）。一般社団法人AICX協会 代表理事。AI専門メディア「AINOW」編集長を経て、年間300回超の講演と1,500本超の記事執筆を行う。経歴、役職、著書、メディア出演。';
+  '小澤健祐（おざけん）。一般社団法人AICX協会 代表理事。AI専門メディア「AINOW」編集長を経て、2025年の登壇300回超、AI関連記事の累計執筆1,500本超。経歴、役職、著書、メディア出演。';
 ---
-<Base {title} {description} railInitial="プロフィール">
+<Base {title} {description} railInitial="プロフィール" jsonLd={[{
+  "@context": "https://schema.org", "@type": "ProfilePage",
+  "@id": `${SITE.url}/about/#profile`, url: `${SITE.url}/about/`, name: title,
+  mainEntity: { "@id": `${SITE.url}/#person` },
+}]}>
 
 <section class="phead wrap" data-rail="プロフィール">
   <div class="phead-glow" aria-hidden="true"></div>
   <p class="label rv">About</p>
-  <h1 class="phead-h1 rv rv-d1">目指してきたのは、<br />分断をこえること</h1>
+  <h1 class="phead-h1 rv rv-d1">小澤健祐（おざけん）<br />プロフィール</h1>
+  <p class="phead-lede rv rv-d2">目指してきたのは、分断をこえること。技術と経営、経営と現場をつなぐ。</p>
 </section>
 
 <section class="band band--paper" data-rail="人物">
@@ -45,11 +51,14 @@ const description =
           </div>
           <p class="num-k">{n.key}</p>
           <p class="num-n">{n.note[0]}<br />{n.note[1]}</p>
+          {n.source && <a class="num-source" href={n.source} target="_blank" rel="noopener noreferrer">公開情報 ↗</a>}
         </div>
       ))}
     </div>
   </div>
 </section>
+
+<Books />
 
 <section class="band wrap" data-rail="メディア">
   <p class="label rv">Media</p>

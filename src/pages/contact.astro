@@ -14,7 +14,7 @@ const description =
   <h1 class="phead-h1 rv rv-d1">お問い合わせ</h1>
   <p class="phead-lede rv rv-d2">
     目的・対象者・想定人数・日程をお知らせいただけると、可否と概算をお返ししやすくなります。
-    企画が固まっていない段階のご相談も歓迎です。
+    費用は個別見積もりです。企画が固まっていない段階のご相談も歓迎です。
   </p>
 </section>
 
@@ -46,6 +46,7 @@ const description =
         <select id="cf-kind" name="kind">
           <option value="講演・登壇">講演・登壇</option>
           <option value="社内研修・ワークショップ">社内研修・ワークショップ</option>
+          <option value="導入プロジェクトの伴走支援">導入プロジェクトの伴走支援</option>
           <option value="アドバイザリー・顧問">アドバイザリー・顧問</option>
           <option value="執筆・監修">執筆・監修</option>
           <option value="取材・メディア出演">取材・メディア出演</option>
@@ -62,7 +63,7 @@ const description =
       </div>
       <div class="form-field wide">
         <label for="cf-message">Message <span class="ja">ご相談内容</span><span class="req">*</span></label>
-        <textarea id="cf-message" name="message" required placeholder="開催の背景と、終わったあと参加者にどうなっていてほしいかを書いていただけると、初回のご提案が具体的になります。"></textarea>
+        <textarea id="cf-message" name="message" required placeholder="開催の背景、希望テーマ、参加者に持ち帰ってほしいことをお知らせください。ご予算の目安、会場／オンライン、録画・配信の希望も分かる範囲でどうぞ。未定の項目はそのままで構いません。"></textarea>
       </div>
     </div>
 
@@ -92,6 +93,15 @@ const description =
     const msg = document.getElementById('cf-msg')!;
     const submit = document.getElementById('cf-submit') as HTMLButtonElement;
     let openedAt = Date.now();
+
+    // 詳細ページで選んだ依頼の形を引き継ぐ。既知のキーだけを受け付ける。
+    const kinds = new Map([
+      ['keynote', '講演・登壇'], ['training', '社内研修・ワークショップ'],
+      ['partner', '導入プロジェクトの伴走支援'], ['advisory', 'アドバイザリー・顧問'],
+    ]);
+    const requestedKind = kinds.get(new URLSearchParams(location.search).get('kind') || '');
+    const kindField = form.elements.namedItem('kind') as HTMLSelectElement | null;
+    if (kindField && requestedKind) kindField.value = requestedKind;
 
     const LABELS: Record<string, string> = {
       name: 'お名前', company: '会社・団体名', email: 'メールアドレス', tel: '電話番号',

@@ -17,7 +17,7 @@ interface Props {
   publishedTime?: string;
   /** 左レールに出す既定の現在地 */
   railInitial?: string;
-  /** このページ固有の構造化データ。トップの身元情報とは別に足される */
+  /** このページ固有の構造化データ。共通の人物情報とは別に足される */
   jsonLd?: Record<string, unknown>[];
 }
 const {
@@ -40,26 +40,18 @@ const ogAlt = ogImageAlt ?? '小澤健祐（おざけん）｜人間とAIが共�
 // 未設定ならタグを出さない（開発中やプレビューで数字を汚さないため）。
 const gaId = import.meta.env.PUBLIC_GA_ID as string | undefined;
 
-// 検索エンジン向けの身元情報。トップにだけ置く（Googleはサイト名をトップから読む）。
-// 指名検索で旧プロフィールページと競合しているので、sameAs で同一人物だと明示する。
+// 各ページのサービスやプロフィールを、同じ Person のIDに結びつける。
 const abs = (path: string) => new URL(path, Astro.site).href;
-const identityJsonLd = !isTop ? [] : [
+const identityJsonLd = [
+  ...(isTop ? [{
+    '@context': 'https://schema.org', '@type': 'WebSite', '@id': `${SITE.url}/#website`,
+    name: IDENTITY.siteName, alternateName: SITE.name, url: SITE.url,
+  }] : []),
   {
-    '@context': 'https://schema.org',
-    '@type': 'WebSite',
-    name: IDENTITY.siteName,
-    alternateName: SITE.name,
-    url: SITE.url,
-  },
-  {
-    '@context': 'https://schema.org',
-    '@type': 'Person',
-    name: IDENTITY.legalName,
-    alternateName: IDENTITY.alternateNames,
-    url: SITE.url,
-    image: abs(IDENTITY.image),
-    jobTitle: SITE.role.replace(/\u3000/g, ' '),
-    description,
+    '@context': 'https://schema.org', '@type': 'Person', '@id': `${SITE.url}/#person`,
+    name: IDENTITY.legalName, alternateName: IDENTITY.alternateNames, url: SITE.url,
+    image: abs(IDENTITY.image), jobTitle: SITE.role.replace(/\u3000/g, ' '),
+    description: '生成AI・AIエージェントの講演・研修、執筆、企業へのアドバイザリーを行う。',
     sameAs: IDENTITY.sameAs,
   },
 ];
@@ -79,7 +71,7 @@ const jsonLd = [...identityJsonLd, ...pageJsonLd];
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical} />
 {jsonLd.length > 0 && (
-  <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')} />
 )}
 <meta name="google-site-verification" content="VoBfvx8Rc4nEPbgtcl-kKaD4QOb7tVEqZIur9A2NV5o" />
 <meta property="og:type" content={ogType} />

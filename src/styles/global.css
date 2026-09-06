@@ -594,6 +594,60 @@ section{position:relative}
 @media(prefers-reduced-motion:reduce){.num.on .odo-col>i{animation:none}}
 .num-k{font-family:var(--f-mincho);font-size:.94rem;margin-top:1rem;color:var(--fg)}
 .num-n{font-size:.79rem;color:var(--fg-mute);margin-top:.3rem;line-height:1.75}
+.num-source{display:inline-block;margin-top:.55rem;font-size:.76rem;color:var(--fg-mid);text-decoration:underline;text-underline-offset:4px}
+
+/* 講演を検討する人が、テーマ・根拠・条件を順に読める案内。 */
+.speaking-focus h2 span{display:inline-block}
+.focus-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2rem;margin-top:3rem}
+.focus-item{border-top:1px solid var(--rule);padding-top:1.3rem;display:flex;flex-direction:column}
+.focus-n{font-family:var(--f-en);font-size:.7rem;letter-spacing:.18em;color:var(--fg-mute)}
+.focus-item h3{font-family:var(--f-mincho);font-size:1.23rem;line-height:1.7;font-weight:500;margin:.75rem 0}
+.focus-item p{font-size:.89rem;color:var(--fg-mid);line-height:1.95}
+.focus-item .focus-audience{font-size:.77rem;color:var(--fg-mute);margin-top:auto;padding-top:1.2rem}
+.booking-strip{display:flex;align-items:center;justify-content:space-between;gap:1.8rem;margin-top:2.6rem;padding:1.7rem 0;border-block:1px solid var(--rule)}
+.booking-strip p,.booking-note{font-size:.85rem;line-height:1.9;color:var(--fg-mid)}
+.booking-strip b{color:var(--fg);font-weight:500}
+.booking-strip .btn{flex-shrink:0;margin:0;font-size:.86rem}
+.booking-note{margin-bottom:1.3rem}
+.authority-links{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.5rem;margin-top:2.2rem}
+.authority-links a{font-size:.83rem;line-height:1.8;color:var(--fg-mid)}
+.authority-links span{display:block;font-size:.69rem;letter-spacing:.08em;color:var(--fg-mute);margin-bottom:.5rem}
+.authority-links a:hover,.evidence-next a:hover{color:var(--fg)}
+.evidence-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2.8rem;margin-top:2.8rem}
+.evidence-item{border-top:1px solid var(--rule);padding-top:1.5rem;display:flex;flex-direction:column;align-items:flex-start}
+.evidence-meta{display:flex;flex-wrap:wrap;align-items:center;gap:.65rem 1rem;font-size:.76rem;color:var(--fg-mid)}
+.evidence-meta time{font-family:var(--f-en);font-variant-numeric:tabular-nums;letter-spacing:.08em}
+.evidence-meta span{border:1px solid var(--rule);padding:.2rem .65rem}
+.evidence-item h3{font-family:var(--f-mincho);font-size:clamp(1.3rem,2.2vw,1.65rem);font-weight:500;margin:1.2rem 0 .2rem;line-height:1.5}
+.evidence-host{font-size:.75rem;color:var(--fg-mute)}
+.evidence-item h4{font-size:.95rem;line-height:1.8;font-weight:500;margin:1.5rem 0 .5rem}
+.evidence-detail{font-size:.88rem;color:var(--fg-mid);line-height:1.95;margin-bottom:1.4rem}
+.source-link{display:inline-block;font-size:.8rem;border-bottom:1px solid var(--rule);padding-bottom:.15rem;margin-top:auto}
+.source-link:hover{border-color:var(--fg)}
+.evidence-next{display:flex;flex-wrap:wrap;gap:.8rem 2rem;margin-top:2.5rem;font-size:.84rem;color:var(--fg-mid)}
+.book-list{margin-top:2.6rem}
+.book-item{display:grid;grid-template-columns:220px 1fr;gap:2rem;padding:2rem 0;border-top:1px solid var(--rule)}
+.book-date{font-size:.79rem;color:var(--fg-mute)}
+.book-upcoming{display:block;color:var(--fg-mid);margin-bottom:.5rem}
+.book-item h3{font-family:var(--f-mincho);font-size:1.35rem;font-weight:500;line-height:1.6}
+.book-item div>p{font-size:.87rem;color:var(--fg-mid);margin:.65rem 0 1rem}
+.section-links{display:flex;flex-wrap:wrap;gap:.5rem 1.6rem;margin:1.8rem 0 .5rem;font-size:.85rem;color:var(--fg-mid)}
+.section-links a{border-bottom:1px solid var(--rule)}
+.program-list{list-style:none;margin-top:2.5rem}
+.program-list li{display:grid;grid-template-columns:65px 1fr;gap:1.5rem;border-top:1px solid var(--rule);padding:1.3rem 0}
+.program-list li>span{font-family:var(--f-en);color:var(--fg-mute);font-size:.9rem}
+.program-list h3{font-size:1rem;font-weight:500}.program-list p{font-size:.87rem;color:var(--fg-mid);margin-top:.35rem}
+.ticker-caption{font-size:.74rem;letter-spacing:.08em;color:var(--fg-mute);padding-bottom:1rem}
+@media(max-width:760px){
+  .focus-grid{grid-template-columns:1fr;gap:1.8rem}
+  .booking-strip{align-items:flex-start;flex-direction:column}
+  .authority-links{grid-template-columns:1fr;gap:1.2rem}
+  .authority-links a{padding-left:1rem;border-left:1px solid var(--rule)}
+  .authority-links span{margin-bottom:.15rem}
+  .evidence-grid{grid-template-columns:1fr;gap:2.5rem}
+  .book-item{grid-template-columns:1fr;gap:.75rem}
+  .book-upcoming{display:inline-block;margin:0 .8rem 0 0}
+}
 
 /* ---------- NEWS ---------- */
 /* カテゴリの絞り込み */

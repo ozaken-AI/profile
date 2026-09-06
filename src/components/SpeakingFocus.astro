@@ -1,0 +1,27 @@
+---
+const themes = [
+  { n: '01', title: 'AI投資の、次の一手を決める。', body: '生成AI・AIエージェントが事業をどう変えるのか。自社で優先する業務と、投資を判断する軸を整理します。', audience: '経営会議・役員合宿・業界団体の講演会' },
+  { n: '02', title: '導入を、組織の変化につなぐ。', body: 'ツールを配った先で、誰が担い、誰が承認するのか。経営・人事・現場の役割と、定着を阻む構造を考えます。', audience: '経営層・DX推進・人事の合同企画' },
+  { n: '03', title: '全社で、AI活用の一歩を。', body: 'AIを安全に使うための線引きと、自分の仕事で試せること。全社の理解をそろえ、実践の入口をつくります。', audience: '全社キックオフ・部門別の研修' },
+];
+---
+<section class="band wrap speaking-focus" id="s-focus" data-rail="経営とAI">
+  <p class="label rv">For business leaders</p>
+  <h2 class="h2 rv rv-d1">AIの変化を、<br /><span>自社の意思決定に</span><span>つなぐ講演。</span></h2>
+  <p class="lede rv rv-d2">経営層・企画担当者の皆さまへ。技術と経営、経営と現場の両方に立ってきた経験から、聞き手が自社に持ち帰れる論点を組み立てます。</p>
+  <div class="focus-grid stg">
+    {themes.map((t) => <article class="focus-item">
+      <span class="focus-n">{t.n}</span>
+      <h3>{t.title}</h3><p>{t.body}</p><p class="focus-audience">{t.audience}</p>
+    </article>)}
+  </div>
+  <div class="booking-strip rv">
+    <p><b>基調講演 60〜90分・質疑応答つき</b><br />会場／オンライン／ハイブリッドに対応。費用は個別見積もり。</p>
+    <a class="btn" href="/speaking/keynote/">講演の内容・依頼方法 <span aria-hidden="true">→</span></a>
+  </div>
+  <div class="authority-links rv">
+    <a href="https://aicx.jp/corporate/news/2025-0120" target="_blank" rel="noopener noreferrer"><span>業界団体</span>AICX協会 代表理事 ↗</a>
+    <a href="https://prtimes.jp/main/html/rd/p/000000115.000155740.html" target="_blank" rel="noopener noreferrer"><span>人材・スキルの検討</span>経済産業省 AXスキルWG委員 ↗</a>
+    <a href="/about/#books"><span>著書</span>『生成AI導入の教科書』<br />『AIエージェントの教科書』 →</a>
+  </div>
+</section>
