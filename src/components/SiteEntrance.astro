@@ -1,64 +1,82 @@
 <div class="site-entrance" aria-hidden="true">
-  <div class="entrance-shade"></div>
-  <div class="entrance-grid"></div>
+  <div class="entrance-aura"></div>
   <canvas class="entrance-field"></canvas>
-  <div class="entrance-orbit"><i></i><i></i><i></i></div>
-  <div class="entrance-caption">
-    <span>HUMAN <b>×</b> ARTIFICIAL INTELLIGENCE</span>
-    <span class="entrance-coordinates">OZAKEN.AI <i></i> BEYOND THE DIVIDE</span>
-  </div>
-  <div class="entrance-scan"></div>
-  <div class="entrance-frame"><i></i><i></i><i></i><i></i></div>
 </div>
 
 <script>
-  // 球面の光点を立体投影し、文字のピクセルへ収束させてから奥行き方向へ解く。
-  // 外部ライブラリ・通信は不要。終了時に描画とイベントをすべて解放する。
+  // 人物の光だまり → 実際の見出しの字形 → 継続するホコリ。
+  // すべてヒーロー内の同じ座標で描き、別画面への切り替えを作らない。
   const entrance = document.querySelector<HTMLElement>('.site-entrance');
+  const hero = entrance?.closest<HTMLElement>('.hero');
   const canvas = entrance?.querySelector<HTMLCanvasElement>('canvas');
+  const headline = hero?.querySelector<HTMLElement>('.hero-h1 em');
+  const line = headline?.closest<HTMLElement>('.line');
   const root = document.documentElement;
   const media = window.matchMedia('(prefers-reduced-motion: reduce)');
   const ctx = canvas?.getContext('2d');
-  if (entrance && canvas && ctx && !media.matches && !document.hidden && window.scrollY < 80) {
-    const width = window.innerWidth, height = window.innerHeight;
+
+  if (entrance && hero && canvas && ctx && headline && line && !media.matches && !document.hidden && window.scrollY < 80) {
+    const box = hero.getBoundingClientRect();
+    const width = box.width, height = box.height;
+    const compact = window.innerWidth <= 860;
     const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     canvas.width = Math.round(width * dpr);
     canvas.height = Math.round(height * dpr);
     ctx.scale(dpr, dpr);
 
+    // 写真の楕円マスクと中心を揃える。スマホでは人物が上へ移る。
+    const cx = width * (compact ? .64 : .7456);
+    const cy = height * (compact ? .26 : .4);
+    const radius = Math.min(width * (compact ? .36 : .235), window.innerHeight * .29, 275);
+    entrance.style.setProperty('--source-x', `${cx}px`);
+    entrance.style.setProperty('--source-y', `${cy}px`);
+    entrance.style.setProperty('--source-size', `${radius * 2.5}px`);
+
     const mask = document.createElement('canvas');
-    mask.width = Math.min(width, 1000);
-    mask.height = 180;
     const ink = mask.getContext('2d', { willReadFrequently: true });
     if (ink) {
-      const fontSize = Math.min(122, width * .135);
-      ink.font = `700 ${fontSize}px Arial, sans-serif`;
-      ink.textAlign = 'center';
-      ink.textBaseline = 'middle';
-      ink.fillText('OZAKEN.AI', mask.width / 2, 90);
-      const pixels = ink.getImageData(0, 0, mask.width, mask.height).data;
-      const targets: { x: number; y: number }[] = [];
-      const spacing = width < 600 ? 3 : 5;
-      for (let y = 0; y < mask.height; y += spacing) {
-        for (let x = 0; x < mask.width; x += spacing) {
-          if (pixels[(y * mask.width + x) * 4 + 3] > 128) {
-            targets.push({ x: x - mask.width / 2, y: y - 90 });
+      function sampleHeadline() {
+        const style = getComputedStyle(headline!);
+        const lineBox = line!.getBoundingClientRect();
+        const heroBox = hero!.getBoundingClientRect();
+        const size = parseFloat(style.fontSize);
+        const lineHeight = parseFloat(style.lineHeight) || size * 1.08;
+        const padding = Math.ceil(size * .4);
+        mask.width = Math.ceil(lineBox.width + padding * 2);
+        mask.height = Math.ceil(lineHeight + padding * 2);
+        ink!.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+        if ('letterSpacing' in ink!) ink!.letterSpacing = style.letterSpacing;
+        const word = headline!.textContent || '';
+        const metrics = ink!.measureText(word);
+        const ascent = metrics.fontBoundingBoxAscent || size * .88;
+        const descent = metrics.fontBoundingBoxDescent || size * .12;
+        const baseline = (lineHeight - ascent - descent) / 2 + ascent;
+        ink!.fillText(word, padding, padding + baseline);
+        const pixels = ink!.getImageData(0, 0, mask.width, mask.height).data;
+        const targets: { x: number; y: number }[] = [];
+        const spacing = compact ? 2 : 3;
+        for (let y = padding; y < padding + lineHeight; y += spacing) {
+          for (let x = padding; x < mask.width - padding; x += spacing) {
+            if (pixels[(y * mask.width + x) * 4 + 3] > 128) {
+              targets.push({ x: lineBox.left - heroBox.left + x - padding,
+                y: lineBox.top - heroBox.top + y - padding });
+            }
           }
         }
+        return targets;
       }
-      const count = Math.min(targets.length, width < 600 ? 650 : 1100);
-      const radius = Math.min(width * .34, height * .29, 275);
+      let targets = sampleHeadline();
+      const count = Math.min(targets.length, compact ? 650 : 1000);
       const points = Array.from({ length: count }, (_, i) => {
         const y = 1 - 2 * (i + .5) / count;
         const r = Math.sqrt(1 - y * y), angle = i * 2.399963;
-        const target = targets[Math.floor(i * targets.length / count)];
-        return { x: Math.cos(angle) * r, y, z: Math.sin(angle) * r, target };
+        return { x: Math.cos(angle) * r, y, z: Math.sin(angle) * r };
       });
+      const dust = [...hero.querySelectorAll<HTMLElement>('.spot-dust b')];
       const smooth = (v: number) => { const t = Math.max(0, Math.min(1, v)); return t * t * (3 - 2 * t); };
       let raf = 0, ended = false;
       const start = performance.now();
-      const hero = document.querySelector('.hero');
-      hero?.classList.add('intro-reveal');
+      hero.classList.add('intro-reveal');
       root.dataset.intro = 'running';
       const events = new AbortController();
       function finish() {
@@ -69,8 +87,7 @@
         events.abort();
         root.dataset.intro = 'done';
         entrance!.remove();
-        // 途中で操作したときも、見出しや人物を待たせない。
-        hero?.classList.add('intro-complete');
+        hero!.classList.add('intro-complete');
       }
       const failsafe = window.setTimeout(finish, 3200);
       for (const event of ['pointerdown', 'keydown', 'wheel', 'touchstart']) {
@@ -80,45 +97,63 @@
       window.addEventListener('pagehide', finish, { signal: events.signal });
       document.addEventListener('visibilitychange', finish, { signal: events.signal });
       media.addEventListener('change', finish, { signal: events.signal });
+      // 初期フォントの差し替えを吸収。文字へ集まり始めたあとは位置を跳ばさない。
+      document.fonts.ready.then(() => {
+        if (!ended && performance.now() - start < 700) targets = sampleHeadline();
+      });
 
       function draw(now: number) {
         const t = (now - start) / 1000;
-        if (t >= 2.75) { finish(); return; }
+        if (t >= 2.9 || !targets.length) { finish(); return; }
         ctx!.clearRect(0, 0, width, height);
-        const gather = smooth((t - .38) / .88);
-        const release = smooth((t - 1.55) / 1.05);
-        const appear = smooth(t / .22);
-        const turn = t * .65;
+        const appear = smooth(t / .2);
+        const release = smooth((t - 1.75) / 1.05);
+        const turn = t * .8;
         const cos = Math.cos(turn), sin = Math.sin(turn);
-        const cx = width / 2, cy = height * .46;
+        // 最後は実際に動いている粒子の現在位置へ渡す。読むだけなのでレイアウトは変えない。
+        const destinations = release > 0 ? dust.map(el => {
+          const rect = el.getBoundingClientRect();
+          return { x: rect.left - box.left + rect.width / 2, y: rect.top - box.top + rect.height / 2 };
+        }) : [];
         const projected = points.map((p, i) => {
           const x = p.x * cos + p.z * sin;
           const z = -p.x * sin + p.z * cos;
-          const perspective = 1 / (1 - z * .32);
-          const sx = x * radius * perspective, sy = p.y * radius * perspective;
-          const tx = p.target.x, ty = p.target.y;
-          const dx = sx * (1 - gather) + tx * gather;
-          const dy = sy * (1 - gather) + ty * gather;
-          const spread = 1 + release * (3 + (i % 7) * .7);
-          return { x: cx + dx * spread, y: cy + dy * spread + p.y * release * height * .3,
-            alpha: appear * (1 - release) * (.35 + (z + 1) * .3), z };
+          const perspective = 1 / (1 - z * .28);
+          const target = targets[Math.floor(i * targets.length / count)];
+          const gather = smooth((t - .5 - (i % 7) * .016) / .83);
+          const arc = Math.sin(gather * Math.PI);
+          const sx = cx + x * radius * perspective;
+          const sy = cy + p.y * radius * perspective;
+          let px = sx * (1 - gather) + target.x * gather + arc * radius * .13 * Math.sin(i * .3);
+          let py = sy * (1 - gather) + target.y * gather - arc * radius * (.3 + (i % 3) * .1);
+          if (destinations.length) {
+            const end = destinations[i % destinations.length];
+            px = px * (1 - release) + end.x * release;
+            py = py * (1 - release) + end.y * release - Math.sin(release * Math.PI) * radius * .15;
+          }
+          return { x: px, y: py, alpha: appear * (1 - release) * (.28 + (z + 1) * .28), z };
         });
-        // 球面の近接点だけを結ぶ。文字が定着するにつれて線を消す。
-        if (gather < .98) {
-          ctx!.lineWidth = .6;
+        const network = appear * (1 - smooth((t - .55) / .75));
+        if (network > .01) {
+          ctx!.lineWidth = .65;
           for (let i = 0; i < projected.length; i += 3) {
             const a = projected[i];
             for (const offset of [13, 21, 34]) {
               const b = projected[(i + offset) % projected.length];
-              if (Math.hypot(a.x - b.x, a.y - b.y) > radius * .35) continue;
-              ctx!.strokeStyle = `rgba(105,218,240,${.2 * (1 - gather) * appear})`;
+              if (Math.hypot(a.x - b.x, a.y - b.y) > radius * .32) continue;
+              ctx!.strokeStyle = `rgba(190,210,240,${.24 * network})`;
               ctx!.beginPath(); ctx!.moveTo(a.x, a.y); ctx!.lineTo(b.x, b.y); ctx!.stroke();
             }
           }
+          // 人物を包む、傾いた一筋の光。画面全体の枠やグリッドは置かない。
+          ctx!.strokeStyle = `rgba(210,223,244,${.18 * network})`;
+          ctx!.beginPath();
+          ctx!.ellipse(cx, cy, radius * 1.16, radius * .42, -.4 + t * .2, 0, Math.PI * 2);
+          ctx!.stroke();
         }
-        projected.forEach((p, i) => {
-          ctx!.fillStyle = i % 9 === 0 ? `rgba(186,173,255,${p.alpha})` : `rgba(166,242,255,${p.alpha})`;
-          const size = (.8 + (p.z + 1) * .5) * (1 + release);
+        projected.forEach(p => {
+          ctx!.fillStyle = `rgba(235,243,255,${p.alpha})`;
+          const size = .85 + (p.z + 1) * .5;
           ctx!.fillRect(p.x, p.y, size, size);
         });
         raf = requestAnimationFrame(draw);
@@ -133,57 +168,37 @@
   @media(prefers-reduced-motion:no-preference){
     html[data-intro='pending'] .site-entrance,
     html[data-intro='running'] .site-entrance{
-      display:block;position:fixed;inset:0;z-index:90;pointer-events:none;overflow:hidden;
-      color:#a6f2ff;animation:entrance-clear 3.2s step-end both;
+      display:block;position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden;
+      animation:entrance-clear 3.2s step-end both;
     }
-    .entrance-shade{position:absolute;inset:0;background:#060b12}
-    .entrance-grid{
-      position:absolute;inset:-20%;opacity:.14;
-      background-image:linear-gradient(#63bfd729 1px,transparent 1px),linear-gradient(90deg,#63bfd729 1px,transparent 1px);
-      background-size:64px 64px;
-      mask-image:radial-gradient(ellipse at center,#000,transparent 66%);
+    .entrance-field{
+      position:absolute;inset:0;width:100%;height:100%;
+      mask-image:linear-gradient(90deg,transparent,#000 16px,#000 calc(100% - 16px),transparent);
     }
-    .entrance-field{position:absolute;inset:0;width:100%;height:100%}
-    .entrance-orbit{position:absolute;left:50%;top:46%;width:min(64vw,520px);aspect-ratio:1;transform:translate(-50%,-50%);perspective:600px}
-    .entrance-orbit i{position:absolute;inset:0;border:1px solid #93eaff38;border-radius:50%;box-shadow:0 0 18px #6ac8ff0a}
-    .entrance-orbit i:nth-child(1){transform:rotateX(68deg) rotateZ(-28deg)}
-    .entrance-orbit i:nth-child(2){transform:rotateY(63deg) rotateZ(36deg)}
-    .entrance-orbit i:nth-child(3){inset:-12%;border-style:dashed;border-color:#b2abff26;transform:rotateX(28deg) rotateY(-35deg)}
-    .entrance-caption{position:absolute;top:calc(46% + min(32vw,260px) + 32px);left:0;width:100%;text-align:center;font:500 clamp(8px,1.1vw,11px)/1.8 var(--f-en);letter-spacing:.22em}
-    .entrance-caption b{font-weight:400;color:#b8adff;margin-inline:.45em}
-    .entrance-coordinates{display:flex;align-items:center;justify-content:center;gap:12px;font-size:8px;letter-spacing:.18em;color:#708e9c;margin-top:10px}
-    .entrance-coordinates i{height:1px;width:30px;background:#6594a0}
-    .entrance-frame{position:absolute;inset:clamp(20px,4vw,60px);opacity:.5}
-    .entrance-frame i{position:absolute;width:22px;height:22px;border-color:#8de5f8;border-style:solid;border-width:0}
-    .entrance-frame i:nth-child(1){top:0;left:0;border-top-width:1px;border-left-width:1px}
-    .entrance-frame i:nth-child(2){top:0;right:0;border-top-width:1px;border-right-width:1px}
-    .entrance-frame i:nth-child(3){bottom:0;left:0;border-bottom-width:1px;border-left-width:1px}
-    .entrance-frame i:nth-child(4){bottom:0;right:0;border-bottom-width:1px;border-right-width:1px}
-    .entrance-scan{position:absolute;top:0;left:0;right:0;height:1px;opacity:0;background:linear-gradient(90deg,transparent,#9af0ff 30%,#e5faff 65%,transparent);box-shadow:0 0 12px #6de6ff,0 -24px 60px 12px #6dd4ff20}
-    html[data-intro='running'] .entrance-shade{animation:entrance-unveil 2.65s ease both}
-    html[data-intro='running'] .entrance-grid{animation:entrance-grid 2.65s ease both}
-    html[data-intro='running'] .entrance-orbit{animation:entrance-orbits 1.6s ease both}
-    html[data-intro='running'] .entrance-caption{animation:entrance-caption 2s ease both}
-    html[data-intro='running'] .entrance-frame{animation:entrance-frame 2.6s ease both}
-    html[data-intro='running'] .entrance-scan{animation:entrance-scan 1.3s cubic-bezier(.4,0,.3,1) 1.25s both}
-    .hero.intro-reveal.on .hero-actor{animation:actor-materialize 1.5s var(--ease) 1s both}
-    .hero.intro-reveal.on .hero-eyebrow{transition-delay:1.15s}
-    .hero.intro-reveal.on .line:nth-child(1)>span{transition-delay:1.3s}
-    .hero.intro-reveal.on .line:nth-child(2)>span{transition-delay:1.42s}
-    .hero.intro-reveal.on .line:nth-child(3)>span{transition-delay:1.54s}
-    .hero.intro-reveal.on .hero-sub{transition-delay:1.65s}
-    .hero.intro-reveal.on .hero-actions{transition-delay:1.78s}
-    .hero.intro-reveal.on .hero-foot{transition-delay:1.9s}
+    .entrance-aura{
+      position:absolute;left:var(--source-x);top:var(--source-y);width:var(--source-size);aspect-ratio:1;
+      transform:translate(-50%,-50%);border-radius:50%;
+      background:radial-gradient(ellipse,rgba(190,210,240,.09),rgba(190,210,240,.025) 42%,transparent 70%);
+      animation:entrance-aura 2.9s ease both;
+    }
+    /* JSの読み込みが失敗しても、写真と本文はCSSだけで最終表示になる。 */
+    html[data-intro='pending'] .hero .hero-actor,
+    .hero.intro-reveal.on .hero-actor{animation:portrait-awaken 2.5s var(--ease) both}
+    html[data-intro='pending'] .hero .line>span,
+    .hero.intro-reveal.on .line>span{transition:none;transform:none}
+    html[data-intro='pending'] .hero .hero-h1 em,
+    .hero.intro-reveal.on .hero-h1 em{transition:none;animation:headline-ignite 2.9s ease both}
+    html[data-intro='pending'] .hero .spot-dust,
+    .hero.intro-reveal .spot-dust{animation:dust-handoff 2.9s ease both}
   }
-  .hero.intro-complete.on .hero-actor{animation:none;opacity:1;transform:none;clip-path:none}
+  .hero.intro-complete.on .hero-actor{animation:none;opacity:1;transform:none}
+  .hero.intro-complete.on .hero-h1 em{animation:none;opacity:1;color:#fff}
+  .hero.intro-complete .spot-dust{animation:none;opacity:.95}
   .hero.intro-complete.on .hero-eyebrow,.hero.intro-complete.on .line>span,
   .hero.intro-complete.on .hero-sub,.hero.intro-complete.on .hero-actions,.hero.intro-complete.on .hero-foot{transition:none;opacity:1;transform:none}
   @keyframes entrance-clear{to{visibility:hidden;opacity:0}}
-  @keyframes entrance-unveil{0%,46%{opacity:1;clip-path:inset(0)}85%,100%{opacity:0;clip-path:inset(100% 0 0)}}
-  @keyframes entrance-grid{0%{transform:scale(1.1);opacity:0}20%,48%{opacity:.3}100%{transform:scale(1.8);opacity:0}}
-  @keyframes entrance-orbits{0%{opacity:0;transform:translate(-50%,-50%) scale(.65) rotate(-25deg)}24%,60%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1.2) rotate(25deg)}}
-  @keyframes entrance-caption{0%,12%{opacity:0;transform:translateY(8px)}28%,72%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-6px)}}
-  @keyframes entrance-frame{0%{opacity:0;transform:scale(.97)}18%,68%{opacity:.5}100%{opacity:0;transform:scale(1.015)}}
-  @keyframes entrance-scan{0%{transform:translateY(0);opacity:0}10%,72%{opacity:.8}100%{transform:translateY(100vh);opacity:0}}
-  @keyframes actor-materialize{from{opacity:0;clip-path:inset(0 0 100%);transform:scale(1.025)}to{opacity:1;clip-path:inset(0);transform:scale(1)}}
+  @keyframes entrance-aura{0%{opacity:0}22%,48%{opacity:1}100%{opacity:0}}
+  @keyframes portrait-awaken{0%{opacity:.35;transform:scale(1.018)}50%{opacity:.85}100%{opacity:1;transform:none}}
+  @keyframes headline-ignite{0%,30%{opacity:.25;color:var(--fg-mid);text-shadow:none}54%{opacity:.4}72%,100%{opacity:1;color:#fff;text-shadow:0 0 34px rgba(190,210,255,.26)}}
+  @keyframes dust-handoff{0%,45%{opacity:.08}100%{opacity:.95}}
 </style>

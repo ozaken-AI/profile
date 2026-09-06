@@ -2,7 +2,6 @@
 import '../styles/global.css';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
-import SiteEntrance from '../components/SiteEntrance.astro';
 import { SITE, IDENTITY } from '../lib/site';
 
 interface Props {
@@ -148,8 +147,6 @@ const jsonLd = [...identityJsonLd, ...pageJsonLd];
 </style></noscript>
 </head>
 <body>
-
-{isTop && <SiteEntrance />}
 
 <div class="rail" aria-hidden="true">
   <div class="rail-mark">OZAKEN.AI</div>
