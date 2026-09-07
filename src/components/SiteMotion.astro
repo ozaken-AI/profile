@@ -1,12 +1,12 @@
 ---
 // ヒーローの粒子を、本文では余白を流れる小さな光として引き継ぐ。
-const motes = Array.from({ length: 8 }, (_, i) => ({
-  x: [5, 91, 16, 84, 8, 95, 24, 76][i],
-  y: 12 + (i * 17) % 78,
-  size: i % 3 === 0 ? 2 : 1,
-  duration: 12 + i % 4 * 2,
-  delay: -i * 2.3,
-  dx: i % 2 === 0 ? 28 : -22,
+const motes = Array.from({ length: 16 }, (_, i) => ({
+  x: [5, 91, 16, 84, 8, 95, 24, 76, 12, 88, 32, 68, 20, 80, 40, 60][i],
+  y: 12 + (i * 29) % 78,
+  size: [1, 1.4, 2.2, 1.2][i % 4],
+  duration: 12 + i % 5 * 1.7,
+  delay: -i * 1.9,
+  dx: [20, -28, 36, -24][i % 4],
 }));
 ---
 
@@ -65,13 +65,13 @@ const motes = Array.from({ length: 8 }, (_, i) => ({
   }
   .ambient-field::before,.ambient-field::after{
     content:'';position:absolute;width:85%;height:min(65%,580px);left:-20%;top:8%;
-    background:radial-gradient(ellipse at center,rgba(var(--ambient-rgb),.09),rgba(var(--ambient-rgb),.025) 35%,transparent 68%);
-    transform:rotate(-22deg);opacity:.8;
+    background:radial-gradient(ellipse at center,rgba(var(--ambient-rgb),.16),rgba(var(--ambient-rgb),.045) 35%,transparent 68%);
+    transform:rotate(-22deg);opacity:.8;--glow-low:.2;--glow-high:1;
   }
-  .ambient-field::after{left:48%;top:48%;height:min(42%,420px);opacity:.5}
+  .ambient-field::after{left:48%;top:48%;height:min(42%,420px);opacity:.5;--glow-low:.12;--glow-high:.75}
   .ambient-field>i{
     position:absolute;left:var(--x);top:var(--y);width:var(--size);height:var(--size);
-    border-radius:50%;background:rgba(var(--ambient-rgb),.65);opacity:0;
+    border-radius:50%;background:rgba(var(--ambient-rgb),.72);opacity:0;
     box-shadow:0 0 7px rgba(var(--ambient-rgb),.25);
   }
   .band--paper>.ambient-field{--ambient-rgb:142,111,69;opacity:.65}
@@ -89,10 +89,14 @@ const motes = Array.from({ length: 8 }, (_, i) => ({
 
   @media(prefers-reduced-motion:no-preference){
     .ambient-field::before,.ambient-field::after{
-      animation:ambient-light 22s ease-in-out infinite alternate;
+      /* ゆっくりした移動に、周期の違う明暗を重ねる。 */
+      animation:ambient-light 22s ease-in-out infinite alternate,ambient-breathe 9s ease-in-out infinite;
       animation-delay:var(--ambient-phase,0s);animation-play-state:var(--motion-play);
     }
-    .ambient-field::after{animation-name:ambient-light-return;animation-duration:29s}
+    .ambient-field::after{
+      animation-name:ambient-light-return,ambient-breathe;animation-duration:29s,12s;
+      animation-delay:var(--ambient-phase,0s),calc(var(--ambient-phase,0s) - 4s);
+    }
     .ambient-field>i{
       animation:ambient-mote var(--duration) linear infinite;
       animation-delay:calc(var(--delay) + var(--ambient-phase,0s));animation-play-state:var(--motion-play);
@@ -115,16 +119,21 @@ const motes = Array.from({ length: 8 }, (_, i) => ({
     .photo-frame:nth-child(even)>img{animation-direction:alternate-reverse;animation-duration:19s}
   }
   @keyframes ambient-light{
-    from{transform:translate(-6%,-5%) rotate(-22deg);opacity:.5}
-    to{transform:translate(26%,20%) rotate(-12deg);opacity:1}
+    from{transform:translate(-6%,-5%) rotate(-22deg)}
+    to{transform:translate(26%,20%) rotate(-12deg)}
   }
   @keyframes ambient-light-return{
-    from{transform:translate(8%,12%) rotate(-18deg);opacity:.3}
-    to{transform:translate(-24%,-16%) rotate(-28deg);opacity:.7}
+    from{transform:translate(8%,12%) rotate(-18deg)}
+    to{transform:translate(-24%,-16%) rotate(-28deg)}
+  }
+  @keyframes ambient-breathe{
+    0%,100%{opacity:var(--glow-low)}
+    50%{opacity:var(--glow-high)}
   }
   @keyframes ambient-mote{
     0%,100%{opacity:0}
-    18%,72%{opacity:.55}
+    18%,72%{opacity:.6}
+    48%{opacity:.38}
     from{transform:translate(0,30px)}
     to{transform:translate(var(--dx),-80px)}
   }
@@ -138,7 +147,7 @@ const motes = Array.from({ length: 8 }, (_, i) => ({
   }
   @media(max-width:600px){
     .photo-frame--wide{aspect-ratio:16/9}
-    .ambient-field>i:nth-child(n+6){display:none}
+    .ambient-field>i:nth-child(n+10){display:none}
   }
   @media(prefers-reduced-motion:reduce){
     .ambient-field{display:none}
