@@ -1,99 +1,70 @@
 # ozaken.ai
 
-小澤健祐（おざけん）のポートフォリオサイト。
+小澤健祐（おざけん）の公式プロフィールサイト。Astroの静的書き出し、microCMSのお知らせ、Cloudflare PagesとPages Functionsで運用する。
 
-- **技術構成**: Astro（静的書き出し）+ microCMS + Cloudflare Pages
-- **デザイン**: ダーク基調 × 巨大タイポ。墨の地に生成り紙の面を1枚差し込む二層構成
-- **書体**: 見出し Shippori Mincho B1 ／ 数字 Archivo ／ 本文 Zen Kaku Gothic New
+**AIが引き継ぐときは [AGENTS.md](AGENTS.md) から読む。** 作業手順と決定事項をリポジトリ内に残し、チャット履歴に依存させない。
+
+## 運用の入口
+
+| やりたいこと | 読む文書 |
+|---|---|
+| 開発・検証・公開・トラブル対応 | [運用ガイド](docs/operations.md) |
+| 資料・PDF・ワークシートの作成 | [資料作成ガイド](docs/materials.md) |
+| プロフィール・実績・SEO・告知用素材 | [文章・素材の運用](docs/content-and-assets.md) |
+| 見た目・アニメーション・隠しLINE | [デザインと動き](docs/design-and-motion.md) |
+| お知らせの投稿・訂正 | [投稿手順](docs/news-post.md) |
+| CMSの設定・過去記事の移行 | [CMS設定](docs/microcms-setup.md)、[移行の記録](docs/news-import.md) |
+| お問い合わせのメール | [メール設定](docs/contact-email.md) |
+| アクセス・検索の分析 | [解析設定](docs/analytics.md)、[解析API](docs/analytics-api.md) |
+| これまでの判断と理由 | [決定事項](docs/decisions.md) |
+
+## サイトとリポジトリ
+
+2026-09-07確認。開始時に設定を照合する。
+
+| | プロフィールサイト（このリポジトリ） | 資料サイト |
+|---|---|---|
+| URL | [ozaken.ai](https://ozaken.ai/) | [content.ozaken.ai](https://content.ozaken.ai/) |
+| GitHub | [ozaken-AI/profile](https://github.com/ozaken-AI/profile) | [ozaken-AI/ozaken-materials](https://github.com/ozaken-AI/ozaken-materials) |
+| 本番ブランチ | **`claude/ozaken-portfolio-site-a0aggr`** | **`main`** |
+| Cloudflare Pages | `profile` | `ozaken-materials` |
+| ビルド | `npm run build` → `dist` | 資料側READMEを参照（静的HTML） |
+
+プロフィールサイトの本番は `main` ではない。講演資料の作成・配信も別の処理である。
 
 ## 開発
 
+Node.js 22を使用する。リポジトリのルートで実行する。
+
 ```bash
-npm install
-npm run dev     # http://localhost:4321
-npm run build   # dist/ に書き出し
-npm run preview # 書き出したものを確認
+npm ci
+npm run dev -- --host 127.0.0.1
+npm run build
+npm run preview -- --host 127.0.0.1
 ```
 
-`.env` に microCMS の値を入れる（`.env.example` を複製）。**未設定でもビルドは通り**、
-お知らせが空の状態でサイトが出る。
+`.env.example` にmicroCMSの変数名がある。未設定ならお知らせは空でビルドされる。**本番で空になってよいという意味ではない。** 設定・検証・公開の詳細は[運用ガイド](docs/operations.md)へ。
 
-## ディレクトリ
+## 主な編集場所
 
-```
-src/
-  assets/photos/   写真。ビルド時に WebP と複数解像度へ自動変換される
-  components/      Ticker（関与先の流れる帯）、NewsList（お知らせ一覧）
-  layouts/Base     HTML の外枠、メタ情報、左レール、スクロール演出
-  lib/microcms.ts  お知らせの取得。失敗しても空配列を返しビルドを止めない
-  lib/site.ts      文言と定数。数字・肩書き・依頼メニュー・FAQ はここ1か所
-  pages/           ルーティング
-  styles/global.css デザインシステム
-functions/api/     Cloudflare Pages Functions（お問い合わせフォームの受け口）
-public/            そのまま配信するファイル
-```
-
-**文言を直すときは `src/lib/site.ts` を見る。** 数字・役職・依頼メニュー・依頼の流れ・FAQ は
-すべてここに集めてあるので、ページ本体を触らずに直せる。
-
-## Cloudflare Pages の設定
-
-| 項目 | 値 |
+| 場所 | 内容 |
 |---|---|
-| Build command | `npm run build` |
-| Build output directory | `dist` |
-| Production branch | `main` |
+| `src/lib/site.ts` | 本人情報、役職、実績、著書、依頼メニュー、FAQ、プロフィール文 |
+| `src/lib/microcms.ts` | 掲載日の降順でお知らせを取得。未設定・失敗は空配列 |
+| `src/pages/` | 各ページの構成・説明文・ルーティング |
+| `src/components/` | 共通表示、開幕演出、ヒーロー粒子、本文の動き |
+| `src/layouts/Base.astro` | メタ情報、構造化データ、解析、共通の表示処理 |
+| `src/styles/global.css` | 色・書体・レイアウト・共通演出 |
+| `src/assets/photos/` | サイト用写真の原本。Astro Imageで変換 |
+| `public/press/` | 顔写真・ロゴの配布ファイル |
+| `scripts/ogp/` | OGP画像の生成元と手順 |
+| `functions/api/contact.js` | 問い合わせの受信・Resendへの転送 |
+| `scripts/`、`.github/workflows/` | CMS投稿・移行、解析レポート |
 
-### 環境変数
+すべての文言が定数に入っているわけではない。修正時は `site.ts` に加え、ページ・コンポーネント・OGP元データの同じ表現も検索する。
 
-| 変数名 | 用途 | 種別 |
-|---|---|---|
-| `MICROCMS_SERVICE_DOMAIN` | `ozaken` | Text |
-| `MICROCMS_API_KEY` | microCMS の APIキー（GETのみ） | **Secret** |
-| `RESEND_API_KEY` | お問い合わせフォームの送信 | **Secret** |
-| `CONTACT_TO` | `kensuke.ozawa@aicx.jp` | Text |
-| `CONTACT_FROM` | Resend で認証済みドメインのアドレス | Text |
+## 主なページ
 
-`NODE_VERSION` は `22` を指定しておくと安定する。
+`/`（活動全体）、`/speaking/`（依頼概要）、`/speaking/keynote/`・`training/`・`partner/`・`advisory/`（依頼の4形式）、`/news/`、`/news/[id]/`、`/about/`、`/press/`、`/contact/`、`/privacy/`。
 
-## お知らせの更新
-
-**チャットから投稿できます。** 内容を伝えると GitHub Actions が microCMS に登録し、
-Webhook 経由でサイトに反映されます。手順は `docs/news-post.md`。
-
-GitHub の Actions タブ →「お知らせを投稿」から自分で実行することもできます。
-
-microCMS の管理画面から直接書いても構わない。どちらの場合も Webhook で
-Cloudflare Pages のデプロイが走り、1〜2分でサイトに反映される。
-CMS側の設定手順は `docs/microcms-setup.md`。
-
-登壇の報告もここに投稿する。カテゴリ「登壇」で絞れば実績アーカイブとして読める。
-
-## 画像
-
-`src/assets/photos/` に置く。**元データのまま置けばよい。**
-ビルド時に WebP へ変換し、表示サイズに応じた複数解像度を生成する。
-自分でリサイズすると画質が落ちるだけなので、縮小しないこと。
-
-どの写真をどこで使っているかは `src/assets/photos/README.md`。
-
-## ページ構成
-
-| URL | 内容 | 狙い |
-|---|---|---|
-| `/` | トップ | 指名検索（「小澤健祐」「おざけん AI」）の受け皿 |
-| `/speaking/` | 講演依頼・テーマ一覧・FAQ | **SEOの主戦場**（「生成AI 講演」「AIエージェント 研修」） |
-| `/news/` | お知らせ一覧（カテゴリ絞り込み） | 更新の受け皿 |
-| `/news/[id]/` | 個別記事 | **ロングテールの本体**。登壇報告が積み上がる |
-| `/about/` | プロフィール・経歴・役職 | 人物の信頼 |
-| `/press/` | プレスキット | 主催者が告知を作るための素材 |
-| `/contact/` | お問い合わせフォーム | 依頼の受け口 |
-
-`/news/[id]/` は microCMS の記事数だけ生成される。CMSが空・未設定なら生成されない
-（ビルドは通る）。
-
-## プレスキット
-
-`public/press/` に配布用の高解像度写真とプロフィールのテキストを置いてある。
-プロフィール文の本体は `src/lib/site.ts` の `BIO`。**テキストファイルはそこから生成した
-コピーなので、文面を変えたら `public/press/ozaken-profile.txt` も更新すること。**
+トップのお知らせはヒーロー直後に最新8件。`/news/` は取得した記事の一覧とカテゴリ絞り込み。プレスキットのプロフィール文は `BIO` を画面からコピーする構成で、現在 `public/press/ozaken-profile.txt` は存在しない。
