@@ -110,17 +110,17 @@ async function fetchList(limit: number): Promise<NewsItem[]> {
 
 /**
  * お知らせを取得する。
- * 未設定・通信失敗のときは空配列を返し、ビルドは止めない。
+ *
+ * キーが未設定なら空配列を返す（キーを入れる前でもサイトは出せる）。
+ * キーがあるのに取得できなかったときは投げる。
+ * ここで空を返すと /news/<id>/ が1枚も生成されないまま公開され、
+ * すでに検索に載っている記事URLが一斉に404になる。
+ * ビルドを失敗させれば、Cloudflare Pages は直前の正常なデプロイを残す。
  */
 export async function getNews(limit = 500): Promise<NewsItem[]> {
   if (!cmsConfigured) {
     console.warn('[microcms] 環境変数が未設定のため、お知らせは空で書き出します');
     return [];
   }
-  try {
-    return await fetchList(limit);
-  } catch (e) {
-    console.error('[microcms] 取得に失敗しました:', e instanceof Error ? e.message : e);
-    return [];
-  }
+  return await fetchList(limit);
 }

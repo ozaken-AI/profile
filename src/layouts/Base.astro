@@ -20,10 +20,12 @@ interface Props {
   railInitial?: string;
   /** このページ固有の構造化データ。共通の人物情報とは別に足される */
   jsonLd?: Record<string, unknown>[];
+  /** 検索結果に出さないページ。canonical も出さない */
+  noindex?: boolean;
 }
 const {
   title, description, ogImage, ogImageAlt, ogType = 'website', publishedTime,
-  railInitial = '現在地', jsonLd: pageJsonLd = [],
+  railInitial = '現在地', jsonLd: pageJsonLd = [], noindex = false,
 } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const isTop = Astro.url.pathname === '/';
@@ -70,7 +72,9 @@ const jsonLd = [...identityJsonLd, ...pageJsonLd];
 </script>}
 <title>{title}</title>
 <meta name="description" content={description} />
-<link rel="canonical" href={canonical} />
+{noindex
+  ? <meta name="robots" content="noindex, follow" />
+  : <link rel="canonical" href={canonical} />}
 {jsonLd.length > 0 && (
   <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')} />
 )}
