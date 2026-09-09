@@ -1,0 +1,27 @@
+# microCMS にいま入っているお知らせのIDを一覧するワークフロー。
+#
+# GitHub の Actions タブ →「お知らせのIDを見る」→ Run workflow から実行する。
+# Claude との会話からも同じものを起動でき、実行後のログをそのまま読める。
+#
+# 公開後に記事が欠落していないかの確認と、
+# 旧サイトから引き継いだIDが404になっていないかの調査に使う。
+name: お知らせのIDを見る
+
+on:
+  workflow_dispatch:
+
+jobs:
+  ids:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: IDを取ってくる
+        env:
+          MICROCMS_SERVICE_DOMAIN: ozaken
+          MICROCMS_API_KEY: ${{ secrets.MICROCMS_API_KEY }}
+        run: node scripts/news-ids.mjs
