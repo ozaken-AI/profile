@@ -20,8 +20,11 @@ jobs:
         with:
           node-version: '22'
 
+      # 読み取り専用キー（MICROCMS_API_KEY）はビルド用でCloudflare側にあり、
+      # GitHub の Secrets には無いことがある。その場合は投稿用のキーで読む。
       - name: IDを取ってくる
         env:
           MICROCMS_SERVICE_DOMAIN: ozaken
           MICROCMS_API_KEY: ${{ secrets.MICROCMS_API_KEY }}
+          MICROCMS_WRITE_API_KEY: ${{ secrets.MICROCMS_WRITE_API_KEY }}
         run: node scripts/news-ids.mjs
