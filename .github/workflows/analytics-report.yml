@@ -22,6 +22,10 @@ on:
         description: '直近何日ぶん'
         required: false
         default: '28'
+      rows:
+        description: 'ページ別の表示件数。旧URLの洗い出しなど、多く見たいときに増やす'
+        required: false
+        default: '20'
 
 jobs:
   report:
@@ -40,4 +44,4 @@ jobs:
           GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
           GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
           SITE_URL: ${{ secrets.SITE_URL }}
-        run: node scripts/analytics-report.mjs "${{ inputs.report }}" --days "${{ inputs.days }}"
+        run: node scripts/analytics-report.mjs "${{ inputs.report }}" --days "${{ inputs.days }}" --rows "${{ inputs.rows }}"

@@ -17,6 +17,9 @@ import { google } from 'googleapis';
 
 const DAYS = Number((process.argv.find((a) => a.startsWith('--days=')) || '').split('=')[1]) ||
   Number(process.argv[process.argv.indexOf('--days') + 1]) || 28;
+// ページ別で何行まで出すか。旧URLの生き残りを洗い出すときは大きくする。
+const ROWS = Number((process.argv.find((a) => a.startsWith('--rows=')) || '').split('=')[1]) ||
+  Number(process.argv[process.argv.indexOf('--rows') + 1]) || 20;
 const CMD = process.argv[2] && !process.argv[2].startsWith('--') ? process.argv[2] : 'all';
 
 function need(name) {
@@ -167,7 +170,7 @@ async function gscPages() {
       startDate: isoDaysAgo(DAYS + 3),
       endDate: isoDaysAgo(0),
       dimensions: ['page'],
-      rowLimit: 20,
+      rowLimit: ROWS,
     },
   });
   const rows = (res.data.rows || []).map((r) => [
