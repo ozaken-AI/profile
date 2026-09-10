@@ -1,14 +1,14 @@
 ---
 import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
-import SpeakerEvidence from '../../components/SpeakerEvidence.astro';
+import KeynoteSeries from '../../components/KeynoteSeries.astro';
 import { SITE, MENU, STEPS, FAQ, TOPICS, SPEAKING_TRACK } from '../../lib/site';
 import speakingStanding from '../../assets/photos/speaking-standing.jpg';
 import speakingSeated from '../../assets/photos/speaking-seated.jpg';
 
-const title = '生成AI・AIエージェントの講演・研修 | 小澤健祐（おざけん）';
+const title = '生成AIの基調講演・研修・アドバイザリー | 小澤健祐（おざけん）';
 const description =
-  '生成AI・AIエージェントの講演、社内研修、伴走支援、顧問のご依頼。2025年の登壇300回超。経営層向けの基調講演から全社リテラシー研修まで、聞き手と目的に合わせて構成します。';
+  '経営論・組織論からAIの最新トレンドまで。カンファレンスの基調講演、社内研修、伴走支援、顧問のご依頼を承ります。2025年の登壇300回超。聞き手と目的に合わせて構成します。';
 ---
 <Base
   {title} {description}
@@ -22,7 +22,7 @@ const description =
   <p class="label rv">Speaking</p>
   <h1 class="phead-h1 rv rv-d1">生成AI・AIエージェントの<br />講演・研修・アドバイザリー</h1>
   <p class="phead-lede rv rv-d2">
-    経営会議、役員合宿、業界団体の講演会、全社研修。
+    カンファレンスの基調講演、経営会議、役員合宿、全社研修。
     AIへの投資判断、組織への定着、現場での活用まで、
     参加者に持ち帰ってほしい論点から構成を組み立てます。
   </p>
@@ -31,9 +31,11 @@ const description =
     <a class="btn" href="/contact/?kind=keynote">講演の日程・内容を相談する <span aria-hidden="true">→</span></a>
   </div>
   <nav class="section-links rv" aria-label="講演・研修ページ内">
-    <a href="#topics">講演テーマ</a><a href="#selected-speaking">代表的な登壇</a><a href="#formats">依頼の形式</a><a href="#conditions">費用・開催条件</a>
+    <a href="#keynote-series">基調講演シリーズ</a><a href="#topics">講演・研修テーマ</a><a href="#formats">依頼の形式</a><a href="#conditions">費用・開催条件</a>
   </nav>
 </section>
+
+<KeynoteSeries compact />
 
 <section class="band band--paper" id="topics" data-rail="話せるテーマ">
   <div class="wrap">
@@ -58,8 +60,6 @@ const description =
     </div>
   </div>
 </section>
-
-<SpeakerEvidence />
 
 <section class="band wrap" id="formats" data-rail="依頼の形式">
   <p class="label rv">Examples</p>
