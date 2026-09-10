@@ -73,6 +73,14 @@ PMシンポジウム2026の基調講演と、2026年6月17日のHR EXPO特別講
 
 資料の自己紹介にも本書の確定条件を引き継ぐ。ただし資料本体は別リポジトリで作成する。[資料作成ガイド](materials.md)を参照する。
 
+## YouTubeへの導線（2026-09-10追加）
+
+本人指定のチャンネルは [AI現場報告](https://www.youtube.com/@AI_Field_Report)。URLと名称は `SITE.youtube` / `SITE.youtubeName` に集約し、トップの「動画と資料」セクションと共通フッターから案内する。トップはYouTubeと講演・実践資料の2つのカードを並べ、760px以下では縦に並べる。
+
+紹介文はチャンネルの公開説明・動画一覧で確認した、生成AIの使い方、企業での活用、対談・解説・現場レポートに基づく。登録者数・投稿本数・更新頻度は固定表示しない。番組チャンネルをPersonの `sameAs` に自動で追加しない。
+
+動画プレーヤーの埋め込みや自動再生は行わず、チャンネルへ直接リンクする。外部クリックは既存の `outbound_click` の対象。URL変更時はカードとフッター、PC・モバイルの表示、リンク先、キーボードのフォーカスを確認する。
+
 ## ファビコン・サイトアイコン
 
 `public/` の `favicon.svg`、`favicon.ico`、`favicon-32.png`、`favicon-96.png`、`apple-touch-icon.png`、`icon-192.png`、`icon-512.png` と `site.webmanifest` を確認する。参照元は `Base.astro` とmanifest。OGPとは別の画像・キャッシュで、`OG_VERSION` の変更だけではアイコンは更新されない。

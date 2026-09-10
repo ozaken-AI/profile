@@ -10,6 +10,8 @@ export const SITE = {
   x: 'https://x.com/ozaken_AI',
   xHandle: '@ozaken_AI',
   contentSite: 'https://content.ozaken.ai/',
+  youtube: 'https://www.youtube.com/@AI_Field_Report',
+  youtubeName: 'AI現場報告',
   /** トップの隠しコマンドからだけ出す。ナビには載せない。 */
   line: 'https://line.me/ti/p/gmxEFjBHs4',
 } as const;
