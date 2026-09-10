@@ -202,23 +202,52 @@ const description =
 <Ticker />
 
 <!-- ============ RESOURCES ============ -->
-<section class="band wrap" id="s-resources" data-rail="資料">
+<section class="band wrap" id="s-resources" data-rail="動画と資料">
   <p class="label rv">Resources</p>
-  <h2 class="h2 rv rv-d1">話した内容は、<br />資料としてまとめています。</h2>
+  <h2 class="h2 rv rv-d1">AIの実践を、<br />動画と資料で。</h2>
 
-  <a class="res rv rv-d2" href={SITE.contentSite} target="_blank" rel="noopener noreferrer">
-    <div>
-      <p class="res-domain">content.ozaken.ai</p>
-      <p class="res-p">講演で使った図解や、導入を検討するときの手順をまとめた資料を置いています。社内での共有にお使いください。</p>
-      <div class="res-tags">
-        <span class="res-tag">講演スライド</span>
-        <span class="res-tag">導入の手順書</span>
-        <span class="res-tag">チェックリスト</span>
-        <span class="res-tag">図解</span>
+  <div class="res-grid">
+    <a class="res res--video rv rv-d2" href={SITE.youtube} target="_blank" rel="noopener noreferrer">
+      <p class="res-kicker">
+        <svg class="res-play" width="28" height="20" viewBox="0 0 28 20" aria-hidden="true" focusable="false">
+          <rect width="28" height="20" rx="5" fill="currentColor" />
+          <path d="m11 5 8 5-8 5Z" fill="#fff" />
+        </svg>
+        YouTube
+      </p>
+      <div>
+        <h3 class="res-title">{SITE.youtubeName}</h3>
+        <p class="res-p">生成AIの使い方から企業での活用まで。現場での実践や気づきを、対談と解説でお届けします。</p>
+        <div class="res-tags">
+          <span class="res-tag">AI活用の解説</span>
+          <span class="res-tag">現場レポート</span>
+          <span class="res-tag">AIエージェント</span>
+        </div>
       </div>
-    </div>
-    <div class="res-go" aria-hidden="true">→</div>
-  </a>
+      <div class="res-footer">
+        <span class="res-action">YouTubeで見る</span>
+        <span class="res-go" aria-hidden="true">↗</span>
+      </div>
+    </a>
+
+    <a class="res rv rv-d3" href={SITE.contentSite} target="_blank" rel="noopener noreferrer">
+      <p class="res-kicker">content.ozaken.ai</p>
+      <div>
+        <h3 class="res-title">講演・実践資料</h3>
+        <p class="res-p">講演で使った図解や、導入を検討するときの手順をまとめています。社内での共有にお使いください。</p>
+        <div class="res-tags">
+          <span class="res-tag">講演スライド</span>
+          <span class="res-tag">導入の手順書</span>
+          <span class="res-tag">チェックリスト</span>
+          <span class="res-tag">図解</span>
+        </div>
+      </div>
+      <div class="res-footer">
+        <span class="res-action">資料一覧を見る</span>
+        <span class="res-go" aria-hidden="true">↗</span>
+      </div>
+    </a>
+  </div>
 
 </section>
 
