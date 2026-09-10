@@ -1,0 +1,114 @@
+---
+import { KEYNOTE_SERIES, SITE } from '../lib/site';
+
+interface Props { compact?: boolean; }
+const { compact = false } = Astro.props;
+---
+
+<section class:list={['band', 'keynote-series', { 'band--paper': !compact }]} id="keynote-series" data-rail="基調講演シリーズ">
+  <div class="wrap">
+    <p class="label rv">Keynote Series ／ 基調講演</p>
+    <h2 class="h2 rv">{KEYNOTE_SERIES.title}</h2>
+    <p class="lede rv">{KEYNOTE_SERIES.lead}</p>
+
+    {compact ? (
+      <div class="keynote-index stg">
+        {KEYNOTE_SERIES.talks.map((talk) => (
+          <a class="keynote-index-item" href={`/speaking/keynote/#${talk.id}`}>
+            <span class="keynote-category">{talk.number} ／ {talk.category}</span>
+            <h3>{talk.title}</h3>
+            <p>{talk.subtitle}</p>
+            <span class="keynote-index-arrow" aria-hidden="true">↗</span>
+          </a>
+        ))}
+      </div>
+    ) : (
+      <>
+        <p class="keynote-note rv">1テーマからご依頼いただけます。連続開催を前提とせず、開催趣旨に合わせてテーマを組み合わせることもできます。</p>
+        <nav class="keynote-nav rv" aria-label="基調講演のテーマ">
+          {KEYNOTE_SERIES.talks.map((talk) => <a href={`#${talk.id}`}>{talk.number} {talk.category} <span aria-hidden="true">↓</span></a>)}
+        </nav>
+        <div class="keynote-talks">
+          {KEYNOTE_SERIES.talks.map((talk) => (
+            <article class="keynote-talk" id={talk.id} aria-labelledby={`${talk.id}-title`}>
+              <header class="rv">
+                <p class="keynote-category">{talk.number} ／ {talk.category} <span lang="en">{talk.english}</span></p>
+                <h3 class="keynote-title" id={`${talk.id}-title`}>{talk.title}</h3>
+                <p class="keynote-subtitle">{talk.subtitle}</p>
+              </header>
+              <p class="keynote-description rv">{talk.description}</p>
+              <div class="keynote-detail rv">
+                <div>
+                  <h4>講演で扱う論点</h4>
+                  <ul>{talk.points.map((point) => <li>{point}</li>)}</ul>
+                </div>
+                <div class="keynote-takeaway">
+                  <h4>持ち帰る視点</h4>
+                  <p>{talk.takeaway}</p>
+                </div>
+              </div>
+              <dl class="keynote-audience rv">
+                <div><dt>対象</dt><dd>{talk.forWhom}</dd></div>
+                <div><dt>開催の例</dt><dd>{talk.occasion}</dd></div>
+              </dl>
+              <div class="keynote-sources rv">
+                <p>関連する解説資料 <span>／ 閲覧にはキーが必要です</span></p>
+                <ul>{talk.sources.map((source) => (
+                  <li><a href={new URL(source.path, SITE.contentSite).href} target="_blank" rel="noopener noreferrer">{source.title} <span aria-hidden="true">↗</span></a></li>
+                ))}</ul>
+              </div>
+            </article>
+          ))}
+        </div>
+        <p class="keynote-note rv">事例や技術動向は開催時点の情報で調整します。講演の考え方は、<a href={`${SITE.contentSite}#downloads`} target="_blank" rel="noopener noreferrer">無料公開のPDF資料</a>でもご覧いただけます。</p>
+      </>
+    )}
+    <a class="more rv" href={compact ? '/speaking/keynote/' : '/contact/?kind=keynote'}>
+      {compact ? '基調講演の内容・開催条件を見る' : '基調講演の日程・内容を相談する'} <span aria-hidden="true">→</span>
+    </a>
+  </div>
+</section>
+
+<style>
+  .keynote-series{--keynote-fg:var(--fg);--keynote-muted:var(--fg-mid);--keynote-rule:var(--rule)}
+  .keynote-series.band--paper{--keynote-fg:var(--paper-fg);--keynote-muted:var(--paper-mute);--keynote-rule:var(--paper-rule)}
+  .keynote-note{font-size:.86rem;color:var(--keynote-muted);max-width:52em;margin-top:1.3rem}
+  .keynote-note a,.keynote-sources a{border-bottom:1px solid var(--keynote-rule)}
+  .keynote-series a:focus-visible{outline:2px solid currentColor;outline-offset:6px}
+  .keynote-nav{display:flex;flex-wrap:wrap;gap:.7rem 2rem;margin-top:2rem;font-size:.9rem}
+  .keynote-nav a{border-bottom:1px solid var(--keynote-rule);padding:.35rem 0}
+  .keynote-nav span{margin-left:1rem}
+  .keynote-talks{margin-top:2.6rem}
+  .keynote-talk{border-top:1px solid var(--keynote-rule);padding:clamp(2.4rem,5vw,4rem) 0;scroll-margin-top:2rem}
+  .keynote-talk:last-child{border-bottom:1px solid var(--keynote-rule)}
+  .keynote-category{font-family:var(--f-en);font-size:.8rem;letter-spacing:.08em;color:var(--keynote-muted)}
+  .keynote-category span{margin-left:1rem;font-size:.72rem;letter-spacing:.13em}
+  .keynote-title{font-family:var(--f-mincho);font-size:clamp(1.5rem,3.3vw,2.35rem);font-weight:500;line-height:1.6;margin-top:1rem;text-wrap:balance}
+  .keynote-subtitle{font-size:clamp(.9rem,1.5vw,1.05rem);margin-top:.55rem;color:var(--keynote-muted)}
+  .keynote-description{font-size:.96rem;line-height:2.05;max-width:56em;margin-top:1.5rem}
+  .keynote-detail{display:grid;grid-template-columns:1.1fr 1fr;gap:2.5rem;margin-top:2rem}
+  .keynote-detail h4{font-size:.81rem;font-weight:500;letter-spacing:.06em;margin-bottom:.7rem}
+  .keynote-detail ul{padding-left:1.15rem;display:grid;gap:.45rem}
+  .keynote-detail li,.keynote-takeaway p{font-size:.9rem;color:var(--keynote-muted);line-height:1.95}
+  .keynote-detail li::marker{color:var(--seal)}
+  .keynote-takeaway{border-left:2px solid var(--keynote-rule);padding-left:1.5rem}
+  .keynote-audience{margin-top:1.8rem;font-size:.8rem;color:var(--keynote-muted);display:grid;gap:.35rem}
+  .keynote-audience>div{display:grid;grid-template-columns:5em 1fr;gap:1rem}
+  .keynote-sources{font-size:.78rem;color:var(--keynote-muted);margin-top:1.5rem}
+  .keynote-sources ul{list-style:none;display:flex;flex-wrap:wrap;gap:.35rem 1.5rem;margin-top:.4rem}
+  .keynote-sources a:hover,.keynote-note a:hover{color:var(--keynote-fg);border-color:currentColor}
+  .keynote-index{margin-top:2.5rem;border-bottom:1px solid var(--keynote-rule)}
+  .keynote-index-item{display:block;position:relative;padding:1.65rem 3rem 1.65rem 0;border-top:1px solid var(--keynote-rule)}
+  .keynote-index-item h3{font-family:var(--f-mincho);font-size:clamp(1.1rem,2.3vw,1.65rem);font-weight:500;line-height:1.6;margin:.55rem 0 .3rem}
+  .keynote-index-item>p{font-size:.85rem;color:var(--keynote-muted)}
+  .keynote-index-arrow{position:absolute;right:.5rem;top:50%;font-size:1.3rem;transition:transform .25s}
+  .keynote-index-item:hover .keynote-index-arrow{transform:translate(3px,-3px)}
+  @media(max-width:700px){
+    .keynote-detail{grid-template-columns:1fr;gap:1.5rem}
+    .keynote-takeaway{padding-left:1rem}
+    .keynote-category span{display:block;margin:.4rem 0 0}
+    .keynote-audience>div{grid-template-columns:4em 1fr;gap:.5rem}
+    .keynote-sources p span{display:block}
+  }
+  @media(prefers-reduced-motion:reduce){.keynote-index-arrow{transition:none}.keynote-index-item:hover .keynote-index-arrow{transform:none}}
+</style>

@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
-import SpeakerEvidence from '../../components/SpeakerEvidence.astro';
+import KeynoteSeries from '../../components/KeynoteSeries.astro';
 import { SITE, MENU, TOPICS, FAQ, SPEAKING_TRACK } from '../../lib/site';
 import speakingStanding from '../../assets/photos/speaking-standing.jpg';
 import speakingSeated from '../../assets/photos/speaking-seated.jpg';
@@ -22,9 +22,11 @@ const others = MENU.filter((m) => m.slug !== item.slug);
 
 const photo = item.slug === 'keynote' || item.slug === 'training' ? speakingStanding : speakingSeated;
 
-const heading = item.slug === 'keynote' ? '経営層向け 生成AI・AIエージェント講演' : item.title;
-const title = `${item.slug === 'keynote' ? '経営層向け 生成AI・AIエージェント講演' : `生成AIの${item.kind}`}のご依頼 | 小澤健祐（おざけん）`;
-const description = `小澤健祐（おざけん）への生成AI・AIエージェントの${item.kind}のご依頼。${item.spec}。${item.forWhom}に向け、目的に合わせて構成します。内容・実績・進め方をご案内。費用は個別見積もりです。`;
+const heading = item.slug === 'keynote' ? '生成AI・AIエージェントの基調講演' : item.title;
+const title = `${item.slug === 'keynote' ? '生成AIの基調講演｜経営論・組織論・最新トレンド' : `生成AIの${item.kind}のご依頼`} | 小澤健祐（おざけん）`;
+const description = item.slug === 'keynote'
+  ? '小澤健祐（おざけん）の基調講演。企業の価値を考える経営論、人間の役割を問い直す組織論、AIエージェントの最新技術トレンドを3つのテーマでお届けします。カンファレンス・業界団体・役員合宿に。60〜90分、費用は個別見積もり。'
+  : `小澤健祐（おざけん）への生成AI・AIエージェントの${item.kind}のご依頼。${item.spec}。${item.forWhom}に向け、目的に合わせて構成します。内容・実績・進め方をご案内。費用は個別見積もりです。`;
 const contactHref = `/contact/?kind=${item.slug}`;
 
 const crumbs = [
@@ -59,6 +61,11 @@ const jsonLd = [{
   <p class="lp-sub rv rv-d1">小澤健祐（おざけん）／AICX協会 代表理事</p>
   <p class="phead-lede rv rv-d2">{item.lede}</p>
   <a class="btn rv rv-d3" href={contactHref}>日程・内容を相談する <span aria-hidden="true">→</span></a>
+  {item.slug === 'keynote' && (
+    <nav class="section-links rv" aria-label="基調講演ページ内">
+      <a href="#keynote-series">3つの講演テーマ</a><a href="#program">構成例</a><a href="#conditions">費用・開催条件</a>
+    </nav>
+  )}
 </section>
 
 <section class="band wrap" style="padding-top:0" data-rail="概要">
@@ -70,7 +77,9 @@ const jsonLd = [{
   </dl>
 </section>
 
-{topics.length > 0 && (
+{item.slug === 'keynote' && <KeynoteSeries />}
+
+{item.slug !== 'keynote' && topics.length > 0 && (
   <section class="band band--paper" data-rail="テーマ">
     <div class="wrap">
       <p class="label rv">Topics</p>
@@ -96,16 +105,15 @@ const jsonLd = [{
 
 {item.slug === 'keynote' && (
   <>
-    <SpeakerEvidence />
-    <section class="band wrap" data-rail="講演の構成例">
+    <section class="band wrap" id="program" data-rail="講演の構成例">
       <p class="label rv">Program example</p>
-      <h2 class="h2 rv">経営層向け・60分の構成例</h2>
-      <p class="lede rv">テーマ「生成AIとAIエージェントで、事業の何が置き換わるのか」の場合。事前の打ち合わせで業種・目的に合わせて調整します。</p>
+      <h2 class="h2 rv">カンファレンス・60分の構成例</h2>
+      <p class="lede rv">「AI時代、企業の価値はどこに宿るのか」の場合。イベントの開催趣旨や後続セッションに合わせ、事例と時間配分を調整します。</p>
       <ol class="program-list stg">
-        <li><span>10分</span><div><h3>いま何が変わっているか</h3><p>生成AIとAIエージェントの違いを、自社への影響として捉える。</p></div></li>
-        <li><span>20分</span><div><h3>事例から、導入の条件を考える</h3><p>業務・情報・人の役割を分け、導入が進む条件とつまずく要因を整理する。</p></div></li>
-        <li><span>20分</span><div><h3>自社で決めるべきこと</h3><p>着手する業務、投資の優先順位、承認と責任の置き方を考える。</p></div></li>
-        <li><span>10分</span><div><h3>質疑応答</h3><p>参加者の疑問をもとに、意思決定に必要な論点を深める。</p></div></li>
+        <li><span>10分</span><div><h3>企業の価値を問い直す</h3><p>AIによって変わる事業の前提を共有し、講演を通じて考える問いを置く。</p></div></li>
+        <li><span>20分</span><div><h3>既存事業の強みを捉え直す</h3><p>顧客との関係、一次情報、現場の知が、どのように価値につながるかを考える。</p></div></li>
+        <li><span>20分</span><div><h3>経営と組織の意思決定へ</h3><p>事業の再定義、投資の優先順位、人間が担う役割をつなぎ、次に議論する論点を整理する。</p></div></li>
+        <li><span>10分</span><div><h3>質疑応答・次の議論へ</h3><p>参加者の疑問を深め、続くセッションや自社での検討につながる問いを共有する。</p></div></li>
       </ol>
       <p class="track-note rv">講演内容を社内で検討する際は、<a href="/about/#books">著書</a>・<a href={SITE.contentSite} target="_blank" rel="noopener noreferrer">公開資料</a>・<a href="/press/">プロフィールと写真</a>もご参照ください。</p>
     </section>
@@ -165,7 +173,7 @@ const jsonLd = [{
   </section>
 )}
 
-<section class="band band--paper" data-rail="よくある質問">
+<section class="band band--paper" id="conditions" data-rail="よくある質問">
   <div class="wrap">
     <p class="label rv">FAQ</p>
     <h2 class="h2">よく聞かれること</h2>

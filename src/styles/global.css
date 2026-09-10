@@ -678,6 +678,8 @@ section{position:relative}
   transition:background .35s ease,padding-inline .35s ease;
 }
 .news-row:hover{background:var(--ink-2);padding-inline:1rem}
+/* display:grid がブラウザ標準の [hidden] を上書きしないよう、絞り込みを優先する。 */
+.news-row[hidden]{display:none}
 .news-date{font-family:var(--f-en);font-size:.82rem;font-weight:600;color:var(--fg-mute);font-variant-numeric:tabular-nums}
 /* 行ごとに独立したグリッドなので、幅を固定しないとタイトルの開始位置が揃わない */
 .news-cat{
