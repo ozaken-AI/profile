@@ -2,167 +2,208 @@
 import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import KeynoteSeries from '../../components/KeynoteSeries.astro';
-import { SITE, MENU, STEPS, FAQ, TOPICS, SPEAKING_TRACK } from '../../lib/site';
+import ServiceDetails from '../../components/ServiceDetails.astro';
+import { SITE, MENU, FAQ, SPEAKING_TRACK, TRAINING_PROGRAMS, ORGANIZATION_THEMES, PRIVATE_ENGAGEMENTS, speakingHref } from '../../lib/site';
 import speakingStanding from '../../assets/photos/speaking-standing.jpg';
 import speakingSeated from '../../assets/photos/speaking-seated.jpg';
 
-const title = '生成AIの基調講演・研修・アドバイザリー | 小澤健祐（おざけん）';
-const description =
-  '経営論・組織論からAIの最新トレンドまで。カンファレンスの基調講演、社内研修、伴走支援、顧問のご依頼を承ります。2025年の登壇300回超。聞き手と目的に合わせて構成します。';
+const [, training, partner, advisory] = MENU;
+const formats = [
+  { slug: 'keynote', label: '基調講演', purpose: '次の議論へ、視点をひらく', detail: '経営論・組織論・AIエージェントの最新技術トレンド' },
+  { slug: 'training', label: '研修・ワークショップ', purpose: '自分の業務で、使ってみる', detail: '生成AIの基礎・Gemini・Microsoft 365 Copilot' },
+  { slug: 'partner', label: '組織変革・伴走支援', purpose: '個人の活用を、組織の力に', detail: '管理職の対話・業務設計・全社への活用浸透' },
+  { slug: 'advisory', label: '顧問・アドバイザリー', purpose: '経営の判断を、ともに考える', detail: 'AI戦略・投資判断・経営陣の壁打ち' },
+] as const;
+const steps = [
+  { n: '01', h: '目的をうかがう', p: '対象者、課題、日程・期間をお知らせください。講演の企画段階や、社内の論点整理からでも構いません。' },
+  { n: '02', h: '内容と条件を決める', p: '講演・研修・プロジェクトなど、目的に合う形をご提案。内容・範囲・費用・資料共有の条件をすり合わせます。' },
+  { n: '03', h: '準備・実施・振り返り', p: '業種・職種・利用環境に合わせて準備します。継続支援では、定例で現場の課題や次の打ち手を確認します。' },
+];
+const title = '生成AIの基調講演・Gemini／Copilot研修・組織変革 | 小澤健祐（おざけん）';
+const description = '経営論・組織論・AIエージェントの最新技術トレンドを扱う基調講演から、Gemini・Microsoft 365 Copilot研修、ワークショップ、全社へのAI活用浸透、顧問まで。小澤健祐への依頼内容と実績・開催条件を一つのページでご案内。費用は個別見積もりです。';
+const jsonLd = [{
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'ホーム', item: `${SITE.url}/` },
+    { '@type': 'ListItem', position: 2, name: '講演・研修・組織変革', item: `${SITE.url}/speaking/` },
+  ],
+}, ...MENU.map((item) => ({
+  '@context': 'https://schema.org', '@type': 'Service',
+  '@id': `${SITE.url}/speaking/#service-${item.slug}`,
+  name: item.title, serviceType: item.kind, description: item.body,
+  url: `${SITE.url}${speakingHref(item.slug)}`, provider: { '@id': `${SITE.url}/#person` },
+}))];
 ---
-<Base
-  {title} {description}
-  ogImage="/ogp-speaking.png"
-  ogImageAlt="小澤健祐（おざけん）｜生成AI・AIエージェントの講演・研修・アドバイザリー"
-  railInitial="依頼"
->
+<Base {title} {description} {jsonLd} ogImage="/ogp-speaking.png"
+  ogImageAlt="小澤健祐（おざけん）｜生成AI・AIエージェントの講演・研修・アドバイザリー" railInitial="依頼">
 
 <section class="phead wrap" data-rail="依頼">
   <div class="phead-glow" aria-hidden="true"></div>
-  <p class="label rv">Speaking</p>
-  <h1 class="phead-h1 rv rv-d1">生成AI・AIエージェントの<br />講演・研修・アドバイザリー</h1>
-  <p class="phead-lede rv rv-d2">
-    カンファレンスの基調講演、経営会議、役員合宿、全社研修。
-    AIへの投資判断、組織への定着、現場での活用まで、
-    参加者に持ち帰ってほしい論点から構成を組み立てます。
-  </p>
+  <p class="label rv">Speaking &amp; Advisory</p>
+  <h1 class="phead-h1 rv rv-d1">講演・研修から、<br />組織の変革まで。</h1>
+  <p class="service-byline rv rv-d1">生成AI・AIエージェント ／ 小澤健祐（おざけん）</p>
+  <p class="phead-lede rv rv-d2">経営の意思決定から、現場での実践へ。<br />基調講演、製品別の研修、全社へのAI活用浸透、継続的な助言まで。目的と参加者、組織の状況に合わせて組み立てます。</p>
   <div class="booking-strip rv rv-d2">
-    <p><b>基調講演 60〜90分・質疑応答つき</b><br />会場／オンライン／ハイブリッド。費用は個別見積もり。</p>
-    <a class="btn" href="/contact/?kind=keynote">講演の日程・内容を相談する <span aria-hidden="true">→</span></a>
+    <p>単発の講演・研修から、継続的な支援まで。<br /><b>費用は個別見積もり。企画段階からご相談いただけます。</b></p>
+    <a class="btn" href="/contact/">内容・日程を相談する <span aria-hidden="true">→</span></a>
   </div>
-  <nav class="section-links rv" aria-label="講演・研修ページ内">
-    <a href="#keynote-series">基調講演シリーズ</a><a href="#topics">講演・研修テーマ</a><a href="#formats">依頼の形式</a><a href="#conditions">費用・開催条件</a>
+  <nav class="format-nav rv" id="formats" aria-label="依頼内容を選ぶ">
+    {formats.map((format, i) => (
+      <a href={speakingHref(format.slug)}>
+        <span class="format-number">{String(i + 1).padStart(2, '0')} <span aria-hidden="true">↓</span></span>
+        <strong>{format.label}</strong><span class="format-purpose">{format.purpose}</span><span class="format-detail">{format.detail}</span>
+      </a>
+    ))}
+  </nav>
+  <nav class="section-links rv" aria-label="実績と依頼条件">
+    <a href="#engagements">企業での研修・推進実績</a><a href="#track">登壇・支援先の一覧</a><a href="#conditions">費用・開催条件</a>
   </nav>
 </section>
 
-<KeynoteSeries compact />
+<KeynoteSeries />
 
-<section class="band band--paper" id="topics" data-rail="話せるテーマ">
+<section class="band wrap" id="training" data-rail="研修・ワークショップ">
+  <span id="topics" class="anchor-alias" aria-hidden="true"></span>
+  <p class="label rv">Training &amp; Workshop</p>
+  <h2 class="h2 rv">仕事で使える、<br /><span class="phrase">AIの研修と</span><span class="phrase">ワークショップ。</span></h2>
+  <p class="lede rv">{training.lede}</p>
+  <div class="training-programs">
+    {TRAINING_PROGRAMS.map((program, i) => (
+      <article class="training-program rv">
+        <span class="program-number">{String(i + 1).padStart(2, '0')}</span>
+        <div>
+          <h3>{program.title}</h3>
+          <p class="program-audience">対象：{program.audience}</p>
+          <p class="program-lead">{program.lead}</p>
+          <ul>{program.points.map((point) => <li>{point}</li>)}</ul>
+        </div>
+      </article>
+    ))}
+  </div>
+  <p class="track-note rv">演習内容は、ご契約のプラン・管理者設定・利用できる機能を事前に確認して決めます。実務データの持ち込み範囲も、社内ルールに合わせて調整します。</p>
+  <ServiceDetails item={training} />
+</section>
+
+<section class="band band--paper" id="organization-change" data-rail="組織変革・伴走支援">
   <div class="wrap">
-    <p class="label rv">Topics</p>
-    <h2 class="h2 rv rv-d1">講演・研修で扱うテーマ</h2>
-    <p class="lede rv rv-d2">下のテーマはあくまで出発点です。実際は業種・職種・すでに使っているツールに合わせて毎回組み直します。</p>
+    <p class="label rv">Organization &amp; Adoption</p>
+    <h2 class="h2 rv">個人の工夫から、<br />組織の変化へ。</h2>
+    <p class="lede rv">{partner.lede}</p>
+    <div class="organization-themes">
+      {ORGANIZATION_THEMES.map((theme, i) => (
+        <article class="rv"><p class="program-number">{String(i + 1).padStart(2, '0')}</p><h3>{theme.title}</h3><p>{theme.body}</p></article>
+      ))}
+    </div>
+    <p class="track-note rv">管理職向けの講演・ワークショップは単発でもご相談いただけます。以下は、継続的な伴走支援の目安です。</p>
+    <ServiceDetails item={partner} />
+  </div>
+</section>
 
-    <div class="topics stg">
-      {TOPICS.map((t, i) => (
-        <article class="topic">
-          <p class="topic-n">{String(i + 1).padStart(2, '0')}</p>
-          <div>
-            <h3 class="topic-h">{t.title}</h3>
-            <p class="topic-lead">{t.lead}</p>
-            <ul class="topic-points">
-              {t.points.map((pt) => <li>{pt}</li>)}
-            </ul>
-            <p class="topic-for">対象：{t.forWhom}</p>
-          </div>
-        </article>
+<section class="band wrap" id="advisory" data-rail="顧問・アドバイザリー">
+  <p class="label rv">Advisory</p>
+  <h2 class="h2 rv">AI戦略を、<br />経営の対話から。</h2>
+  <p class="lede rv">{advisory.lede} 技術動向、投資の優先順位、組織のあり方を、経営陣・事業責任者と継続的に議論します。</p>
+  <ServiceDetails item={advisory} />
+</section>
+
+<section class="band band--paper" id="engagements" data-rail="企業での実績">
+  <div class="wrap">
+    <p class="label rv">Corporate Engagements</p>
+    <h2 class="h2 rv">企業での研修・推進実績</h2>
+    <p class="lede rv">管理職の合宿、社員向け研修、実践ワークショップ、全社へのAIエージェント活用浸透。社名を非公開とした取り組みの一部をご紹介します。</p>
+    <div class="engagement-list">
+      {PRIVATE_ENGAGEMENTS.map((engagement) => (
+        <article class="engagement rv"><p class="engagement-sector">{engagement.sector}</p><div><p class="engagement-kind">{engagement.kind}</p><h3>{engagement.title}</h3></div></article>
       ))}
     </div>
   </div>
 </section>
 
-<section class="band wrap" id="formats" data-rail="依頼の形式">
-  <p class="label rv">Examples</p>
-  <h2 class="h2 rv rv-d1">目的に合わせて選ぶ、4つの形式</h2>
-  <p class="lede rv rv-d2">よくある形を並べています。ここに当てはまらなくても構いません。目的だけ伝えてもらえれば、こちらから形を提案します。</p>
-
-  <div class="menu stg">
-    {MENU.map((m) => (
-      <a class="menu-item" href={`/speaking/${m.slug}/`}>
-        <span class="menu-idx">{m.idx}</span>
-        <h3 class="menu-h">{m.kind}</h3>
-        <p class="menu-sub">{m.title}</p>
-        <p class="menu-spec">{m.spec}</p>
-        <p class="menu-p">{m.body}</p>
-        <p class="menu-for">向いている場：<b>{m.forWhom}</b></p>
-        <span class="menu-go">詳しく <span aria-hidden="true">→</span></span>
-      </a>
-    ))}
-  </div>
-
-  <div class="pair rv rv-d3">
-    <div class="photo-frame">
-      <Image src={speakingStanding} alt="基調講演で登壇する小澤健祐" width={2000} widths={[560, 1120, 1600, 2000]} quality={84} sizes="(max-width:600px) 100vw, 46vw" class="shotbox" />
+<section class="band wrap" id="track" data-rail="登壇・支援先">
+  <p class="label rv">Track Record</p>
+  <h2 class="h2 rv">登壇・支援先の一覧</h2>
+  <p class="lede rv">カンファレンス、企業・行政、顧問として関わる先まで。公開できる実績を役割ごとにまとめています。個別の活動は<a href="/news/">お知らせ</a>でもご覧いただけます。</p>
+  <details class="public-track rv">
+    <summary>登壇・支援先を一覧で見る</summary>
+    <div class="track">
+      {SPEAKING_TRACK.map((group) => <div class="track-g"><h3 class="track-k">{group.label}</h3><ul class="track-l">{group.items.map((item) => <li>{item}</li>)}</ul></div>)}
     </div>
-    <div class="photo-frame">
-      <Image src={speakingSeated} alt="パネルディスカッションに登壇する小澤健祐" width={2000} widths={[560, 1120, 1600, 2000]} quality={84} sizes="(max-width:600px) 100vw, 46vw" class="shotbox" />
-    </div>
+  </details>
+  <div class="pair rv">
+    <div class="photo-frame"><Image src={speakingStanding} alt="基調講演で登壇する小澤健祐" width={2000} widths={[560, 1120, 1600, 2000]} quality={84} sizes="(max-width:600px) 100vw, 46vw" class="shotbox" /></div>
+    <div class="photo-frame"><Image src={speakingSeated} alt="パネルディスカッションに登壇する小澤健祐" width={2000} widths={[560, 1120, 1600, 2000]} quality={84} sizes="(max-width:600px) 100vw, 46vw" class="shotbox" /></div>
   </div>
-</section>
-
-<section class="band wrap" id="track" data-rail="登壇実績">
-  <p class="label rv">Track record</p>
-  <h2 class="h2 rv rv-d1">これまでの登壇・支援</h2>
-  <p class="lede rv rv-d2">
-    展示会の特別講演から、社内向けの研修、顧問として関わっている先まで。役割ごとに公開できる実績をまとめています。
-  </p>
-  <div class="track stg">
-    {SPEAKING_TRACK.map((g) => (
-      <div class="track-g">
-        <h3 class="track-k">{g.label}</h3>
-        <ul class="track-l">{g.items.map((i) => <li>{i}</li>)}</ul>
-      </div>
-    ))}
-  </div>
-  <p class="track-note rv rv-d2">
-    一回ごとの報告は<a href="/news/" style="border-bottom:1px solid var(--rule)">お知らせ</a>に残しています。ここに出しているのはその一部です。
-  </p>
 </section>
 
 <section class="band wrap" data-rail="依頼の流れ">
-  <p class="label rv">How it works</p>
-  <h2 class="h2 rv rv-d1">依頼から当日までの流れ</h2>
+  <p class="label rv">How It Works</p>
+  <h2 class="h2 rv">ご相談から実施まで</h2>
   <div class="steps steps--dark stg">
-    {STEPS.map((s) => (
-      <div class="step-d">
-        <p class="step-n">{s.n}</p>
-        <h3 class="step-h">{s.h}</h3>
-        <p class="step-p">{s.p}</p>
-      </div>
-    ))}
+    {steps.map((step) => <div class="step-d"><p class="step-n">{step.n}</p><h3 class="step-h">{step.h}</h3><p class="step-p">{step.p}</p></div>)}
   </div>
 </section>
 
 <section class="band band--paper" id="conditions" data-rail="費用・開催条件">
   <div class="wrap">
     <p class="label rv">FAQ</p>
-    <h2 class="h2 rv rv-d1">費用・開催条件</h2>
-    <p class="lede rv">費用は個別見積もりです。内容・時間・形式をうかがい、交通・宿泊費や録画・配信の条件を含めてご案内します。</p>
-    <div class="faq stg">
-      {FAQ.map((f) => (
-        <details>
-          <summary>{f.q}</summary>
-          <p>{f.a}</p>
-        </details>
-      ))}
-    </div>
+    <h2 class="h2 rv">費用・開催条件</h2>
+    <p class="lede rv">費用は個別見積もりです。内容・時間・期間・形式をうかがい、交通・宿泊費や録画・配信の条件を含めてご案内します。</p>
+    <div class="faq stg">{FAQ.map((item) => <details><summary>{item.q}</summary><p>{item.a}</p></details>)}</div>
   </div>
 </section>
 
 <section class="contact wrap" data-rail="依頼する">
   <p class="label rv">Contact</p>
-  <h2 class="contact-h rv rv-d1">ご依頼・ご相談</h2>
-  <p class="lede rv rv-d2">
-    目的・対象者・想定人数・日程をお知らせいただけると、可否と概算をお返ししやすくなります。
-    企画が固まっていない段階のご相談も歓迎です。
-  </p>
+  <h2 class="contact-h rv">ご依頼・ご相談</h2>
+  <p class="lede rv">目的・対象者・想定人数・日程や期間をお知らせいただけると、可否と概算をお返ししやすくなります。企画が固まっていない段階のご相談も歓迎です。</p>
   <div class="contact-grid stg">
-    <a class="cc" href="/contact/">
-      <span class="cc-k">Form</span>
-      <span class="cc-v">お問い合わせフォーム</span>
-      <span class="cc-n">2〜3営業日以内に返信します。</span>
-    </a>
-    <a class="cc" href={`mailto:${SITE.email}`}>
-      <span class="cc-k">Mail</span>
-      <span class="cc-v">{SITE.email}</span>
-      <span class="cc-n">直接メールでも構いません。</span>
-    </a>
-    <a class="cc" href="/press/">
-      <span class="cc-k">Press Kit</span>
-      <span class="cc-v">告知用の素材</span>
-      <span class="cc-n">プロフィール文と顔写真はこちら。</span>
-    </a>
+    <a class="cc" href="/contact/"><span class="cc-k">Form</span><span class="cc-v">お問い合わせフォーム</span><span class="cc-n">2〜3営業日以内に返信します。</span></a>
+    <a class="cc" href={`mailto:${SITE.email}`}><span class="cc-k">Mail</span><span class="cc-v">{SITE.email}</span><span class="cc-n">直接メールでも構いません。</span></a>
+    <a class="cc" href="/press/"><span class="cc-k">Press Kit</span><span class="cc-v">告知用の素材</span><span class="cc-n">プロフィール文と顔写真はこちら。</span></a>
   </div>
 </section>
-
 </Base>
+
+<style>
+  .h2{text-wrap:balance}.phrase{display:inline-block}
+  .service-byline{color:var(--fg-mid);font-size:clamp(.8rem,1.5vw,1rem);margin-top:1.5rem}
+  .format-nav{scroll-margin-top:6rem;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-block:1px solid var(--rule);margin-top:3rem}
+  .format-nav>a{display:flex;flex-direction:column;gap:.55rem;padding:1.6rem 1.2rem;transition:background .25s}
+  .format-nav>a+a{border-left:1px solid var(--rule)}
+  .format-nav>a:hover{background:rgba(150,180,220,.07)}
+  .format-number{display:flex;justify-content:space-between;font-family:var(--f-en);font-size:.78rem;color:var(--fg-mute);margin-bottom:.4rem}
+  .format-nav strong{font-size:1rem;font-weight:500}
+  .format-purpose{font-family:var(--f-mincho);font-size:.86rem}
+  .format-detail{font-size:.74rem;color:var(--fg-mid);line-height:1.8}
+  .format-nav a:focus-visible,summary:focus-visible{outline:2px solid currentColor;outline-offset:4px}
+  .training-programs{margin-top:3rem}
+  .training-program{display:grid;grid-template-columns:3rem 1fr;gap:1.4rem;border-top:1px solid var(--rule);padding:2rem 0}
+  .training-program h3,.organization-themes h3,.engagement h3{font-family:var(--f-mincho);font-weight:500;line-height:1.65;text-wrap:pretty;font-size:clamp(1.1rem,2.2vw,1.55rem);overflow-wrap:anywhere}
+  .program-number{font-family:var(--f-en);font-size:1.3rem;line-height:1.5;color:var(--fg-mute)}
+  .program-audience{font-size:.78rem;color:var(--fg-mid);margin-top:.5rem}
+  .program-lead{font-size:.92rem;line-height:2;max-width:55em;margin-top:1rem}
+  .training-program ul{font-size:.84rem;color:var(--fg-mid);padding-left:1.2rem;line-height:1.95;margin-top:1rem}
+  .organization-themes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 3rem;margin-top:2.5rem}
+  .organization-themes article{padding:1.8rem 0;border-top:1px solid var(--paper-rule)}
+  .organization-themes .program-number{color:var(--paper-mute);margin-bottom:.7rem}
+  .organization-themes h3{font-size:1.18rem}
+  .organization-themes article>p:last-child{font-size:.9rem;color:var(--paper-mute);line-height:1.95;margin-top:.7rem}
+  .engagement-list{margin-top:2.5rem;border-bottom:1px solid var(--paper-rule)}
+  .engagement{display:grid;grid-template-columns:12rem minmax(0,1fr);gap:2rem;padding:1.8rem 0;border-top:1px solid var(--paper-rule)}
+  .engagement-sector{font-size:.95rem}
+  .engagement-kind{font-size:.73rem;color:var(--paper-mute);margin-bottom:.45rem}
+  .engagement h3{font-size:clamp(1.05rem,2vw,1.45rem)}
+  .public-track{margin-top:2rem;border-block:1px solid var(--rule)}
+  .public-track summary{cursor:pointer;padding:1.2rem 0;font-size:.95rem}
+  .public-track .track{margin:0 0 1.5rem}
+  #track .lede a{border-bottom:1px solid var(--rule)}
+  .anchor-alias{display:block;scroll-margin-top:6rem}
+  @media(max-width:1000px){.format-nav{grid-template-columns:repeat(2,minmax(0,1fr))}.format-nav>a:nth-child(3){border-left:0}.format-nav>a:nth-child(n+3){border-top:1px solid var(--rule)}}
+  @media(max-width:600px){
+    .format-nav{grid-template-columns:1fr}.format-nav>a{padding:1.2rem 0}.format-nav>a+a{border-left:0;border-top:1px solid var(--rule)}
+    .format-number{margin:0}.format-nav strong{font-size:1.1rem}.format-purpose{font-size:.92rem}
+    .training-program{grid-template-columns:1fr;gap:.6rem}.organization-themes{grid-template-columns:1fr}
+    .engagement{grid-template-columns:1fr;gap:.55rem}.engagement-sector{font-weight:500}.engagement-kind{margin-bottom:.25rem}
+  }
+  @media(prefers-reduced-motion:reduce){.format-nav>a{transition:none}}
+</style>

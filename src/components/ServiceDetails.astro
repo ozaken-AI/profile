@@ -1,0 +1,46 @@
+---
+import type { MENU } from '../lib/site';
+interface Props { item: (typeof MENU)[number]; }
+const { item } = Astro.props;
+---
+
+<div class="service-details">
+  <dl class="service-facts rv">
+    {item.facts.map((fact) => <div><dt>{fact.k}</dt><dd>{fact.v}</dd></div>)}
+  </dl>
+  <details class="service-more rv">
+    <summary>{item.kind}の進め方・お渡しするもの</summary>
+    <div class="service-more-body">
+      <h3>こんなご相談から始まります</h3>
+      <ul>{item.situations.map((situation) => <li>{situation}</li>)}</ul>
+      <h3>進め方</h3>
+      <ol class="service-flow">
+        {item.flow.map((step) => <li><h4>{step.h}</h4><p>{step.p}</p></li>)}
+      </ol>
+      <h3>お渡しするもの</h3>
+      <ul>{item.deliver.map((deliverable) => <li>{deliverable}</li>)}</ul>
+    </div>
+  </details>
+  <slot />
+  <a class="more rv" href={`/contact/?kind=${item.slug}`}>{item.kind}について相談する <span aria-hidden="true">→</span></a>
+</div>
+
+<style>
+  .service-details{--service-muted:var(--fg-mid);--service-rule:var(--rule);margin-top:2.5rem}
+  :global(.band--paper) .service-details{--service-muted:var(--paper-mute);--service-rule:var(--paper-rule)}
+  .service-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 2.5rem}
+  .service-facts>div{display:grid;grid-template-columns:3em 1fr;gap:1rem;border-top:1px solid var(--service-rule);padding:1.15rem 0}
+  dt{font-size:.78rem;color:var(--service-muted)}
+  dd{font-size:.9rem;line-height:1.9}
+  .service-more{border-block:1px solid var(--service-rule);margin-top:1.5rem}
+  summary{padding:1.2rem 0;cursor:pointer;font-size:.93rem;font-weight:500}
+  summary:focus-visible{outline:2px solid currentColor;outline-offset:5px}
+  .service-more-body{padding:.4rem 0 2rem;max-width:58em}
+  .service-more-body h3{font-size:.92rem;font-weight:500;margin:1.5rem 0 .8rem}
+  .service-more-body ul{padding-left:1.2rem;color:var(--service-muted);font-size:.87rem;line-height:2}
+  .service-flow{padding-left:1.2rem;display:grid;gap:1.2rem;font-size:.87rem}
+  h4{font-size:.9rem;font-weight:500;margin-bottom:.3rem}
+  .service-flow p{color:var(--service-muted);line-height:1.95}
+  .more{margin-top:1.8rem}
+  @media(max-width:600px){.service-facts{grid-template-columns:1fr}.service-facts>div{gap:.7rem}}
+</style>
