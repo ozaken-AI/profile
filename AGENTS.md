@@ -11,6 +11,7 @@
 | 全体像、作業するリポジトリの選択 | [README](README.md)、[運用ガイド](docs/operations.md) |
 | 開発、検証、PR、公開、障害対応 | [運用ガイド](docs/operations.md) |
 | 本人情報、SEO、告知文、写真、ロゴ、OGP | [文章・素材の運用](docs/content-and-assets.md) |
+| 依頼ページの構成、製品別研修、匿名の企業実績 | [統合ページの編集・検証](docs/speaking-page.md) |
 | 基調講演シリーズ、主催者向けの講演企画 | [基調講演の編集・企画](docs/keynote-series.md) |
 | 講演資料、PDF、ワークシート、週次トレンド | [資料作成と別リポジトリへの引き継ぎ](docs/materials.md) |
 | デザイン、開幕演出、粒子、LINE | [デザインと動き](docs/design-and-motion.md) |

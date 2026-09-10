@@ -65,6 +65,6 @@ npm run preview -- --host 127.0.0.1
 
 ## 主なページ
 
-`/`（活動全体）、`/speaking/`（依頼概要）、`/speaking/keynote/`・`training/`・`partner/`・`advisory/`（依頼の4形式）、`/news/`、`/news/[id]/`、`/about/`、`/press/`、`/contact/`、`/privacy/`。
+`/`（活動全体）、`/speaking/`（基調講演・研修・組織変革・顧問を1ページに集約。旧4詳細URLは301転送）、`/news/`、`/news/[id]/`、`/about/`、`/press/`、`/contact/`、`/privacy/`。
 
 トップのお知らせはヒーロー直後に最新8件。`/news/` は取得した記事の一覧とカテゴリ絞り込み。プレスキットのプロフィール文は `BIO` を画面からコピーする構成で、現在 `public/press/ozaken-profile.txt` は存在しない。

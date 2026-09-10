@@ -7,7 +7,7 @@ import HeroDust from '../components/HeroDust.astro';
 import SiteEntrance from '../components/SiteEntrance.astro';
 import SpeakingFocus from '../components/SpeakingFocus.astro';
 import { getNews } from '../lib/microcms';
-import { SITE, NUMBERS, ROLES, HERO_ROLES, MENU, STEPS, FAQ, PROFILE } from '../lib/site';
+import { SITE, NUMBERS, ROLES, HERO_ROLES, MENU, STEPS, FAQ, PROFILE, speakingHref } from '../lib/site';
 
 import panel from '../assets/photos/panel.jpg';
 import venue from '../assets/photos/venue.jpg';
@@ -140,7 +140,7 @@ const description =
 
   <div class="menu stg">
     {MENU.map((m) => (
-      <a class="menu-item" href={`/speaking/${m.slug}/`}>
+      <a class="menu-item" href={speakingHref(m.slug)}>
         <span class="menu-idx">{m.idx}</span>
         <h3 class="menu-h">{m.kind}</h3>
         <p class="menu-sub">{m.title}</p>

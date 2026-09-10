@@ -7,7 +7,7 @@
 主な依頼者は企業の経営層・企画担当者。AIの知識量だけでなく「自社の課題を理解し、経営と現場を前へ進めてくれそうか」を判断できる構成にする。
 
 - トップは活動全体の入口。経営・助言、導入支援、講演・研修、執筆、協会活動を伝える。`For business leaders` を講演だけの説明に戻さない。
-- 講演の詳しい比較は `/speaking/` と各依頼ページへ。「代表的な登壇」の紹介は2026-09-10の本人希望で詳細ページも含めて削除した。確認済みデータが残っていても、紹介枠を復活させない。
+- 講演・研修・組織変革・顧問の比較は `/speaking/` の1ページで完結させる。[編集手順](speaking-page.md)を参照。「代表的な登壇」の紹介は2026-09-10の本人希望で詳細ページも含めて削除した。確認済みデータが残っていても、紹介枠を復活させない。
 - お知らせは多様な登壇・活動を継続的に伝えるため、トップのヒーロー直後に最新8件を置く。
 - 依頼ページは「誰の、どの課題に」「何を持ち帰れるか」「形式・進め方」「根拠」「相談への入口」の順で読めるようにする。実在しない導入成果・顧客の声・取引先ロゴを補わない。
 - 費用は本人の希望で**個別見積もり**。推測の価格帯や交通費条件を追加しない。
@@ -20,8 +20,9 @@
 | 実績の数字・集計条件 | `NUMBERS` | `BIO`、ページ本文・メタ情報、OGP画像生成元 |
 | 登壇の根拠の記録（現在は非掲載） | `SPEAKING_EVIDENCE` | 役割・日付・一次情報へのリンク。紹介枠は本人希望で外している |
 | 著書 | `BOOKS` | 発売予定フラグ、BIO、メタ情報、書影と購入先 |
-| 依頼内容・FAQ | `MENU`、`STEPS`、`FAQ`、`TOPICS` | `/speaking/`、各詳細、`SpeakingFocus.astro`、フォームの選択肢 |
-| 基調講演シリーズ | `KEYNOTE_SERIES`、`MENU`の`keynote`項目 | [企画・根拠・更新手順](keynote-series.md)、`KeynoteSeries.astro`、講演一覧と詳細のSEO・構成例 |
+| 依頼内容・FAQ | `MENU`、`STEPS`、`FAQ`、`TOPICS` | `/speaking/`、各セクション、`SpeakingFocus.astro`、フォームの選択肢 |
+| 基調講演シリーズ | `KEYNOTE_SERIES`、`MENU`の`keynote`項目 | [企画・根拠・更新手順](keynote-series.md)、`KeynoteSeries.astro`、統合ページのSEO・構成例 |
+| 製品別研修・組織変革・匿名実績 | `TRAINING_PROGRAMS`、`ORGANIZATION_THEMES`、`PRIVATE_ENGAGEMENTS` | [編集・匿名表記・検証](speaking-page.md)。実社名や対応表を公開ソースに残さない |
 | プロフィール文 | `BIO`、`PROFILE` | `/about/`、`/press/`、トップ |
 | title / description / canonical / JSON-LD | 各ページと `src/layouts/Base.astro` | 画面上の見出し・本文、サイトマップ |
 | お知らせ | microCMS `news` | [投稿手順](news-post.md)。Gitだけでは本文は変わらない |
