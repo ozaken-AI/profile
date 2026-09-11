@@ -6,7 +6,7 @@ const limit = (key: string) => CONTACT_FIELDS.find(f => f.key === key)!.max;
 
 const title = 'お問い合わせ | 小澤健祐（おざけん）';
 const description =
-  '講演、Gemini・Copilot研修、組織変革・AI活用浸透、顧問、執筆・取材のご相談。内容や時期が未定でも構いません。費用は個別見積もり、通常2〜3営業日以内に返信します。';
+  '講演、Gemini・Copilot研修、AI戦略・組織変革の顧問・アドバイザー、執筆・取材のご相談。内容や時期が未定でも構いません。費用は個別見積もり、通常2〜3営業日以内に返信します。';
 ---
 <Base {title} {description} railInitial="お問い合わせ">
 
@@ -89,7 +89,7 @@ const description =
 </section>
 
 <script>
-  import { CONTACT_FIELDS, contactKind, contactTopic, contactTopicLabel } from '../lib/contact.js';
+  import { CONTACT_FIELDS, contactKind, contactTopic, contactTopicLabel, contactSelection } from '../lib/contact.js';
   const form = document.querySelector<HTMLFormElement>('#contact-form');
   if (form) {
     const msg = document.getElementById('cf-msg')!;
@@ -101,7 +101,8 @@ const description =
     const field = (key: string) => form.elements.namedItem(key) as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
     let openedAt = Date.now(), started = false;
     const requested = new URLSearchParams(location.search);
-    kindField.value = contactKind(requested.get('kind')).label;
+    const requestedSelection = contactSelection(requested.get('kind'), requested.get('topic'));
+    kindField.value = requestedSelection.kind.label;
     const syncKind = () => {
       const kind = contactKind(kindField.value);
       document.getElementById('date-label')!.textContent = kind.date;
@@ -112,11 +113,10 @@ const description =
         option.hidden = option.disabled = option.dataset.kind !== kind.id;
       });
       if (!contactTopic(topicField.value, kind.id)) topicField.value = '';
-      document.getElementById('topic-field')!.hidden = !['keynote', 'training'].includes(kind.id);
+      document.getElementById('topic-field')!.hidden = !['keynote', 'training', 'advisory'].includes(kind.id);
     };
     syncKind();
-    const topic = contactTopic(requested.get('topic'), contactKind(kindField.value).id);
-    if (topic) topicField.value = topic.id;
+    if (requestedSelection.topic) topicField.value = requestedSelection.topic.id;
     kindField.addEventListener('change', syncKind);
     const tracking = () => ({ kind: contactKind(kindField.value).id, topic: contactTopic(topicField.value, contactKind(kindField.value).id)?.id || 'unspecified' });
     const track = (name: string, extra: Record<string, string> = {}) => (window as any).ozTrack?.(name, { ...tracking(), ...extra });

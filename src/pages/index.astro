@@ -1,7 +1,6 @@
 ---
 import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
-import Ticker from '../components/Ticker.astro';
 import NewsList from '../components/NewsList.astro';
 import HeroDust from '../components/HeroDust.astro';
 import SiteEntrance from '../components/SiteEntrance.astro';
@@ -22,9 +21,9 @@ const news = (await getNews(8)).slice(0, 8);
 const STRIP = Array.from({ length: 20 }, (_, i) => i % 10);
 const fmt = (v: number, comma: boolean) => (comma ? v.toLocaleString('en-US') : String(v));
 
-const title = '小澤健祐（おざけん）｜生成AIの講演・研修・組織変革';
+const title = '小澤健祐（おざけん）｜生成AIの講演・研修・顧問';
 const description =
-  '小澤健祐（おざけん）の公式サイト。経営論・組織論・AIエージェントの最新技術を扱う講演、Gemini・Microsoft 365 Copilot研修、全社へのAI活用浸透、顧問に対応。テーマ・実績・相談方法をご案内します。';
+  '小澤健祐（おざけん）の公式サイト。生成AIの講演、Gemini・Microsoft 365 Copilot研修、AI戦略・組織変革の顧問・アドバイザー。経営論・組織論・AIエージェントの最新技術から全社への活用浸透まで。テーマ・実績・相談方法をご案内します。';
 ---
 <Base {title} {description} railInitial="小澤健祐">
 
@@ -91,7 +90,7 @@ const description =
       </svg>
     </a>
     <nav class="hero-jumps" aria-label="目的に合う依頼内容へ">
-      {FORMATS.map((format) => <a href={speakingHref(format.slug)}>{format.slug === 'partner' ? '組織変革' : format.slug === 'advisory' ? '顧問' : format.slug === 'training' ? '研修' : format.label}<span aria-hidden="true">↗</span></a>)}
+      {FORMATS.map((format) => <a href={speakingHref(format.slug)}>{format.shortLabel}<span aria-hidden="true">↗</span></a>)}
     </nav>
   </div>
 </section>
@@ -143,7 +142,6 @@ const description =
     <div class="profile-grid">
       <p class="profile-vert rv">目指してきたのは、<br />分断をこえること</p>
       <div class="profile-body rv rv-d1">
-        <p>技術を経営の判断へ、経営の方針を現場の実践へ。この往復を、講演・執筆・企業への支援を通じて続けています。</p>
         <p>AI専門メディア「AINOW」編集長を経て、事業会社の経営、企業への助言、AICX協会での活動へ。取材と実践で得た知見を、事業・組織・人材を考えるための視点として届けます。</p>
 
         <div class="shots">
@@ -164,8 +162,6 @@ const description =
     </div>
   </div>
 </section>
-
-<Ticker />
 
 <!-- ============ RESOURCES ============ -->
 <section class="band wrap" id="s-resources" data-rail="動画と資料">
@@ -221,7 +217,7 @@ const description =
   <p class="label rv">Contact</p>
   <h2 class="contact-h rv rv-d1">ご依頼・ご相談</h2>
   <p class="lede rv">費用は個別見積もりです。課題や目的から、関わり方をご相談いただけます。内容や時期が未定でも構いません。</p>
-  <p class="contact-guide rv"><a href="/speaking/#conditions">費用・条件</a><a href="/speaking/#process">ご相談から実施まで</a></p>
+  <p class="contact-guide rv"><a href="/speaking/#conditions">費用・条件</a><a href="/speaking/#process">ご相談から契約まで</a></p>
 
   <div class="contact-grid stg">
     <a class="cc" href="/contact/">

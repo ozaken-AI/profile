@@ -2,21 +2,23 @@
 import Base from '../../layouts/Base.astro';
 import KeynoteSeries from '../../components/KeynoteSeries.astro';
 import ServiceDetails from '../../components/ServiceDetails.astro';
-import { SITE, MENU, FAQ, SPEAKING_TRACK, TRAINING_PROGRAMS, ORGANIZATION_THEMES, PRIVATE_ENGAGEMENTS, FORMATS, ORGANIZATION_CHALLENGES, ROLES, speakingHref } from '../../lib/site';
+import { SITE, MENU, FAQ, SPEAKING_TRACK, TRAINING_PROGRAMS, ADVISORY_AREAS, PRIVATE_ENGAGEMENTS, FORMATS, ORGANIZATION_CHALLENGES, speakingHref } from '../../lib/site';
 
-const [, training, partner, advisory] = MENU;
+const [, training, advisory] = MENU;
+const advisoryTrack = SPEAKING_TRACK.find(group => group.label === '顧問・アドバイザリー')!;
+const speakingTrack = SPEAKING_TRACK.filter(group => group !== advisoryTrack);
 const steps = [
   { n: '01', h: '目的をうかがう', p: '対象者、課題、日程・期間をお知らせください。講演の企画段階や、社内の論点整理からでも構いません。' },
   { n: '02', h: '内容と条件を決める', p: '講演・研修・プロジェクトなど、目的に合う形をご提案。内容・範囲・費用・資料共有の条件をすり合わせます。' },
-  { n: '03', h: '準備・実施・振り返り', p: '業種・職種・利用環境に合わせて準備します。継続支援では、定例で現場の課題や次の打ち手を確認します。' },
+  { n: '03', h: '日程・契約を確定する', p: '実施日または支援期間、関与範囲などをご確認いただき、合意した内容に沿って準備を始めます。' },
 ];
-const title = '生成AIの講演・Gemini／Copilot研修・組織変革 | 小澤健祐（おざけん）';
-const description = '経営論・組織論・AIエージェントの最新技術トレンドを扱う講演から、Gemini・Microsoft 365 Copilot研修、ワークショップ、全社へのAI活用浸透、顧問まで。小澤健祐への依頼内容と実績・開催条件を一つのページでご案内。費用は個別見積もりです。';
+const title = '生成AIの講演・研修・顧問／アドバイザー | 小澤健祐（おざけん）';
+const description = '生成AIの講演、Gemini・Microsoft 365 Copilot研修、AI戦略・組織変革の顧問・アドバイザー。小澤健祐への依頼内容、実績、開催・契約条件をご案内します。経営の意思決定から全社へのAI活用浸透まで。費用は個別見積もりです。';
 const jsonLd = [{
   '@context': 'https://schema.org', '@type': 'BreadcrumbList',
   itemListElement: [
     { '@type': 'ListItem', position: 1, name: 'ホーム', item: `${SITE.url}/` },
-    { '@type': 'ListItem', position: 2, name: '講演・研修・組織変革', item: `${SITE.url}/speaking/` },
+    { '@type': 'ListItem', position: 2, name: '講演・研修・顧問', item: `${SITE.url}/speaking/` },
   ],
 }, ...MENU.map((item) => ({
   '@context': 'https://schema.org', '@type': 'Service',
@@ -26,38 +28,37 @@ const jsonLd = [{
 }))];
 ---
 <Base {title} {description} {jsonLd} ogImage="/ogp-speaking.png"
-  ogImageAlt="小澤健祐（おざけん）｜経営の問いから、組織の実践まで。講演・研修・組織変革・顧問" railInitial="依頼">
+  ogImageAlt="小澤健祐（おざけん）｜経営の問いから、組織の実践まで。講演・研修・顧問／アドバイザー" railInitial="依頼">
 
 <section class="phead wrap" data-rail="依頼">
   <div class="phead-glow" aria-hidden="true"></div>
   <p class="label rv">Speaking &amp; Advisory</p>
   <h1 class="phead-h1 rv rv-d1">講演・研修から、<br />組織の変革まで。</h1>
   <p class="service-byline rv rv-d1">生成AI・AIエージェント ／ 小澤健祐（おざけん）</p>
-  <p class="phead-lede rv rv-d2">経営の意思決定から、現場での実践へ。<br />講演、製品別の研修、全社へのAI活用浸透、継続的な助言まで。目的と参加者、組織の状況に合わせて組み立てます。</p>
+  <p class="phead-lede rv rv-d2">経営層から現場の担当者まで。参加者や利用環境、検討している課題に合わせて、講演・研修・継続支援を組み立てます。</p>
   <div class="booking-strip rv rv-d2">
-    <p>単発の講演・研修から、継続的な支援まで。<br /><b>費用は個別見積もり。企画段階からご相談いただけます。</b></p>
+    <p><b>費用は個別見積もり。企画段階からご相談いただけます。</b></p>
     <a class="btn" href="/contact/" data-place="speaking-intro">内容・日程を相談する <span aria-hidden="true">→</span></a>
   </div>
   <nav class="format-nav rv" id="formats" aria-label="依頼内容を選ぶ">
     {FORMATS.map((format, i) => (
       <a href={speakingHref(format.slug)}>
         <span class="format-number">{String(i + 1).padStart(2, '0')} <span aria-hidden="true">↓</span></span>
-        <strong>{format.label}</strong><span class="format-purpose">{format.purpose}</span><span class="format-detail">{format.detail}</span><span class="format-outcome">{format.outcome}</span>
+        <strong>{format.label}</strong><span class="format-purpose">{format.purpose}</span><span class="format-detail">{format.detail}</span>
       </a>
     ))}
   </nav>
   <nav class="section-links rv" aria-label="実績と依頼条件">
-    <a href="#engagements">企業での研修・推進実績</a><a href="#track">登壇・支援先の一覧</a><a href="#conditions">費用・開催条件</a>
+    <a href="#engagements">研修実績</a><a href="#advisory-evidence">継続支援の実績</a><a href="#track">登壇先の一覧</a><a href="#conditions">費用・条件</a>
   </nav>
 </section>
 
 <nav class="service-jumpbar" aria-label="このページの依頼内容">
-  {FORMATS.map((format) => <a href={speakingHref(format.slug)}>{format.slug === 'partner' ? '組織変革' : format.slug === 'advisory' ? '顧問' : format.slug === 'training' ? '研修' : '講演'}</a>)}
+  {FORMATS.map((format) => <a href={speakingHref(format.slug)}>{format.shortLabel}</a>)}
 </nav>
 <KeynoteSeries />
 
 <section class="band wrap" id="training" data-rail="研修・ワークショップ">
-  <span id="engagements" class="anchor-alias" aria-hidden="true"></span>
   <span id="topics" class="anchor-alias" aria-hidden="true"></span>
   <p class="label rv">Training &amp; Workshop</p>
   <h2 class="h2 rv">仕事で使える、<br /><span class="phrase">AIの研修と</span><span class="phrase">ワークショップ。</span></h2>
@@ -76,8 +77,7 @@ const jsonLd = [{
       </article>
     ))}
   </div>
-  <p class="track-note rv">演習内容は、ご契約のプラン・管理者設定・利用できる機能を事前に確認して決めます。実務データの持ち込み範囲も、社内ルールに合わせて調整します。</p>
-  <aside class="nearby-evidence rv" aria-label="研修の実績">
+  <aside class="nearby-evidence rv" id="engagements" aria-label="研修の実績">
     <h3>これまでの研修・ワークショップ実績</h3>
     <p>実際に担当した企業研修・ワークショップの一例です。社名を伏せて掲載しています。</p>
     <ul>{PRIVATE_ENGAGEMENTS.slice(0, 3).map(e => <li><b>{e.sector}</b><span>{e.title}</span></li>)}</ul>
@@ -85,49 +85,41 @@ const jsonLd = [{
   <ServiceDetails item={training} />
 </section>
 
-<section class="band band--paper" id="organization-change" data-rail="組織変革・伴走支援">
+<section class="band band--paper" id="advisory" data-rail="顧問・アドバイザー">
   <div class="wrap">
-    <p class="label rv">顧問・アドバイザーとしての支援</p>
-    <h2 class="h2 rv">AI活用を全社に広げる、<br />組織変革の伴走支援。</h2>
-    <p class="lede rv">顧問・アドバイザーとして、経営陣やAI推進担当者を継続的に支援します。活用方針、業務・役割の設計、全社への展開を一緒に考え、定例で進捗や課題を確認しながら次の施策を決めていきます。</p>
-    <div class="challenge-list">
-      {ORGANIZATION_CHALLENGES.map(challenge => <article class="rv"><h3>{challenge.title}</h3><p>{challenge.body}</p></article>)}
+    <p class="label rv">Advisory ／ 顧問・アドバイザー</p>
+    <h2 class="h2 rv">経営の判断から、<br />組織への浸透まで。</h2>
+    <p class="lede rv">{advisory.lede}</p>
+    <div class="advisory-areas">
+      {ADVISORY_AREAS.map((area, i) => <article class="advisory-area rv" id={area.id}>
+        <p class="program-number">{String(i + 1).padStart(2, '0')}</p>
+        <h3>{area.title}</h3><p>{area.body}</p>
+        <ul>{area.points.map(point => <li>{point}</li>)}</ul>
+      </article>)}
     </div>
-    <details class="organization-more rv"><summary>支援で扱う4つの領域</summary>
-    <div class="organization-themes">
-      {ORGANIZATION_THEMES.map((theme, i) => (
-        <article class="rv"><p class="program-number">{String(i + 1).padStart(2, '0')}</p><h3>{theme.title}</h3><p>{theme.body}</p></article>
-      ))}
-    </div>
-    </details>
-    <p class="track-note rv">管理職向けの講演・ワークショップは単発でもご相談いただけます。以下は、継続的な伴走支援の目安です。</p>
-    <aside class="nearby-evidence rv" aria-label="全社推進の実績">
+    <p class="track-note rv">「{ORGANIZATION_CHALLENGES.map(challenge => challenge.title).join('」「')}」といった課題からご相談いただけます。</p>
+    <aside class="nearby-evidence rv" id="advisory-evidence" aria-label="全社推進の実績">
       <h3>これまでのAI活用浸透の支援実績</h3>
       <ul>{PRIVATE_ENGAGEMENTS.slice(3).map(e => <li><b>{e.sector}</b><span>{e.title}</span></li>)}</ul>
       <p>実際に関わった取り組みの一例です。社名を伏せて掲載しています。</p>
     </aside>
-    <ServiceDetails item={partner} />
+    <details class="public-track rv">
+      <summary>公開している顧問・アドバイザー等の活動先</summary>
+      <ul class="track-l">{advisoryTrack.items.map(item => <li>{item}</li>)}</ul>
+      <p class="track-note">役職の正式表記は<a href="/about/#positions">プロフィールの役職一覧</a>をご覧ください。</p>
+    </details>
+    <ServiceDetails item={advisory} />
   </div>
 </section>
 
-<section class="band wrap" id="advisory" data-rail="顧問・アドバイザリー">
-  <p class="label rv">Advisory</p>
-  <h2 class="h2 rv">AI戦略を、<br />経営の対話から。</h2>
-  <p class="lede rv">{advisory.lede} 技術動向、投資の優先順位、組織のあり方を、経営陣・事業責任者と継続的に議論します。</p>
-  <aside class="nearby-evidence rv" aria-label="公開しているアドバイザーの役職">
-    <h3>公開している役職</h3><ul>{ROLES.filter(r => ['株式会社日本HP', '株式会社Lightblue', '株式会社NTTデータグループ'].includes(r.org)).map(r => <li><b>{r.org}</b><span>{r.title}</span></li>)}</ul><a href="/about/">詳しいプロフィール →</a>
-  </aside>
-  <ServiceDetails item={advisory} />
-</section>
-
-<section class="band wrap" id="track" data-rail="登壇・支援先">
+<section class="band wrap" id="track" data-rail="登壇先">
   <p class="label rv">Track Record</p>
-  <h2 class="h2 rv">登壇・支援先の一覧</h2>
-  <p class="lede rv">カンファレンス、企業・行政、顧問として関わる先まで。公開できる実績を役割ごとにまとめています。個別の活動は<a href="/news/">お知らせ</a>でもご覧いただけます。</p>
+  <h2 class="h2 rv">これまでの登壇先</h2>
+  <p class="lede rv">カンファレンスや企業・行政での登壇先をまとめています。個別の活動は<a href="/news/">お知らせ</a>でご覧いただけます。</p>
   <details class="public-track rv">
-    <summary>登壇・支援先を一覧で見る</summary>
+    <summary>登壇先を一覧で見る</summary>
     <div class="track">
-      {SPEAKING_TRACK.map((group) => <div class="track-g"><h3 class="track-k">{group.label}</h3><ul class="track-l">{group.items.map((item) => <li>{item}</li>)}</ul></div>)}
+      {speakingTrack.map((group) => <div class="track-g"><h3 class="track-k">{group.label}</h3><ul class="track-l">{group.items.map((item) => <li>{item}</li>)}</ul></div>)}
     </div>
   </details>
 
@@ -135,17 +127,16 @@ const jsonLd = [{
 
 <section class="band wrap" id="process" data-rail="依頼の流れ">
   <p class="label rv">How It Works</p>
-  <h2 class="h2 rv">ご相談から実施まで</h2>
+  <h2 class="h2 rv">ご相談から契約まで</h2>
   <div class="steps steps--dark stg">
     {steps.map((step) => <div class="step-d"><p class="step-n">{step.n}</p><h3 class="step-h">{step.h}</h3><p class="step-p">{step.p}</p></div>)}
   </div>
 </section>
 
-<section class="band band--paper" id="conditions" data-rail="費用・開催条件">
+<section class="band band--paper" id="conditions" data-rail="費用・条件">
   <div class="wrap">
     <p class="label rv">FAQ</p>
-    <h2 class="h2 rv">費用・開催条件</h2>
-    <p class="lede rv">費用は個別見積もりです。内容・時間・期間・形式をうかがい、交通・宿泊費や録画・配信の条件を含めてご案内します。</p>
+    <h2 class="h2 rv">費用・ご依頼の条件</h2>
     <div class="faq stg">{FAQ.map((item) => <details><summary>{item.q}</summary><p>{item.a}</p></details>)}</div>
   </div>
 </section>
@@ -165,7 +156,7 @@ const jsonLd = [{
 <style>
   .h2{text-wrap:balance}.phrase{display:inline-block}
   .service-byline{color:var(--fg-mid);font-size:clamp(.8rem,1.5vw,1rem);margin-top:1.5rem}
-  .format-nav{scroll-margin-top:6rem;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-block:1px solid var(--rule);margin-top:3rem}
+  .format-nav{scroll-margin-top:6rem;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-block:1px solid var(--rule);margin-top:3rem}
   .format-nav>a{display:flex;flex-direction:column;gap:.55rem;padding:1.6rem 1.2rem;transition:background .25s}
   .format-nav>a+a{border-left:1px solid var(--rule)}
   .format-nav>a:hover{background:rgba(150,180,220,.07)}
@@ -176,32 +167,30 @@ const jsonLd = [{
   .format-nav a:focus-visible,summary:focus-visible{outline:2px solid currentColor;outline-offset:4px}
   .training-programs{margin-top:3rem}
   .training-program{display:grid;grid-template-columns:3rem 1fr;gap:1.4rem;border-top:1px solid var(--rule);padding:2rem 0}
-  .training-program h3,.organization-themes h3,.engagement h3{font-family:var(--f-mincho);font-weight:500;line-height:1.65;text-wrap:pretty;font-size:clamp(1.1rem,2.2vw,1.55rem);overflow-wrap:anywhere}
+  .training-program h3,.advisory-area h3{font-family:var(--f-mincho);font-weight:500;line-height:1.65;text-wrap:pretty;font-size:clamp(1.1rem,2.2vw,1.55rem);overflow-wrap:anywhere}
   .program-number{font-family:var(--f-en);font-size:1.3rem;line-height:1.5;color:var(--fg-mute)}
   .program-audience{font-size:.875rem;color:var(--fg-mid);margin-top:.5rem}
   .program-lead{font-size:.92rem;line-height:2;max-width:55em;margin-top:1rem}
   .training-program ul{font-size:.84rem;color:var(--fg-mid);padding-left:1.2rem;line-height:1.95;margin-top:1rem}
-  .organization-themes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 3rem;margin-top:2.5rem}
-  .organization-themes article{padding:1.8rem 0;border-top:1px solid var(--paper-rule)}
-  .organization-themes .program-number{color:var(--paper-mute);margin-bottom:.7rem}
-  .organization-themes h3{font-size:1.18rem}
-  .organization-themes article>p:last-child{font-size:.9rem;color:var(--paper-mute);line-height:1.95;margin-top:.7rem}
-  .engagement-list{margin-top:2.5rem;border-bottom:1px solid var(--paper-rule)}
-  .engagement{display:grid;grid-template-columns:12rem minmax(0,1fr);gap:2rem;padding:1.8rem 0;border-top:1px solid var(--paper-rule)}
-  .engagement-sector{font-size:.95rem}
-  .engagement-kind{font-size:.73rem;color:var(--paper-mute);margin-bottom:.45rem}
-  .engagement h3{font-size:clamp(1.05rem,2vw,1.45rem)}
+  .advisory-areas{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 3rem;margin-top:2.5rem}
+  .advisory-area{padding:1.8rem 0;border-top:1px solid var(--paper-rule)}
+  .advisory-area .program-number{color:var(--paper-mute);margin-bottom:.7rem}
+  .advisory-area h3{font-size:1.35rem}
+  .advisory-area h3+p,.advisory-area ul{font-size:.9rem;color:var(--paper-mute);line-height:1.95;margin-top:.7rem}
+  .advisory-area ul{padding-left:1.2rem}
+  #advisory .public-track{border-color:var(--paper-rule)}
+  #advisory .public-track>.track-l{margin-block:0 1.2rem}
+  #advisory .public-track>.track-note{margin-bottom:1.2rem}
   .public-track{margin-top:2rem;border-block:1px solid var(--rule)}
   .public-track summary{cursor:pointer;padding:1.2rem 0;font-size:.95rem}
   .public-track .track{margin:0 0 1.5rem}
   #track .lede a{border-bottom:1px solid var(--rule)}
   .anchor-alias{display:block;scroll-margin-top:6rem}
-  @media(max-width:1000px){.format-nav{grid-template-columns:repeat(2,minmax(0,1fr))}.format-nav>a:nth-child(3){border-left:0}.format-nav>a:nth-child(n+3){border-top:1px solid var(--rule)}}
+  @media(max-width:760px){.format-nav{grid-template-columns:1fr}.format-nav>a+a{border-left:0;border-top:1px solid var(--rule)}}
   @media(max-width:600px){
-    .format-nav{grid-template-columns:repeat(2,minmax(0,1fr))}.format-nav>a{padding:1rem .7rem}.format-nav>a+a{border-left:0}.format-nav>a:nth-child(even){border-left:1px solid var(--rule)}
+    .format-nav>a{padding:1rem .7rem}
     .format-number{margin:0}.format-nav strong{font-size:1.1rem}.format-purpose{font-size:.92rem}
-    .training-program{grid-template-columns:1fr;gap:.6rem}.organization-themes{grid-template-columns:1fr}
-    .engagement{grid-template-columns:1fr;gap:.55rem}.engagement-sector{font-weight:500}.engagement-kind{margin-bottom:.25rem}
+    .training-program{grid-template-columns:1fr;gap:.6rem}.advisory-areas{grid-template-columns:1fr}
   }
   @media(prefers-reduced-motion:reduce){.format-nav>a{transition:none}}
 </style>

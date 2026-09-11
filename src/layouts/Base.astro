@@ -32,7 +32,7 @@ const isTop = Astro.url.pathname === '/';
 // 相対パスで渡されても絶対URLにする。第1引数が絶対URLならベースは無視される。
 const ogPath = ogImage ?? '/ogp.png';
 // SNS側は画像をURL単位で長く持つ。作り直したら OG_VERSION を上げて、取り直させる。
-const OG_VERSION = '5';
+const OG_VERSION = '6';
 const isOwnOg = ogPath.startsWith('/ogp');
 const og = new URL(isOwnOg ? `${ogPath}?v=${OG_VERSION}` : ogPath, Astro.site).href;
 // public/ogp*.png は1200×630で作ってある。
@@ -54,7 +54,7 @@ const identityJsonLd = [
     '@context': 'https://schema.org', '@type': 'Person', '@id': `${SITE.url}/#person`,
     name: IDENTITY.legalName, alternateName: IDENTITY.alternateNames, url: SITE.url,
     image: abs(IDENTITY.image), jobTitle: SITE.role.replace(/\u3000/g, ' '),
-    description: '生成AI・AIエージェントの講演、研修、組織変革・活用浸透の支援、執筆、企業へのアドバイザリーを行う。',
+    description: '生成AI・AIエージェントの講演、研修、執筆と、AI戦略・組織変革の顧問・アドバイザーとしての支援を行う。',
     sameAs: IDENTITY.sameAs,
   },
 ];
@@ -162,7 +162,7 @@ const jsonLd = [...identityJsonLd, ...pageJsonLd];
 <SiteMotion />
 
 <script>
-  import { contactKind, contactTopic } from '../lib/contact.js';
+  import { contactSelection } from '../lib/contact.js';
   /* 出現アニメーション ＋ 左レールの現在地表示 */
 
   // 見出しとまとまりも同じ仕組みで出す。取りこぼすと出たまま隠れるので、まとめて拾う。
@@ -182,8 +182,9 @@ const jsonLd = [...identityJsonLd, ...pageJsonLd];
       track('outbound_click', { url: href, page: location.pathname });
     } else if (href === '/contact/' || href.startsWith('/contact/')) {
       const params = new URL(href, location.origin).searchParams;
-      const kind = contactKind(params.get('kind')).id;
-      const topic = contactTopic(params.get('topic'), kind)?.id || 'unspecified';
+      const selection = contactSelection(params.get('kind'), params.get('topic'));
+      const kind = selection.kind.id;
+      const topic = selection.topic?.id || 'unspecified';
       const place = a.dataset.place || (a.closest('header') ? 'header' : a.closest('footer') ? 'footer' : a.closest('section')?.id || 'page');
       track('contact_cta', { from: location.pathname, label: (a.textContent || '').trim().slice(0, 40), kind, topic, place });
     }
