@@ -10,8 +10,8 @@ const steps = [
   { n: '02', h: '内容と条件を決める', p: '講演・研修・プロジェクトなど、目的に合う形をご提案。内容・範囲・費用・資料共有の条件をすり合わせます。' },
   { n: '03', h: '準備・実施・振り返り', p: '業種・職種・利用環境に合わせて準備します。継続支援では、定例で現場の課題や次の打ち手を確認します。' },
 ];
-const title = '生成AIの基調講演・Gemini／Copilot研修・組織変革 | 小澤健祐（おざけん）';
-const description = '経営論・組織論・AIエージェントの最新技術トレンドを扱う基調講演から、Gemini・Microsoft 365 Copilot研修、ワークショップ、全社へのAI活用浸透、顧問まで。小澤健祐への依頼内容と実績・開催条件を一つのページでご案内。費用は個別見積もりです。';
+const title = '生成AIの講演・Gemini／Copilot研修・組織変革 | 小澤健祐（おざけん）';
+const description = '経営論・組織論・AIエージェントの最新技術トレンドを扱う講演から、Gemini・Microsoft 365 Copilot研修、ワークショップ、全社へのAI活用浸透、顧問まで。小澤健祐への依頼内容と実績・開催条件を一つのページでご案内。費用は個別見積もりです。';
 const jsonLd = [{
   '@context': 'https://schema.org', '@type': 'BreadcrumbList',
   itemListElement: [
@@ -26,14 +26,14 @@ const jsonLd = [{
 }))];
 ---
 <Base {title} {description} {jsonLd} ogImage="/ogp-speaking.png"
-  ogImageAlt="小澤健祐（おざけん）｜経営の問いから、組織の実践まで。基調講演・研修・組織変革・顧問" railInitial="依頼">
+  ogImageAlt="小澤健祐（おざけん）｜経営の問いから、組織の実践まで。講演・研修・組織変革・顧問" railInitial="依頼">
 
 <section class="phead wrap" data-rail="依頼">
   <div class="phead-glow" aria-hidden="true"></div>
   <p class="label rv">Speaking &amp; Advisory</p>
   <h1 class="phead-h1 rv rv-d1">講演・研修から、<br />組織の変革まで。</h1>
   <p class="service-byline rv rv-d1">生成AI・AIエージェント ／ 小澤健祐（おざけん）</p>
-  <p class="phead-lede rv rv-d2">経営の意思決定から、現場での実践へ。<br />基調講演、製品別の研修、全社へのAI活用浸透、継続的な助言まで。目的と参加者、組織の状況に合わせて組み立てます。</p>
+  <p class="phead-lede rv rv-d2">経営の意思決定から、現場での実践へ。<br />講演、製品別の研修、全社へのAI活用浸透、継続的な助言まで。目的と参加者、組織の状況に合わせて組み立てます。</p>
   <div class="booking-strip rv rv-d2">
     <p>単発の講演・研修から、継続的な支援まで。<br /><b>費用は個別見積もり。企画段階からご相談いただけます。</b></p>
     <a class="btn" href="/contact/" data-place="speaking-intro">内容・日程を相談する <span aria-hidden="true">→</span></a>
@@ -52,7 +52,7 @@ const jsonLd = [{
 </section>
 
 <nav class="service-jumpbar" aria-label="このページの依頼内容">
-  {FORMATS.map((format) => <a href={speakingHref(format.slug)}>{format.slug === 'partner' ? '組織変革' : format.slug === 'advisory' ? '顧問' : format.slug === 'training' ? '研修' : '基調講演'}</a>)}
+  {FORMATS.map((format) => <a href={speakingHref(format.slug)}>{format.slug === 'partner' ? '組織変革' : format.slug === 'advisory' ? '顧問' : format.slug === 'training' ? '研修' : '講演'}</a>)}
 </nav>
 <KeynoteSeries />
 

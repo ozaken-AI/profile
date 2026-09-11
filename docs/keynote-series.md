@@ -1,8 +1,10 @@
-# 基調講演シリーズの編集・企画
+# 講演シリーズの編集・企画
 
 作成日：2026-09-10。本人の希望は「カンファレンスの基調講演を増やしたい」「経営論、組織論、トレンドまで幅広く」。[content.ozaken.ai](https://content.ozaken.ai/) の既存資料を起点に、主催者が選べる講演テーマをまとめた。
 
 ## 位置づけ
+
+2026-09-11の本人の希望により、サイトの一般的なサービス名・メニュー・見出しは「講演」に統一する。基調講演は対応する開催形式の一つとして扱い、確認済みの過去実績の正式な役割名は変更しない。`KEYNOTE_SERIES`、`kind=keynote`、`#keynote-series`等は既存リンク・計測の互換性のため維持する。
 
 シリーズ名は **「AI時代の経営と組織の未来。」**。本人のビジョン「人間とAIが共存する社会をつくる。」を共通の軸にする。3回の連続受講を求める商品ではなく、1テーマから依頼でき、開催趣旨に合わせて組み合わせられる企画メニュー。
 
@@ -63,7 +65,7 @@ AI・テクノロジーカンファレンス、業界横断イベント、企業
 | シリーズ名、3講演のタイトル・概要・論点・対象・関連資料 | `src/lib/site.ts` の `KEYNOTE_SERIES` |
 | トップの3テーマ予告、4形式の比較、形式・進め方 | `KEYNOTE_SERIES` / `FORMATS` / `MENU` 内 `keynote` |
 | 3講演の概要・開閉式の補足、専用スタイル | `src/components/KeynoteSeries.astro` |
-| 基調講演ページ、SEO、60分の構成例 | `src/components/KeynoteSeries.astro`（構成例）、`src/pages/speaking/index.astro`（SEO） |
+| 講演ページ、SEO、60分の構成例 | `src/components/KeynoteSeries.astro`（構成例）、`src/pages/speaking/index.astro`（SEO） |
 | 統合した依頼ページの入口、SEO | `src/pages/speaking/index.astro` |
 
 詳細は `/speaking/#management`、`#organization`、`#trends`。主催者が共有できる固定アンカーとして維持する。2026-09-10の追加希望で一覧と詳細を `/speaking/` に統合した。旧 `/speaking/keynote/` は301転送し、既存のフラグメントを維持する。[統合ページの編集・検証](speaking-page.md)を参照。「代表的な登壇」枠はどのページにも戻さず、トップは4形式の目的別一覧と3テーマの短い予告から案内する。

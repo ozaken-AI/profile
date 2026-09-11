@@ -4,15 +4,15 @@ import ServiceDetails from './ServiceDetails.astro';
 const keynote = MENU[0];
 ---
 
-<section class="band band--paper keynote-series" id="keynote-series" data-rail="基調講演シリーズ">
+<section class="band band--paper keynote-series" id="keynote-series" data-rail="講演シリーズ">
   <div class="wrap">
     <p class="print-identity">{SITE.name} ／ {SITE.role}<br />{SITE.url}/speaking/ ／ {SITE.email}</p>
-    <p class="label rv">Keynote Series ／ 基調講演</p>
+    <p class="label rv">Talks ／ 講演</p>
     <h2 class="h2 rv">{KEYNOTE_SERIES.title}</h2>
     <p class="lede rv">{KEYNOTE_SERIES.lead}</p>
 
     <p class="keynote-note rv">1テーマからご依頼いただけます。連続開催を前提とせず、開催趣旨に合わせてテーマを組み合わせることもできます。</p>
-    <nav class="keynote-nav rv" aria-label="基調講演のテーマ">
+    <nav class="keynote-nav rv" aria-label="講演のテーマ">
       {KEYNOTE_SERIES.talks.map((talk) => <a href={`#${talk.id}`}>{talk.number} {talk.category} <span aria-hidden="true">↓</span></a>)}
     </nav>
     <div class="keynote-talks">

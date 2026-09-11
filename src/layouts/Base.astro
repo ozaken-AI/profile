@@ -32,7 +32,7 @@ const isTop = Astro.url.pathname === '/';
 // 相対パスで渡されても絶対URLにする。第1引数が絶対URLならベースは無視される。
 const ogPath = ogImage ?? '/ogp.png';
 // SNS側は画像をURL単位で長く持つ。作り直したら OG_VERSION を上げて、取り直させる。
-const OG_VERSION = '4';
+const OG_VERSION = '5';
 const isOwnOg = ogPath.startsWith('/ogp');
 const og = new URL(isOwnOg ? `${ogPath}?v=${OG_VERSION}` : ogPath, Astro.site).href;
 // public/ogp*.png は1200×630で作ってある。
@@ -54,7 +54,7 @@ const identityJsonLd = [
     '@context': 'https://schema.org', '@type': 'Person', '@id': `${SITE.url}/#person`,
     name: IDENTITY.legalName, alternateName: IDENTITY.alternateNames, url: SITE.url,
     image: abs(IDENTITY.image), jobTitle: SITE.role.replace(/\u3000/g, ' '),
-    description: '生成AI・AIエージェントの基調講演、研修、組織変革・活用浸透の支援、執筆、企業へのアドバイザリーを行う。',
+    description: '生成AI・AIエージェントの講演、研修、組織変革・活用浸透の支援、執筆、企業へのアドバイザリーを行う。',
     sameAs: IDENTITY.sameAs,
   },
 ];
