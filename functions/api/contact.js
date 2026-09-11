@@ -17,7 +17,7 @@
 const DEFAULT_TO = 'kensuke.ozawa@aicx.jp';
 const DEFAULT_FROM = 'ozaken.ai <onboarding@resend.dev>';
 
-import { CONTACT_FIELDS, contactKind, contactTopic, contactTopicLabel } from '../../src/lib/contact.js';
+import { CONTACT_FIELDS, contactSelection, contactTopicLabel } from '../../src/lib/contact.js';
 const FIELDS = CONTACT_FIELDS.map(({ key, label, max }) => [key, label, max]);
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
@@ -93,11 +93,10 @@ export async function onRequestPost({ request, env }) {
     return json({ ok: false, configured: false }, 200);
   }
 
-  const kind = contactKind(data.kind);
-  const topic = contactTopic(data.topic, kind.id);
+  const { kind, topic } = contactSelection(data.kind, data.topic);
   const body = FIELDS.map(([key, label]) => {
     const fieldLabel = key === 'date' ? kind.date : key === 'audience' ? kind.audience : key === 'topic' ? contactTopicLabel(kind.id) : label;
-    const value = key === 'topic' ? topic?.label : data[key];
+    const value = key === 'topic' ? topic?.label : key === 'kind' ? kind.label : data[key];
     return `${fieldLabel}：${value || '（未入力）'}`;
   }).join('\n');
 
@@ -118,7 +117,7 @@ export async function onRequestPost({ request, env }) {
       from: env.CONTACT_FROM || DEFAULT_FROM,
       to: [env.CONTACT_TO || DEFAULT_TO],
       reply_to: data.email,
-      subject: `【ozaken.ai】${data.kind || 'お問い合わせ'}／${data.name}`,
+      subject: `【ozaken.ai】${kind.label}／${data.name}`,
       text: body + meta,
     }),
   });

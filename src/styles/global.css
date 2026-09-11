@@ -1416,8 +1416,7 @@ html[data-intro='return'] .hero :is(.hero-actor,.hero-actor-img,.hero-eyebrow,.h
 .service-jumpbar{position:sticky;top:70px;z-index:20;background:rgba(10,13,19,.96);border-block:1px solid var(--rule);display:flex;gap:clamp(.8rem,3vw,2rem);justify-content:center;padding:.6rem var(--pad)}
 .service-jumpbar a{font-size:.9rem;padding:.35rem 0;border-bottom:1px solid transparent}
 .service-jumpbar a:hover{border-color:currentColor}
-#keynote-series,#training,#organization-change,#advisory,#management,#organization,#trends{scroll-margin-top:8.5rem}
-.format-outcome{font-size:.875rem;color:var(--fg-mid);border-top:1px solid var(--rule);padding-top:.6rem;margin-top:auto}
+#keynote-series,#training,#organization-change,#advisory,#ai-strategy,#management,#organization,#trends,#engagements,#advisory-evidence,#positions{scroll-margin-top:8.5rem}
 .nearby-evidence{margin-top:1.5rem;padding:1.2rem 1.4rem;background:rgba(150,170,200,.055);border-left:2px solid var(--rule)}
 .nearby-evidence h3{font-size:.95rem;font-weight:500;margin-bottom:.65rem}
 .nearby-evidence ul{list-style:none;display:grid;gap:.55rem}

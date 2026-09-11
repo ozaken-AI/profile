@@ -11,8 +11,8 @@ const { item } = Astro.props;
   <details class="service-more rv">
     <summary>{item.kind}の進め方・お渡しするもの</summary>
     <div class="service-more-body">
-      <h3>こんなご相談から始まります</h3>
-      <ul>{item.situations.map((situation) => <li>{situation}</li>)}</ul>
+      {item.situations.length > 0 && <><h3>こんなご相談から始まります</h3>
+      <ul>{item.situations.map((situation) => <li>{situation}</li>)}</ul></>}
       <h3>進め方</h3>
       <ol class="service-flow">
         {item.flow.map((step) => <li><h4>{step.h}</h4><p>{step.p}</p></li>)}

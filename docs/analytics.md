@@ -49,6 +49,6 @@ Search Consoleは実際に所有権を確認したプロパティを使う。サ
 
 ## 2026-09-11の依頼別計測
 
-`kind` は `src/lib/contact.js` の固定ID（keynote/training/partner/advisory/writing/media/other）。`topic` は同じファイルの許可されたIDかunspecified。フォーム本文・氏名・メールアドレスをイベントへ渡さない。送信成功はフォームをresetする前の種別・テーマを記録する。
+`kind` は `src/lib/contact.js` の固定ID（keynote/training/advisory/writing/media/other）。2026-09-11の統合後は旧partnerをadvisoryへ正規化し、旧伴走支援の相談はtopic=ai-adoptionとして引き継ぐ。過去のpartnerの集計値は遡って変更しない。`topic` は同じファイルの許可されたIDかunspecified。フォーム本文・氏名・メールアドレスをイベントへ渡さない。送信成功はフォームをresetする前の種別・テーマを記録する。
 
 GA4の管理画面でカスタムディメンションを定義することと、コードからイベントを送ることは別作業。今回のコード変更だけでGA4レポートの項目登録や受信確認が完了したと扱わない。公開URLのクエリに非公開情報を入れない。

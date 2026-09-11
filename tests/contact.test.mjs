@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { onRequestPost } from '../functions/api/contact.js';
+import { contactSelection } from '../src/lib/contact.js';
 
 const valid = { name: 'フォーム確認', email: 'test@example.com', message: '再送してもこの本文を保持する', elapsed: 3000 };
 function submit(payload, env = { RESEND_API_KEY: 'test-only' }) {
@@ -88,8 +89,38 @@ test('顧問の受信メールは開催人数ではなく期間と関与範囲�
   });
   await submit({ ...valid, kind: 'アドバイザリー・顧問', date: '11月から', audience: '経営陣', topic: 'gemini' });
   assert.match(sent.text, /開始希望時期・想定期間：11月から/);
-  assert.match(sent.text, /相談する方・関与を希望する範囲：経営陣/);
+  assert.match(sent.text, /相談する方・対象部門・関与範囲：経営陣/);
+  assert.match(sent.subject, /顧問・アドバイザー/);
   assert.doesNotMatch(sent.text, /Gemini/);
+});
+
+test('旧伴走支援の問い合わせは統合後も組織への浸透という意図を保持する', async t => {
+  const sent = [];
+  t.mock.method(globalThis, 'fetch', async (_, options) => {
+    sent.push(JSON.parse(options.body));
+    return new Response('{"id":"test-only"}', { status: 200 });
+  });
+  for (const kind of ['partner', '導入プロジェクトの伴走支援']) {
+    const selection = contactSelection(kind, null);
+    assert.equal(selection.kind.id, 'advisory');
+    assert.equal(selection.topic.id, 'ai-adoption');
+    const response = await submit({ ...valid, kind, audience: '全社の推進担当' });
+    assert.equal(response.status, 200);
+    assert.match(sent.at(-1).text, /ご依頼の種類：顧問・アドバイザー/);
+    assert.match(sent.at(-1).text, /相談したい内容：組織への浸透・定着/);
+    assert.match(sent.at(-1).text, /全社の推進担当/);
+    assert.match(sent.at(-1).subject, /顧問・アドバイザー/);
+  }
+});
+
+test('顧問の相談内容は許可された種別にだけ引き継ぐ', () => {
+  for (const topic of ['ai-strategy', 'ai-adoption', 'other-advisory']) {
+    assert.equal(contactSelection('advisory', topic).topic.id, topic);
+    assert.equal(contactSelection('training', topic).topic, undefined);
+    assert.equal(contactSelection('unknown', topic).topic, undefined);
+  }
+  assert.equal(contactSelection('アドバイザリー・顧問', 'ai-strategy').kind.id, 'advisory');
+  assert.equal(contactSelection('advisory', 'gemini').topic, undefined);
 });
 
 test('研修の選択内容が読みやすい名称でメールに残る', async t => {
