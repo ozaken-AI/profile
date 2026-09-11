@@ -128,7 +128,7 @@ export const MENU = [
     slug: 'keynote',
     idx: '01',
     kind: '講演',
-    title: 'カンファレンス・経営層向けの基調講演',
+    title: '企業・団体・カンファレンス向けの講演',
     spec: '60–90 min ／ 質疑応答つき',
     body: '経営論・組織論からAIエージェントの最新技術トレンドまで。企業の価値、人間の役割、社会の変化をつなぎ、参加者が次の議論に進むための視点を届けます。',
     forWhom: 'カンファレンス・業界団体の年次総会・経営会議',
@@ -270,7 +270,7 @@ export function speakingHref(slug: keyof typeof SPEAKING_ANCHORS): string {
 
 /** トップと統合依頼ページで共有する、目的から選ぶ入口。 */
 export const FORMATS = [
-  { slug: 'keynote', label: '基調講演', purpose: '経営と事業の問いを深める', detail: '経営論・組織論・AIエージェントの最新技術トレンド', outcome: '次の議論に進むための視点' },
+  { slug: 'keynote', label: '講演', purpose: '経営と事業の問いを深める', detail: '経営論・組織論・AIエージェントの最新技術トレンド', outcome: '次の議論に進むための視点' },
   { slug: 'training', label: '研修・ワークショップ', purpose: '自分の業務で使えるようにする', detail: '生成AIの基礎・Gemini・Microsoft 365 Copilot', outcome: '業務で試し、確かめるための手順' },
   { slug: 'partner', label: '組織変革・伴走支援', purpose: '活用を全社に広げ、根づかせる', detail: '業務・役割の設計、推進体制、全社への活用浸透', outcome: '現場の課題に応じた推進の進め方' },
   { slug: 'advisory', label: '顧問・アドバイザリー', purpose: '経営の意思決定を継続的に相談する', detail: 'AI戦略・投資の優先順位・経営陣との対話', outcome: '判断に必要な論点と見立て' },
@@ -331,10 +331,10 @@ export const PRIVATE_ENGAGEMENTS = [
   { sector: '事業会社', title: '全社でのAIエージェント活用浸透プロジェクトの推進', kind: '全社への展開' },
 ] as const;
 
-/** 基調講演の企画テーマ。登壇実績とは別。根拠と更新手順は docs/keynote-series.md。 */
+/** 講演の企画テーマ。登壇実績とは別。公開済みのIDは維持する。根拠と更新手順は docs/keynote-series.md。 */
 export const KEYNOTE_SERIES = {
   title: 'AI時代の経営と組織の未来。',
-  lead: '「人間とAIが共存する社会をつくる。」を軸に、経営論・組織論から最新トレンドまでをつなぐ基調講演シリーズです。',
+  lead: '「人間とAIが共存する社会をつくる。」を軸に、経営論・組織論から最新トレンドまでをつなぐ講演シリーズです。',
   talks: [
     {
       id: 'management', number: '01', category: '経営論', english: 'Management',
