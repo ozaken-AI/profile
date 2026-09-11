@@ -69,7 +69,7 @@ CMSデプロイフックのURLも実行権限を持つ値なので、リポジ�
 | お知らせ / CMS取得 | 最新8件、一覧、記事、外部リンク、カテゴリ、掲載日。本番で欠落がないか確認 |
 | 写真 / ロゴ / OGP | 実寸・切り抜き・配布先・OGPサイズ・表示文言・キャッシュ更新 |
 
-`npm run check`、`npm test`、`npm run build`を実行する。`@astrojs/check`とTypeScriptはdevDependenciesに含む。PRと本番ブランチのpushでは `.github/workflows/site-checks.yml` が同じ検証と `npm audit --audit-level=moderate` を行う。PRへCMS等のSecretsを渡さず、本番のニュース生成はCloudflare側で別に確認する。
+`npm run check`、`npm test`、`npm run build`、`npm audit --audit-level=moderate`を実行する。`@astrojs/check`とTypeScriptはdevDependenciesに含む。2026-09-11の自動CI追加は、GitHub認証のworkflow権限不足で未適用。権限のある認証を利用できたら、PR・本番ブランチpushを対象に、Nodeの指定・npm ci・上記4コマンドを実行するworkflowを追加する。PRへCMS等のSecretsを渡さず、本番のニュース生成はCloudflare側で別に確認する。
 
 フォームのテストは通信を模擬し、実メールを送らない。2026-09-11時点の型診断の既存ヒントは、LINEコピーの `execCommand` 非推奨。新しい診断と分けて報告する。
 
