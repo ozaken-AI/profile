@@ -37,8 +37,8 @@ const description =
 
   <noscript><style>.log-toolbar,.news-search{display:none}</style></noscript>
   {all.length > 0 && <div class="news-search" role="search" aria-label="お知らせを探す">
-    <label>キーワード<input id="news-query" type="search" placeholder="イベント名・テーマなど" autocomplete="off" /></label>
-    <label>掲載年<select id="news-year"><option value="all">すべての年</option>{years.map(year => <option value={year}>{year}年</option>)}</select></label>
+    <div class="search-field"><label for="news-query">キーワード</label><input id="news-query" type="search" placeholder="イベント名・テーマなど" autocomplete="off" /></div>
+    <div class="search-field"><label for="news-year">掲載年</label><select id="news-year"><option value="all">すべての年</option>{years.map(year => <option value={year}>{year}年</option>)}</select></div>
     <button type="button" id="news-reset">条件をリセット</button>
   </div>}
   <p id="news-no-results" class="news-no-results" hidden>条件に合うお知らせはありません。キーワードやカテゴリを変えてお試しください。</p>
@@ -95,9 +95,9 @@ const description =
 </Base>
 <style>
   .news-search{display:flex;align-items:end;gap:1rem;flex-wrap:wrap;margin:1.4rem 0 2rem}
-  .news-search label{display:flex;flex-direction:column;gap:.5rem;font-size:.9rem}
-  .news-search label:first-child{flex:1;min-width:180px}
+  .search-field{display:flex;flex-direction:column;gap:.5rem;font-size:.9rem}
+  .search-field:first-child{flex:1;min-width:180px}
   input,select{font:inherit;color:var(--fg);background:var(--ink-2);border:1px solid var(--rule);padding:.65rem .8rem;min-height:44px;width:100%}
-  button{font:inherit;background:none;color:var(--fg-mid);border:0;cursor:pointer;min-height:44px;padding:.5rem;text-decoration:underline;text-underline-offset:4px}
+  .news-search button{font:inherit;background:none;color:var(--fg-mid);border:0;cursor:pointer;min-height:44px;padding:.5rem;text-decoration:underline;text-underline-offset:4px}
   .news-no-results{font-size:1rem;color:var(--fg-mid);padding:2rem 0}
 </style>
