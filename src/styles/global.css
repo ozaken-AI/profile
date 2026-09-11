@@ -389,7 +389,6 @@ section{position:relative}
 }
 .hero-name{font-family:var(--f-gothic);font-size:clamp(1.2rem,2.1vw,1.65rem);font-weight:700;letter-spacing:.08em;color:var(--fg)}
 .hero-primary-role{font-size:.875rem;color:var(--fg-mid);line-height:1.7;margin-top:.15rem}
-.hero-name-en{font-family:var(--f-en);font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--fg-mute);margin-top:.3rem}
 .hero-h1{
   font-family:var(--f-mincho);font-weight:500;
   font-size:clamp(2.85rem,7.7vw,6.35rem);
@@ -467,16 +466,33 @@ section{position:relative}
 .hero-role-i.out{opacity:0;transform:translateY(-.45em)}
 @media(max-width:600px){.hero-role{font-size:.78rem;width:100%;flex:none}.hero-role-i{text-align:left}}
 
-.scrollcue{
-  font-family:var(--f-en);font-size:10.5px;font-weight:700;letter-spacing:.24em;
-  text-transform:uppercase;color:var(--fg-mute);display:flex;align-items:center;gap:.7rem;
+/* 分かれた線の間から光が下へ抜ける。文字を足さず、開幕の「つながる→散る」を引き継ぐ。 */
+.hero-continuation{
+  display:grid;place-items:center;flex:none;width:72px;min-height:44px;
+  color:var(--fg-mid);--continuation-play:paused;
 }
-.scrollcue i{display:block;width:46px;height:1px;background:var(--rule);position:relative;overflow:hidden}
-.scrollcue i::after{
-  content:'';position:absolute;inset:0;background:var(--fg-mid);
-  animation:sweep 2.4s cubic-bezier(.7,0,.3,1) infinite;
+.hero-continuation svg{display:block;width:72px;height:47px;overflow:visible;pointer-events:none}
+.continuation-seam{fill:none;stroke:currentColor;stroke-width:.8;opacity:.55;transition:opacity .25s}
+.continuation-trace{fill:none;stroke:currentColor;stroke-width:.6;opacity:.16;stroke-dasharray:1 5}
+.continuation-origin{fill:var(--fg);filter:drop-shadow(0 0 4px rgba(220,235,255,.65))}
+.continuation-particle{fill:var(--fg);opacity:0;--particle-x:0px;--particle-y:24px}
+.continuation-particle--left{--particle-x:-8px;--particle-y:18px}
+.continuation-particle--right{--particle-x:7px;--particle-y:21px}
+.hero-continuation:hover .continuation-seam,.hero-continuation:focus-visible .continuation-seam{opacity:1}
+.hero-continuation:focus-visible{outline:1px solid var(--fg);outline-offset:4px}
+@media(prefers-reduced-motion:no-preference){
+  .hero.fx-active .hero-continuation{--continuation-play:running}
+  .continuation-seam{animation:continuation-open 4.6s ease-in-out infinite;animation-play-state:var(--continuation-play)}
+  .continuation-seam--left{--seam-x:-3px}
+  .continuation-seam--right{--seam-x:3px}
+  .continuation-origin{animation:continuation-glow 4.6s ease-in-out infinite;animation-play-state:var(--continuation-play)}
+  .continuation-particle{animation:continuation-fall 4.6s ease-in-out infinite;animation-play-state:var(--continuation-play)}
+  .continuation-particle--left{animation-delay:.15s}
+  .continuation-particle--right{animation-delay:.3s}
 }
-@keyframes sweep{0%{transform:translateX(-100%)}55%,100%{transform:translateX(100%)}}
+@keyframes continuation-open{0%,75%,100%{transform:translateX(0)}35%,50%{transform:translateX(var(--seam-x))}}
+@keyframes continuation-glow{0%,75%,100%{opacity:.4}25%,40%{opacity:1}}
+@keyframes continuation-fall{0%,20%{opacity:0;transform:translate(0,0)}30%{opacity:.85}65%,100%{opacity:0;transform:translate(var(--particle-x),var(--particle-y))}}
 
 /* ---------- STAGE：ヒーロー直後のフルブリード登壇写真 ---------- */
 .stage{
@@ -1278,7 +1294,7 @@ footer{border-top:1px solid var(--rule-2);padding-block:2.5rem;font-size:.78rem;
 .foot-legal a:hover{color:var(--fg);border-color:var(--fg-mute)}
 
 /* ---------- 隠しコマンドで出すLINEの面 ----------
-   名前 → 見出し → SCROLL の順にたたくと開く。墨の面で、サイトと同じ調子。
+   名前 → 見出し → 光の合図 の順にたたくと開く。墨の面で、サイトと同じ調子。
    QRだけは読み取りのために紙色を敷く。 */
 .lpanel:not([open]){display:none}
 .lpanel{

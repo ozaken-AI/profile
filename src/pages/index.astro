@@ -50,7 +50,6 @@ const description =
       <div class="hero-eyebrow">
         <p class="hero-name">{SITE.name}</p>
         <p class="hero-primary-role">{SITE.role}</p>
-        <p class="hero-name-en">Kensuke Ozawa — Ozaken</p>
       </div>
 
       <div class="hero-h1wrap">
@@ -80,7 +79,17 @@ const description =
   </div>
 
   <div class="hero-foot">
-    <div class="scrollcue"><i></i>Scroll</div>
+    <a class="hero-continuation" href="#s-news" aria-label="お知らせへ進む" title="お知らせへ進む">
+      <svg viewBox="0 0 80 52" aria-hidden="true" focusable="false">
+        <path class="continuation-seam continuation-seam--left" d="M6 17H31M31 13V21" />
+        <path class="continuation-seam continuation-seam--right" d="M49 13V21M49 17H74" />
+        <path class="continuation-trace" d="M40 15V42" />
+        <circle class="continuation-origin" cx="40" cy="17" r="1.7" />
+        <circle class="continuation-particle" cx="40" cy="17" r="1.5" />
+        <circle class="continuation-particle continuation-particle--left" cx="40" cy="17" r=".8" />
+        <circle class="continuation-particle continuation-particle--right" cx="40" cy="17" r=".8" />
+      </svg>
+    </a>
     <nav class="hero-jumps" aria-label="目的に合う依頼内容へ">
       {FORMATS.map((format) => <a href={speakingHref(format.slug)}>{format.slug === 'partner' ? '組織変革' : format.slug === 'advisory' ? '顧問' : format.slug === 'training' ? '研修' : format.label}<span aria-hidden="true">↗</span></a>)}
     </nav>
@@ -255,7 +264,7 @@ const description =
 </section>
 
 <!-- ============ 隠しコマンド（LINE） ============
-     ファーストビューを上から順に 名前 → 見出し → SCROLL と3回たたくと開く。
+     ファーストビューを上から順に 名前 → 見出し → 光の合図 と3回たたくと開く。
      PCでは ozaken とタイプしても開く。ナビからは辿れない。面は墨で統一。 -->
 <dialog class="lpanel" id="linePanel" aria-labelledby="lpanelTitle">
   <div class="lpanel-scrim" data-lp-close></div>
@@ -313,23 +322,23 @@ const description =
       setTimeout(() => { copy.textContent = before; }, 1600);
     });
 
-    /* 順番にたたく：名前 → 見出し → SCROLL。間違えたら最初から。6秒あいてもリセット。 */
-    const SEQ = ['#s-hero .hero-eyebrow', '#s-hero .hero-h1wrap', '#s-hero .scrollcue'];
+    /* 順番にたたく：名前 → 見出し → 光の合図。間違えたら最初から。6秒あいてもリセット。 */
+    const SEQ = ['#s-hero .hero-eyebrow', '#s-hero .hero-h1wrap', '#s-hero .hero-continuation'];
     let step = 0;
     let timer = 0;
     const arm = () => { clearTimeout(timer); timer = window.setTimeout(() => { step = 0; }, 6000); };
     SEQ.forEach((sel, i) => {
       const el = document.querySelector(sel);
       if (!el) return;
-      el.style.cursor = 'default';
-      el.addEventListener('click', () => {
+      if (i < SEQ.length - 1) el.style.cursor = 'default';
+      el.addEventListener('click', (event) => {
         if (i !== step) { clearTimeout(timer); step = i === 0 ? 1 : 0; if (step) arm(); return; }
         step += 1;
         // 効いたことが分かるように、朱をひと呼吸だけ差す
         el.classList.remove('secret-hit');
         void el.offsetWidth;
         el.classList.add('secret-hit');
-        if (step === SEQ.length) { clearTimeout(timer); step = 0; open(); } else arm();
+        if (step === SEQ.length) { event.preventDefault(); clearTimeout(timer); step = 0; open(); } else arm();
       });
     });
 
