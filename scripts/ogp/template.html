@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <title>OGP</title>
-<link rel="stylesheet" href="fonts.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Shippori+Mincho+B1:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" />
 <style>
   :root{
     --ink:#0A0D13; --ink-2:#10151F; --rule:#252D3D;
@@ -88,13 +88,8 @@
   .who b{display:block;font-family:var(--f-mincho);font-size:19px;font-weight:500;letter-spacing:.06em}
   .who>span{display:block;font-family:var(--f-gothic);font-size:12.5px;color:var(--fg-mute);margin-top:5px}
 
-  .nums{display:flex;gap:30px;margin-top:18px}
-  .num i{
-    display:block;font-family:var(--f-en);font-size:28px;font-weight:800;font-style:normal;
-    letter-spacing:-.01em;font-variant-numeric:tabular-nums;
-  }
-  .num i small{font-size:11px;font-weight:700;letter-spacing:.06em;margin-left:4px;color:var(--fg-mute)}
-  .num span{display:block;font-family:var(--f-gothic);font-size:11px;color:var(--fg-mute);margin-top:2px}
+  .services{font-family:var(--f-gothic);font-size:20px;letter-spacing:.06em;color:var(--fg);margin-top:20px}
+  .who>span{font-size:15px;color:var(--fg-mid)}
 
   /* 落款は「健」の判子から、本人の丸写真＋朱のリングに替えた（seal.png が必要） */
   .seal{
@@ -127,16 +122,15 @@
       <div class="who">
         <b>小澤健祐（おざけん）</b>
         <span>一般社団法人AICX協会 代表理事</span>
-        <div class="nums">
-          <div class="num"><i>300<small>回／年</small></i><span>講演・登壇</span></div>
-          <div class="num"><i>1,500<small>本超</small></i><span>記事執筆</span></div>
-          <div class="num"><i>50,000<small>名超</small></i><span>Udemy受講者</span></div>
-        </div>
+        <p class="services">基調講演 ／ 研修 ／ 組織変革 ／ 顧問</p>
       </div>
     </div>
   </div>
 
 <script>
+  // 書き出し環境の倍率補正。通常表示は1。画像寸法は書き出し後に必ず確認する。
+  const renderScale = Number(new URLSearchParams(location.search).get('renderScale') || 1);
+  if (renderScale >= 0.5 && renderScale <= 2) document.body.style.zoom = String(renderScale);
   const V = {
     main: {
       label: 'Vision',
@@ -145,13 +139,13 @@
       sub: '',
     },
     speaking: {
-      label: 'Speaking',
-      h1: '生成AI・AIエージェントの<br>講演・研修・<em>アドバイザリー</em>',
+      label: 'Speaking & Advisory',
+      h1: '経営の問いから、<br>組織の<em>実践まで。</em>',
       sm: true,
-      sub: '経営層向けの基調講演から、全社リテラシー研修、実装ワークショップ、顧問まで。聞き手と目的に合わせて構成します。',
+      sub: '経営論・組織論・AIエージェントの最新技術。基調講演からGemini・Copilot研修、全社への活用浸透、顧問まで。',
     },
   };
-  const v = V[new URLSearchParams(location.search).get('v') || 'main'];
+  const v = V[new URLSearchParams(location.search).get('v')] || V.main;
   document.getElementById('labelText').textContent = v.label;
   document.getElementById('h1').innerHTML = v.h1;
   document.getElementById('h1o').innerHTML = v.h1;

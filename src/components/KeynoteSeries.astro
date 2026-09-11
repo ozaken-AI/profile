@@ -6,6 +6,7 @@ const keynote = MENU[0];
 
 <section class="band band--paper keynote-series" id="keynote-series" data-rail="基調講演シリーズ">
   <div class="wrap">
+    <p class="print-identity">{SITE.name} ／ {SITE.role}<br />{SITE.url}/speaking/ ／ {SITE.email}</p>
     <p class="label rv">Keynote Series ／ 基調講演</p>
     <h2 class="h2 rv">{KEYNOTE_SERIES.title}</h2>
     <p class="lede rv">{KEYNOTE_SERIES.lead}</p>
@@ -22,23 +23,25 @@ const keynote = MENU[0];
             <h3 class="keynote-title" id={`${talk.id}-title`}>{talk.title}</h3>
             <p class="keynote-subtitle">{talk.subtitle}</p>
           </header>
-          <p class="keynote-description rv">{talk.description}</p>
+          <p class="print-abstract">{talk.description}</p>
+              <div class="keynote-takeaway">
+                <h4>持ち帰る視点</h4>
+                <p>{talk.takeaway}</p>
+              </div>
+            <dl class="keynote-audience">
+              <div><dt>対象</dt><dd>{talk.forWhom}</dd></div>
+              <div><dt>開催の例</dt><dd>{talk.occasion}</dd></div>
+            </dl>
+
           <details class="talk-more rv">
-            <summary>論点・対象・関連資料を見る</summary>
+            <summary>講演の内容・関連資料を見る</summary>
+            <p class="keynote-description">{talk.description}</p>
             <div class="keynote-detail">
               <div>
                 <h4>講演で扱う論点</h4>
                 <ul>{talk.points.map((point) => <li>{point}</li>)}</ul>
               </div>
-              <div class="keynote-takeaway">
-                <h4>持ち帰る視点</h4>
-                <p>{talk.takeaway}</p>
-              </div>
             </div>
-            <dl class="keynote-audience">
-              <div><dt>対象</dt><dd>{talk.forWhom}</dd></div>
-              <div><dt>開催の例</dt><dd>{talk.occasion}</dd></div>
-            </dl>
             <div class="keynote-sources">
               <p>関連する解説資料 <span>／ 閲覧にはキーが必要です</span></p>
               <ul>{talk.sources.map((source) => (
@@ -46,10 +49,17 @@ const keynote = MENU[0];
               ))}</ul>
             </div>
           </details>
+          <div class="talk-actions">
+            <a class="btn" href={`/contact/?kind=keynote&topic=${talk.id}`} data-place="keynote-theme">このテーマで相談する <span aria-hidden="true">→</span></a>
+            <button type="button" data-print-talk={talk.id}>企画概要を印刷</button>
+            <button type="button" data-share-talk={talk.id}>共有リンクをコピー</button>
+          </div>
         </article>
       ))}
     </div>
     <p class="keynote-note rv">事例や技術動向は開催時点の情報で調整します。講演の考え方は、<a href={`${SITE.contentSite}#downloads`} target="_blank" rel="noopener noreferrer">無料公開のPDF資料</a>でもご覧いただけます。</p>
+    <p class="print-conditions">形式：60〜90分（質疑応答を含む）／会場・オンライン・ハイブリッド。費用は個別見積もり。開催趣旨と参加者に合わせて構成します。<br />お問い合わせ：{SITE.email} ／ {SITE.url}/contact/</p>
+    <p class="talk-status" role="status" aria-live="polite"></p>
     <ServiceDetails item={keynote}>
       <details class="program-more" id="program">
         <summary>カンファレンス・60分の構成例を見る</summary>
@@ -106,5 +116,64 @@ const keynote = MENU[0];
     .keynote-category span{display:block;margin:.4rem 0 0}
     .keynote-audience>div{grid-template-columns:4em 1fr;gap:.5rem}
     .keynote-sources p span{display:block}
+  }
+</style>
+
+<script>
+  const talkStatus = document.querySelector<HTMLElement>('.talk-status');
+  document.querySelectorAll<HTMLButtonElement>('[data-share-talk]').forEach(button => {
+    button.addEventListener('click', async () => {
+      const link = new URL(`/speaking/#${button.dataset.shareTalk}`, location.origin).href;
+      try {
+        await navigator.clipboard.writeText(link);
+        if (talkStatus) talkStatus.textContent = '共有リンクをコピーしました。';
+        button.textContent = 'コピーしました';
+        window.setTimeout(() => { button.textContent = '共有リンクをコピー'; }, 2500);
+      } catch {
+        if (talkStatus) { talkStatus.textContent = `共有リンク：${link}`; talkStatus.scrollIntoView({ block: 'nearest' }); }
+      }
+    });
+  });
+  document.querySelectorAll<HTMLButtonElement>('[data-print-talk]').forEach(button => {
+    button.addEventListener('click', () => {
+      document.documentElement.dataset.printTalk = button.dataset.printTalk;
+      window.print();
+    });
+  });
+  window.addEventListener('afterprint', () => { delete document.documentElement.dataset.printTalk; });
+</script>
+<style>
+  .keynote-detail{grid-template-columns:1fr}
+  .keynote-takeaway{margin-top:1rem;padding:.8rem 1rem;background:rgba(150,170,200,.06)}
+  .keynote-takeaway h4{font-size:.875rem;margin-bottom:.35rem;font-weight:500}
+  .keynote-audience{font-size:.9rem;margin-top:1rem}
+  .talk-actions{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;margin-top:1.3rem}
+  .talk-actions .btn{margin:0;font-size:.9rem}
+  .talk-actions button{font:inherit;font-size:.875rem;color:inherit;border:0;border-bottom:1px solid currentColor;background:none;cursor:pointer;padding:.6rem 0}
+  .print-identity,.print-conditions,.print-abstract{display:none}
+  .talk-status{font-size:.875rem;overflow-wrap:anywhere}
+</style>
+<style is:global>
+  @media print {
+    @page {size:A4;margin:18mm}
+    html,body{background:white!important;color:#111!important;font-size:12pt!important}
+    .page{margin:0!important;padding:0!important}
+    .rail,.site-head,.site-foot,.skip-link,.site-motion,.section-motion,.motion-field,.service-jumpbar,body::before,body::after{display:none!important}
+    main>*:not(.keynote-series){display:none!important}
+    .keynote-series{padding:0!important;background:white!important;color:#111!important}
+    .keynote-series .wrap{padding:0!important;max-width:none!important}
+    .keynote-series .rv,.keynote-series .h2{opacity:1!important;transform:none!important;clip-path:none!important;animation:none!important}
+    .keynote-series>.wrap> :is(.label,.lede,.keynote-note,.keynote-nav,.service-details,.talk-status){display:none!important}
+    .keynote-series .h2{font-size:17pt!important;margin:.5rem 0 1rem!important}
+    .keynote-series .print-identity,.keynote-series .print-conditions,.keynote-series .print-abstract{display:block!important;font-size:10pt;line-height:1.7}
+    .keynote-series .keynote-talks{margin:0!important}
+    .keynote-series .keynote-talk{break-inside:avoid;padding:1rem 0!important;border-color:#aaa!important}
+    .keynote-series .keynote-title{font-size:20pt!important;line-height:1.5!important}
+    .keynote-series :is(p,dt,dd,h4){color:#111!important;font-size:11pt!important;line-height:1.8!important}
+    .keynote-series .keynote-audience{margin:1rem 0!important}
+    .keynote-series :is(.talk-more,.talk-actions,.keynote-category span){display:none!important}
+    html[data-print-talk] .keynote-talk{display:none!important}
+    html[data-print-talk='management'] #management,html[data-print-talk='organization'] #organization,html[data-print-talk='trends'] #trends{display:block!important}
+    .keynote-series a{text-decoration:none!important}
   }
 </style>

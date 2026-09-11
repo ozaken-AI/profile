@@ -61,12 +61,14 @@ AI・テクノロジーカンファレンス、業界横断イベント、企業
 | 対象 | 編集先 |
 |---|---|
 | シリーズ名、3講演のタイトル・概要・論点・対象・関連資料 | `src/lib/site.ts` の `KEYNOTE_SERIES` |
-| トップと講演一覧の基調講演カード、形式・進め方 | `src/lib/site.ts` の `MENU` 内 `keynote` |
+| トップの3テーマ予告、4形式の比較、形式・進め方 | `KEYNOTE_SERIES` / `FORMATS` / `MENU` 内 `keynote` |
 | 3講演の概要・開閉式の補足、専用スタイル | `src/components/KeynoteSeries.astro` |
 | 基調講演ページ、SEO、60分の構成例 | `src/components/KeynoteSeries.astro`（構成例）、`src/pages/speaking/index.astro`（SEO） |
 | 統合した依頼ページの入口、SEO | `src/pages/speaking/index.astro` |
 
-詳細は `/speaking/#management`、`#organization`、`#trends`。主催者が共有できる固定アンカーとして維持する。2026-09-10の追加希望で一覧と詳細を `/speaking/` に統合した。旧 `/speaking/keynote/` は301転送し、既存のフラグメントを維持する。[統合ページの編集・検証](speaking-page.md)を参照。「代表的な登壇」枠はどのページにも戻さず、トップは既存の4形式カードから案内する。
+詳細は `/speaking/#management`、`#organization`、`#trends`。主催者が共有できる固定アンカーとして維持する。2026-09-10の追加希望で一覧と詳細を `/speaking/` に統合した。旧 `/speaking/keynote/` は301転送し、既存のフラグメントを維持する。[統合ページの編集・検証](speaking-page.md)を参照。「代表的な登壇」枠はどのページにも戻さず、トップは4形式の目的別一覧と3テーマの短い予告から案内する。
+
+対象・開催の例・持ち帰る視点は常時表示し、詳しい本文・論点・関連資料は展開式にする。各テーマの相談リンクは `kind=keynote&topic=...` を引き継ぐ。共有ボタンは固定アンカーをコピーする。「企画概要を印刷」は同じページの選択テーマ・講師情報・条件をA4向けに整える。印刷用の完成スライドや別PDFを管理する仕組みではない。
 
 関連資料はキーが必要なことを明記し、公開PDFの一覧にもリンクする。鍵をURLやサイトのソースへ付けない。料金は個別見積もり、基本時間は質疑を含む60〜90分。時間・納品物・権利の条件を勝手に増やさない。
 

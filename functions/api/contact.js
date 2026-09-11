@@ -5,7 +5,7 @@
  *
  * 必要な環境変数（Cloudflare Pages → Settings → Variables and Secrets）
  *   RESEND_API_KEY  … Resend の API キー。Secret で入れる。
- *                     未設定ならフォームはメーラー起動に切り替わる
+ *                     未設定なら入力を保持し、メーラーへの案内を表示する
  *   CONTACT_TO      … 受信アドレス（未設定なら kensuke.ozawa@aicx.jp）
  *   CONTACT_FROM    … 送信元（未設定なら onboarding@resend.dev）
  *                     ドメイン認証をしていない間、Resend は Resend の登録アドレス宛にしか
@@ -17,16 +17,8 @@
 const DEFAULT_TO = 'kensuke.ozawa@aicx.jp';
 const DEFAULT_FROM = 'ozaken.ai <onboarding@resend.dev>';
 
-const FIELDS = [
-  ['name', 'お名前', 200],
-  ['company', '会社・団体名', 200],
-  ['email', 'メールアドレス', 200],
-  ['tel', '電話番号', 60],
-  ['kind', 'ご依頼の種類', 100],
-  ['date', '開催希望日・時期', 200],
-  ['audience', '対象者・想定人数', 200],
-  ['message', 'ご相談内容', 8000],
-];
+import { CONTACT_FIELDS, contactKind, contactTopic } from '../../src/lib/contact.js';
+const FIELDS = CONTACT_FIELDS.map(({ key, label, max }) => [key, label, max]);
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
@@ -78,6 +70,12 @@ export async function onRequestPost({ request, env }) {
     return json({ ok: false, error: 'まだ送信していません。3秒ほど待ってから、もう一度送信してください。' }, 429);
   }
 
+  // 上限超過を黙って切り捨てず、入力内容を修正できる応答にする。
+  for (const [key, label, max] of FIELDS) {
+    if (typeof payload[key] === 'string' && payload[key].length > max) {
+      return json({ ok: false, field: key, error: `${label}は${max}文字以内で入力してください。` }, 400);
+    }
+  }
   const data = {};
   for (const [key, , max] of FIELDS) {
     data[key] = key === 'message' ? cleanText(payload[key], max) : cleanLine(payload[key], max);
@@ -91,11 +89,17 @@ export async function onRequestPost({ request, env }) {
 
   const apiKey = env.RESEND_API_KEY;
   if (!apiKey) {
-    // 未設定。クライアント側でメーラー起動にフォールバックさせる。
+    // 未設定。クライアント側で利用者が選べるメーラーリンクを案内する。
     return json({ ok: false, configured: false }, 200);
   }
 
-  const body = FIELDS.map(([key, label]) => `${label}：${data[key] || '（未入力）'}`).join('\n');
+  const kind = contactKind(data.kind);
+  const topic = contactTopic(data.topic, kind.id);
+  const body = FIELDS.map(([key, label]) => {
+    const fieldLabel = key === 'date' ? kind.date : key === 'audience' ? kind.audience : label;
+    const value = key === 'topic' ? topic?.label : data[key];
+    return `${fieldLabel}：${value || '（未入力）'}`;
+  }).join('\n');
 
   const meta = [
     '',

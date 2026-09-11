@@ -1,6 +1,6 @@
 # サイト運用ガイド
 
-最終確認：2026-09-07。対象は `ozaken-AI/profile`。資料の運用は[資料作成ガイド](materials.md)から別リポジトリへ進む。
+最終確認：2026-09-11。対象は `ozaken-AI/profile`。資料の運用は[資料作成ガイド](materials.md)から別リポジトリへ進む。
 
 ## 作業開始
 
@@ -20,7 +20,7 @@ GitHubコネクタで不足する操作は、認証済みの `gh` と `git` で�
 
 ## 開発環境
 
-Node.js 22、`package-lock.json` に従う依存関係を使用する。
+Node.js 22.23.2（`.node-version`）、`package-lock.json` に従う依存関係を使用する。
 
 ```bash
 npm ci
@@ -69,15 +69,9 @@ CMSデプロイフックのURLも実行権限を持つ値なので、リポジ�
 | お知らせ / CMS取得 | 最新8件、一覧、記事、外部リンク、カテゴリ、掲載日。本番で欠落がないか確認 |
 | 写真 / ロゴ / OGP | 実寸・切り抜き・配布先・OGPサイズ・表示文言・キャッシュ更新 |
 
-`npm run check` は `astro check` を呼ぶが、チェック用パッケージは依存に含まれていない。依存を変更せず使ったコマンドは以下。追加インストールが必要な環境では、利用中の実行規則に従う。
+`npm run check`、`npm test`、`npm run build`を実行する。`@astrojs/check`とTypeScriptはdevDependenciesに含む。PRと本番ブランチのpushでは `.github/workflows/site-checks.yml` が同じ検証と `npm audit --audit-level=moderate` を行う。PRへCMS等のSecretsを渡さず、本番のニュース生成はCloudflare側で別に確認する。
 
-```bash
-npm exec --yes --package=@astrojs/check@0.9.10 --package=typescript@5.9.3 -- astro-check
-npm test
-git diff --check
-```
-
-2026-09-07の既存ヒントは、LINEコピーの `execCommand` 非推奨と記事ページの未使用 `Props`。新しい診断と分けて報告する。フォームの4テストは通信を模擬しており、実メールは送らない。
+フォームのテストは通信を模擬し、実メールを送らない。2026-09-11時点の型診断の既存ヒントは、LINEコピーの `execCommand` 非推奨。新しい診断と分けて報告する。
 
 動きは静止画だけで判断せず、時間差の透明度・位置と画面上の見え方を確認する。OS設定の実機切替をしていなければ、コード確認と区別する。ブラウザがロック等で使えない場合は、その制約を明記する。
 
@@ -118,7 +112,7 @@ gh workflow run analytics-report.yml --repo ozaken-AI/profile --ref claude/ozake
 | ビルド成功なのにお知らせが空 | CMS取得ログ、Productionの設定、`getNews()`の空配列への切替 |
 | CMS投稿成功なのに画面が古い | Webhook、対象ブランチ、マージ後のデプロイ、通常のブラウザの再読み込み |
 | 投稿の訂正に失敗 | 同じ記事IDか、PATCH権限があるか。別IDでの再試行は重複を作る |
-| フォームがメーラーへ切り替わる | `RESEND_API_KEY` と対象環境。表示成功と配送成功を混同しない |
+| フォームにメーラーへの案内が出る | `RESEND_API_KEY` と対象環境。表示成功と配送成功を混同しない |
 | 429でフォームが戻る | 3秒未満の送信。入力が保持され、再送できるか |
 | 502・通信失敗 | Pages FunctionとResend。ログを公開場所へ貼り付けない |
 | 本文が隠れたまま | reveal、`.on`、JSエラー、noscript / reduced-motionの代替表示 |
