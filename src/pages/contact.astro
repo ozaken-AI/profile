@@ -51,8 +51,9 @@ const description =
         </select>
       </div>
       <div class="form-field" id="topic-field" hidden>
-        <label for="cf-topic">テーマ・研修（任意）</label>
-        <select id="cf-topic" name="topic"><option value="">まだ決まっていない</option>{CONTACT_TOPICS.map(topic => <option value={topic.id} data-kind={topic.kind}>{topic.label}</option>)}</select>
+        <label for="cf-topic" id="topic-label">希望するテーマ（任意）</label>
+        <select id="cf-topic" name="topic" aria-describedby="topic-help"><option value="">まだ決まっていない</option>{CONTACT_TOPICS.map(topic => <option value={topic.id} data-kind={topic.kind}>{topic.label}</option>)}</select>
+        <p class="field-help" id="topic-help">「その他」を選んだ場合は、下の「ご相談内容」にご希望をお書きください。</p>
       </div>
       <div class="form-field">
         <label for="cf-date" id="date-label">希望する時期</label>
@@ -88,7 +89,7 @@ const description =
 </section>
 
 <script>
-  import { CONTACT_FIELDS, contactKind, contactTopic } from '../lib/contact.js';
+  import { CONTACT_FIELDS, contactKind, contactTopic, contactTopicLabel } from '../lib/contact.js';
   const form = document.querySelector<HTMLFormElement>('#contact-form');
   if (form) {
     const msg = document.getElementById('cf-msg')!;
@@ -105,6 +106,7 @@ const description =
       const kind = contactKind(kindField.value);
       document.getElementById('date-label')!.textContent = kind.date;
       document.getElementById('audience-label')!.textContent = kind.audience;
+      document.getElementById('topic-label')!.textContent = `${contactTopicLabel(kind.id)}（任意）`;
       messageField.placeholder = kind.placeholder;
       topicField.querySelectorAll<HTMLOptionElement>('option[data-kind]').forEach(option => {
         option.hidden = option.disabled = option.dataset.kind !== kind.id;
@@ -146,7 +148,7 @@ const description =
     };
     const mailtoFallback = (data: Record<string, string>, reason: string) => {
       const kind = contactKind(data.kind);
-      const lines = fields.map(f => `${f.key === 'date' ? kind.date : f.key === 'audience' ? kind.audience : f.label}：${f.key === 'topic' ? contactTopic(data.topic, kind.id)?.label || '未定' : data[f.key] || '（未入力）'}`);
+      const lines = fields.map(f => `${f.key === 'date' ? kind.date : f.key === 'audience' ? kind.audience : f.key === 'topic' ? contactTopicLabel(kind.id) : f.label}：${f.key === 'topic' ? contactTopic(data.topic, kind.id)?.label || '未定' : data[f.key] || '（未入力）'}`);
       const mail = form.querySelector<HTMLAnchorElement>('.form-foot a[href^="mailto:"]')!.href;
       const href = `${mail}?subject=${encodeURIComponent(`【お問い合わせ】${data.kind}／${data.name}`)}&body=${encodeURIComponent(lines.join('\n'))}`;
       setMsg(reason + '入力内容を保持しています。メールで送る場合は、次のリンクからメールソフトを開いてください。', 'err');

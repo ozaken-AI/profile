@@ -78,7 +78,8 @@ const jsonLd = [{
   </div>
   <p class="track-note rv">演習内容は、ご契約のプラン・管理者設定・利用できる機能を事前に確認して決めます。実務データの持ち込み範囲も、社内ルールに合わせて調整します。</p>
   <aside class="nearby-evidence rv" aria-label="研修の実績">
-    <h3>企業での研修・ワークショップ</h3>
+    <h3>これまでの研修・ワークショップ実績</h3>
+    <p>実際に担当した企業研修・ワークショップの一例です。社名を伏せて掲載しています。</p>
     <ul>{PRIVATE_ENGAGEMENTS.slice(0, 3).map(e => <li><b>{e.sector}</b><span>{e.title}</span></li>)}</ul>
   </aside>
   <ServiceDetails item={training} />
@@ -86,9 +87,9 @@ const jsonLd = [{
 
 <section class="band band--paper" id="organization-change" data-rail="組織変革・伴走支援">
   <div class="wrap">
-    <p class="label rv">Organization &amp; Adoption</p>
-    <h2 class="h2 rv">個人の工夫から、<br />組織の変化へ。</h2>
-    <p class="lede rv">生成AIを導入した、その先へ。活用の目的、業務の設計、組織の進め方を一緒に見直します。</p>
+    <p class="label rv">顧問・アドバイザーとしての支援</p>
+    <h2 class="h2 rv">AI活用を全社に広げる、<br />組織変革の伴走支援。</h2>
+    <p class="lede rv">顧問・アドバイザーとして、経営陣やAI推進担当者を継続的に支援します。活用方針、業務・役割の設計、全社への展開を一緒に考え、定例で進捗や課題を確認しながら次の施策を決めていきます。</p>
     <div class="challenge-list">
       {ORGANIZATION_CHALLENGES.map(challenge => <article class="rv"><h3>{challenge.title}</h3><p>{challenge.body}</p></article>)}
     </div>
@@ -101,9 +102,9 @@ const jsonLd = [{
     </details>
     <p class="track-note rv">管理職向けの講演・ワークショップは単発でもご相談いただけます。以下は、継続的な伴走支援の目安です。</p>
     <aside class="nearby-evidence rv" aria-label="全社推進の実績">
-      <h3>全社への活用浸透に関わる取り組み</h3>
+      <h3>これまでのAI活用浸透の支援実績</h3>
       <ul>{PRIVATE_ENGAGEMENTS.slice(3).map(e => <li><b>{e.sector}</b><span>{e.title}</span></li>)}</ul>
-      <p>社名を非公開とした実施内容の紹介です。</p>
+      <p>実際に関わった取り組みの一例です。社名を伏せて掲載しています。</p>
     </aside>
     <ServiceDetails item={partner} />
   </div>

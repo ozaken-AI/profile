@@ -100,4 +100,24 @@ test('研修の選択内容が読みやすい名称でメールに残る', async
   });
   await submit({ ...valid, kind: '社内研修・ワークショップ', topic: 'copilot' });
   assert.match(sent.text, /Microsoft 365 Copilot活用研修/);
+  assert.match(sent.text, /研修内容：Microsoft 365 Copilot活用研修/);
+});
+
+test('講演・研修のその他の希望が相談本文と一緒に受信メールへ届く', async t => {
+  const sent = [];
+  t.mock.method(globalThis, 'fetch', async (_, options) => {
+    sent.push(JSON.parse(options.body));
+    return new Response('{"id":"test-only"}', { status: 200 });
+  });
+  for (const [kind, topic, label] of [
+    ['講演・登壇', 'other-keynote', '講演テーマ'],
+    ['社内研修・ワークショップ', 'other-training', '研修内容'],
+  ]) {
+    const message = '掲載のテーマ以外で、開催趣旨に合わせて相談したい';
+    const response = await submit({ ...valid, kind, topic, message });
+    assert.equal(response.status, 200);
+    assert.ok(sent.at(-1).text.includes(`${label}：その他`));
+    assert.ok(sent.at(-1).text.includes(message));
+    assert.doesNotMatch(sent.at(-1).text, /テーマ・研修/);
+  }
 });

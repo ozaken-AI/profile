@@ -7,7 +7,7 @@ import HeroDust from '../components/HeroDust.astro';
 import SiteEntrance from '../components/SiteEntrance.astro';
 import SpeakingFocus from '../components/SpeakingFocus.astro';
 import { getNews } from '../lib/microcms';
-import { SITE, NUMBERS, ROLES, FORMATS, KEYNOTE_SERIES, speakingHref } from '../lib/site';
+import { SITE, NUMBERS, ROLES, FORMATS, speakingHref } from '../lib/site';
 
 import venue from '../assets/photos/venue.jpg';
 import portrait from '../assets/photos/portrait.jpg';
@@ -136,20 +136,6 @@ const description =
   </div>
 </section>
 
-<!-- ============ KEYNOTE PREVIEW ============ -->
-<section class="band wrap keynote-preview" id="s-speaking" data-rail="講演の問い">
-  <p class="label rv">Talks</p>
-  <h2 class="h2 rv">{KEYNOTE_SERIES.title}</h2>
-  <p class="lede rv">経営、組織、技術。開催趣旨に合わせ、参加者が次の議論に進むための問いを届けます。</p>
-  <div class="keynote-preview-list">
-    {KEYNOTE_SERIES.talks.map((talk) => <a class="keynote-preview-item rv" href={`/speaking/#${talk.id}`}>
-      <span class="keynote-preview-category">{talk.number} ／ {talk.category}</span>
-      <h3>{talk.title}</h3><p>{talk.forWhom}</p><span class="keynote-preview-go">持ち帰る視点・構成を見る <span aria-hidden="true">→</span></span>
-    </a>)}
-  </div>
-  <p class="track-note rv">講演の考え方は、<a href={`${SITE.contentSite}#downloads`} target="_blank" rel="noopener noreferrer">キー不要の無料PDF ↗</a>でもご覧いただけます。企画の概要は<a href="/speaking/#keynote-series">各テーマから印刷・共有</a>できます。</p>
-</section>
-
 <!-- ============ PROFILE（紙の面） ============ -->
 <section class="band band--paper" id="s-profile" data-rail="人物">
   <div class="wrap">
@@ -210,20 +196,19 @@ const description =
       </div>
     </a>
 
-    <a class="res rv rv-d3" href={`${SITE.contentSite}#downloads`} target="_blank" rel="noopener noreferrer">
+    <a class="res rv rv-d3" href={SITE.contentSite} target="_blank" rel="noopener noreferrer">
       <p class="res-kicker">content.ozaken.ai</p>
       <div>
-        <h3 class="res-title">無料公開のPDF資料</h3>
-        <p class="res-p">AIエージェントの実装レベルや業務変革、人材育成の考え方を公開しています。キー不要で読める資料から、検討を始められます。</p>
+        <h3 class="res-title">コンテンツ一覧</h3>
+        <p class="res-p">AIエージェントの活用、業務変革、人材育成などの資料・解説をまとめています。一部を無料でご覧いただけます。</p>
         <div class="res-tags">
-          <span class="res-tag">キー不要</span>
-          <span class="res-tag">導入の手順書</span>
-          <span class="res-tag">チェックリスト</span>
-          <span class="res-tag">図解</span>
+          <span class="res-tag">AIエージェント</span>
+          <span class="res-tag">業務変革</span>
+          <span class="res-tag">人材育成</span>
         </div>
       </div>
       <div class="res-footer">
-        <span class="res-action">無料PDFを見る</span>
+        <span class="res-action">コンテンツ一覧を見る</span>
         <span class="res-go" aria-hidden="true">↗</span>
       </div>
     </a>

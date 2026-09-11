@@ -13,16 +13,18 @@ export const CONTACT_TOPICS = [
   { id: 'management', kind: 'keynote', label: '経営論：AI時代、企業の価値はどこに宿るのか' },
   { id: 'organization', kind: 'keynote', label: '組織論：AIが働く組織で、人間は何を担うのか' },
   { id: 'trends', kind: 'keynote', label: 'AIエージェントの最新技術トレンド' },
+  { id: 'other-keynote', kind: 'keynote', label: 'その他' },
   { id: 'ai-basics', kind: 'training', label: '生成AIの基礎・仕事での使い方' },
   { id: 'gemini', kind: 'training', label: 'Gemini活用研修・ワークショップ' },
   { id: 'copilot', kind: 'training', label: 'Microsoft 365 Copilot活用研修・ワークショップ' },
   { id: 'agent-workshop', kind: 'training', label: 'AIエージェント活用・業務設計ワークショップ' },
+  { id: 'other-training', kind: 'training', label: 'その他' },
 ];
 
 export const CONTACT_FIELDS = [
   { key: 'name', label: 'お名前', max: 200 }, { key: 'company', label: '会社・団体名', max: 200 },
   { key: 'email', label: 'メールアドレス', max: 200 }, { key: 'tel', label: '電話番号', max: 60 },
-  { key: 'kind', label: 'ご依頼の種類', max: 100 }, { key: 'topic', label: 'テーマ・研修', max: 100 },
+  { key: 'kind', label: 'ご依頼の種類', max: 100 }, { key: 'topic', label: '希望するテーマ', max: 100 },
   { key: 'date', label: '希望時期・期間', max: 200 }, { key: 'audience', label: '対象・関与範囲', max: 200 },
   { key: 'message', label: 'ご相談内容', max: 8000 },
 ];
@@ -34,4 +36,9 @@ export function contactKind(value) {
 /** @param {unknown} value @param {string} kind */
 export function contactTopic(value, kind) {
   return CONTACT_TOPICS.find(t => t.id === value && t.kind === kind);
+}
+
+/** フォーム・受信メール・メールソフトへの引き継ぎで同じ項目名を使う。 @param {string} kind */
+export function contactTopicLabel(kind) {
+  return kind === 'keynote' ? '講演テーマ' : kind === 'training' ? '研修内容' : '希望するテーマ';
 }
