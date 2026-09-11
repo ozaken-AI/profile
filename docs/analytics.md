@@ -16,8 +16,9 @@ Search Consoleは実際に所有権を確認したプロパティを使う。サ
 
 | イベント | 発生時点 | パラメータ |
 |---|---|---|
-| `contact_cta` | `/contact/` へのリンクをクリック | `from`（元ページ）、`label`（リンク文字） |
-| `contact_submit` | フォームの送信処理の結果 | `result`: `ok` / `エラー` / `通信失敗` / `メーラーに切替` |
+| `contact_cta` | `/contact/` へのリンクをクリック | `from`（元ページ）、`label`（リンク文字）、`kind`、`topic`、`place`（設置場所） |
+| `contact_start` | 最初の入力・選択変更 | `kind`、`topic` |
+| `contact_submit` | フォームの送信処理の結果 | `kind`、`topic`、`result`: `ok` / `エラー` / `通信失敗` / `メーラーに切替` |
 | `outbound_click` | HTTP(S)の外部リンクをクリック | `url`（遷移先）、`page`（元ページ） |
 
 **`contact_submit` の総数を送信成功数にしない。** 成功として集計する場合は `result = ok` を分ける。メーラーへの切替は、その後の送信完了をサイトから確認できない。bot対策の見かけの成功もあるため、このイベントが人間の有効な相談件数を完全に表すわけではない。
@@ -45,3 +46,9 @@ Search Consoleは実際に所有権を確認したプロパティを使う。サ
 タグ・共通イベントは `Base.astro`、フォーム結果は `src/pages/contact.astro`、取得は `scripts/analytics-report.mjs`。設定では `allow_google_signals: false`、`allow_ad_personalization_signals: false`、`anonymize_ip: true` を渡している。
 
 計測項目・外部送信先・利用目的を変える場合は `/privacy/` の記載も更新する。上記の設定だけであらゆる地域の法的要件を満たすと説明しない。新たな同意管理等が必要な変更では、対象条件に応じて確認する。
+
+## 2026-09-11の依頼別計測
+
+`kind` は `src/lib/contact.js` の固定ID（keynote/training/partner/advisory/writing/media/other）。`topic` は同じファイルの許可されたIDかunspecified。フォーム本文・氏名・メールアドレスをイベントへ渡さない。送信成功はフォームをresetする前の種別・テーマを記録する。
+
+GA4の管理画面でカスタムディメンションを定義することと、コードからイベントを送ることは別作業。今回のコード変更だけでGA4レポートの項目登録や受信確認が完了したと扱わない。公開URLのクエリに非公開情報を入れない。

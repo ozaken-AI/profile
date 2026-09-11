@@ -23,7 +23,7 @@ const motes = Array.from({ length: 16 }, (_, i) => ({
   if (template && 'IntersectionObserver' in window) {
     // セクション単位で背景だけを隔離する。ヒーローの暗幕・文字の重なりには触れない。
     const surfaces = document.querySelectorAll<HTMLElement>(
-      '.page > section:is(.band, .phead, .contact), .site-foot',
+      '.page main > section:is(.band, .phead, .contact), .site-foot',
     );
     surfaces.forEach((surface, i) => {
       surface.classList.add('motion-surface');

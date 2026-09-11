@@ -1,10 +1,12 @@
 ---
 import Base from '../layouts/Base.astro';
 import { SITE } from '../lib/site';
+import { CONTACT_KINDS, CONTACT_TOPICS, CONTACT_FIELDS } from '../lib/contact.js';
+const limit = (key: string) => CONTACT_FIELDS.find(f => f.key === key)!.max;
 
 const title = 'お問い合わせ | 小澤健祐（おざけん）';
 const description =
-  '生成AI・AIエージェントの講演、社内研修、アドバイザリー、執筆・監修、取材のご依頼はこちらから。目的・対象者・想定人数・日程をお知らせいただければ、2〜3営業日以内にご返信します。';
+  '基調講演、Gemini・Copilot研修、組織変革・AI活用浸透、顧問、執筆・取材のご相談。内容や時期が未定でも構いません。費用は個別見積もり、通常2〜3営業日以内に返信します。';
 ---
 <Base {title} {description} railInitial="お問い合わせ">
 
@@ -13,7 +15,7 @@ const description =
   <p class="label rv">Contact</p>
   <h1 class="phead-h1 rv rv-d1">お問い合わせ</h1>
   <p class="phead-lede rv rv-d2">
-    目的・対象者・想定人数・日程をお知らせいただけると、可否と概算をお返ししやすくなります。
+    いまの課題や、ご相談の目的をお知らせください。
     費用は個別見積もりです。企画が固まっていない段階のご相談も歓迎です。
   </p>
 </section>
@@ -24,46 +26,46 @@ const description =
       <p class="form-foot">フォームの利用にはJavaScriptが必要です。<a href={`mailto:${SITE.email}`}>{SITE.email}</a> までメールでご連絡ください。</p>
       <style>.form-grid,.form-hp,.form-actions{display:none!important}</style>
     </noscript>
+    <p class="form-required-note">必須はお名前・メールアドレス・ご相談内容の3項目です。</p>
     <div class="form-grid">
       <div class="form-field">
-        <label for="cf-name">Name <span class="ja">お名前</span><span class="req">*</span></label>
-        <input type="text" id="cf-name" name="name" autocomplete="name" required placeholder="小澤 健祐" />
+        <label for="cf-name">お名前<span class="req">*</span></label>
+        <input type="text" id="cf-name" name="name" maxlength={limit('name')} autocomplete="name" required placeholder="小澤 健祐" />
       </div>
       <div class="form-field">
-        <label for="cf-company">Company <span class="ja">会社・団体名</span></label>
-        <input type="text" id="cf-company" name="company" autocomplete="organization" placeholder="株式会社◯◯" />
+        <label for="cf-company">会社・団体名</label>
+        <input type="text" id="cf-company" name="company" maxlength={limit('company')} autocomplete="organization" placeholder="株式会社◯◯" />
       </div>
       <div class="form-field">
-        <label for="cf-email">Email <span class="ja">メールアドレス</span><span class="req">*</span></label>
-        <input type="email" id="cf-email" name="email" autocomplete="email" required placeholder="you@example.com" />
+        <label for="cf-email">メールアドレス<span class="req">*</span></label>
+        <input type="email" id="cf-email" name="email" maxlength={limit('email')} autocomplete="email" required placeholder="you@example.com" />
       </div>
       <div class="form-field">
-        <label for="cf-tel">Tel <span class="ja">電話番号</span></label>
-        <input type="tel" id="cf-tel" name="tel" autocomplete="tel" placeholder="03-0000-0000" />
+        <label for="cf-tel">電話番号</label>
+        <input type="tel" id="cf-tel" name="tel" maxlength={limit('tel')} autocomplete="tel" placeholder="03-0000-0000" />
       </div>
       <div class="form-field">
-        <label for="cf-kind">Subject <span class="ja">ご依頼の種類</span></label>
+        <label for="cf-kind">ご依頼の種類</label>
         <select id="cf-kind" name="kind">
-          <option value="講演・登壇">講演・登壇</option>
-          <option value="社内研修・ワークショップ">社内研修・ワークショップ</option>
-          <option value="導入プロジェクトの伴走支援">導入プロジェクトの伴走支援</option>
-          <option value="アドバイザリー・顧問">アドバイザリー・顧問</option>
-          <option value="執筆・監修">執筆・監修</option>
-          <option value="取材・メディア出演">取材・メディア出演</option>
-          <option value="その他・まだ決まっていない">その他・まだ決まっていない</option>
+          {CONTACT_KINDS.map(kind => <option value={kind.label} data-kind={kind.id}>{kind.label}</option>)}
         </select>
       </div>
+      <div class="form-field" id="topic-field" hidden>
+        <label for="cf-topic">テーマ・研修（任意）</label>
+        <select id="cf-topic" name="topic"><option value="">まだ決まっていない</option>{CONTACT_TOPICS.map(topic => <option value={topic.id} data-kind={topic.kind}>{topic.label}</option>)}</select>
+      </div>
       <div class="form-field">
-        <label for="cf-date">Date <span class="ja">開催希望日・時期</span></label>
-        <input type="text" id="cf-date" name="date" placeholder="2026年11月中旬 / 未定" />
+        <label for="cf-date" id="date-label">希望する時期</label>
+        <input type="text" id="cf-date" name="date" maxlength={limit('date')} placeholder="2026年11月中旬 / 未定" />
       </div>
       <div class="form-field wide">
-        <label for="cf-audience">Audience <span class="ja">対象者・想定人数</span></label>
-        <input type="text" id="cf-audience" name="audience" placeholder="経営層・事業部長 / 約120名" />
+        <label for="cf-audience" id="audience-label">対象となる方・部門</label>
+        <input type="text" id="cf-audience" name="audience" maxlength={limit('audience')} placeholder="分かる範囲でお知らせください" />
       </div>
       <div class="form-field wide">
-        <label for="cf-message">Message <span class="ja">ご相談内容</span><span class="req">*</span></label>
-        <textarea id="cf-message" name="message" required placeholder="開催の背景、希望テーマ、参加者に持ち帰ってほしいことをお知らせください。ご予算の目安、会場／オンライン、録画・配信の希望も分かる範囲でどうぞ。未定の項目はそのままで構いません。"></textarea>
+        <label for="cf-message">ご相談内容<span class="req">*</span></label>
+        <textarea id="cf-message" name="message" maxlength={limit('message')} required aria-describedby="message-help" placeholder={CONTACT_KINDS[0].placeholder}></textarea>
+        <p class="field-help" id="message-help">8,000文字以内。分かる範囲で構いません。</p>
       </div>
     </div>
 
@@ -86,102 +88,104 @@ const description =
 </section>
 
 <script>
-  /* 送信。/api/contact が未設定・不達のときは、入力内容を埋めたメーラー起動に切り替える */
-  const MAIL_TO = 'kensuke.ozawa@aicx.jp';
-  const form = document.getElementById('contact-form') as HTMLFormElement | null;
+  import { CONTACT_FIELDS, contactKind, contactTopic } from '../lib/contact.js';
+  const form = document.querySelector<HTMLFormElement>('#contact-form');
   if (form) {
     const msg = document.getElementById('cf-msg')!;
-    const submit = document.getElementById('cf-submit') as HTMLButtonElement;
-    let openedAt = Date.now();
-
-    // 詳細ページで選んだ依頼の形を引き継ぐ。既知のキーだけを受け付ける。
-    const kinds = new Map([
-      ['keynote', '講演・登壇'], ['training', '社内研修・ワークショップ'],
-      ['partner', '導入プロジェクトの伴走支援'], ['advisory', 'アドバイザリー・顧問'],
-    ]);
-    const requestedKind = kinds.get(new URLSearchParams(location.search).get('kind') || '');
-    const kindField = form.elements.namedItem('kind') as HTMLSelectElement | null;
-    if (kindField && requestedKind) kindField.value = requestedKind;
-
-    const LABELS: Record<string, string> = {
-      name: 'お名前', company: '会社・団体名', email: 'メールアドレス', tel: '電話番号',
-      kind: 'ご依頼の種類', date: '開催希望日・時期', audience: '対象者・想定人数', message: 'ご相談内容',
+    const submit = document.querySelector<HTMLButtonElement>('#cf-submit')!;
+    const kindField = document.querySelector<HTMLSelectElement>('#cf-kind')!;
+    const topicField = document.querySelector<HTMLSelectElement>('#cf-topic')!;
+    const messageField = document.querySelector<HTMLTextAreaElement>('#cf-message')!;
+    const fields = CONTACT_FIELDS;
+    const field = (key: string) => form.elements.namedItem(key) as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+    let openedAt = Date.now(), started = false;
+    const requested = new URLSearchParams(location.search);
+    kindField.value = contactKind(requested.get('kind')).label;
+    const syncKind = () => {
+      const kind = contactKind(kindField.value);
+      document.getElementById('date-label')!.textContent = kind.date;
+      document.getElementById('audience-label')!.textContent = kind.audience;
+      messageField.placeholder = kind.placeholder;
+      topicField.querySelectorAll<HTMLOptionElement>('option[data-kind]').forEach(option => {
+        option.hidden = option.disabled = option.dataset.kind !== kind.id;
+      });
+      if (!contactTopic(topicField.value, kind.id)) topicField.value = '';
+      document.getElementById('topic-field')!.hidden = !['keynote', 'training'].includes(kind.id);
     };
-    const ORDER = Object.keys(LABELS);
-
-    const setMsg = (text: string, kind?: string) => {
-      msg.className = 'form-msg' + (kind ? ' ' + kind : '');
-      msg.textContent = text;
+    syncKind();
+    const topic = contactTopic(requested.get('topic'), contactKind(kindField.value).id);
+    if (topic) topicField.value = topic.id;
+    kindField.addEventListener('change', syncKind);
+    const tracking = () => ({ kind: contactKind(kindField.value).id, topic: contactTopic(topicField.value, contactKind(kindField.value).id)?.id || 'unspecified' });
+    const track = (name: string, extra: Record<string, string> = {}) => (window as any).ozTrack?.(name, { ...tracking(), ...extra });
+    const setMsg = (text: string, kind = '') => { msg.className = 'form-msg ' + kind; msg.textContent = text; };
+    const clearError = (element: HTMLElement) => {
+      element.removeAttribute('aria-invalid');
+      const described = element.getAttribute('aria-describedby')?.split(' ').filter(id => id !== 'cf-msg').join(' ');
+      if (described) element.setAttribute('aria-describedby', described); else element.removeAttribute('aria-describedby');
     };
-
-    const collect = () => {
-      const d: Record<string, any> = {};
-      ORDER.forEach((k) => { d[k] = (form.elements.namedItem(k) as HTMLInputElement)?.value.trim() ?? ''; });
-      d.website = (form.elements.namedItem('website') as HTMLInputElement)?.value.trim() ?? '';
-      d.elapsed = Date.now() - openedAt;
-      return d;
+    form.addEventListener('input', event => {
+      if (event.target instanceof HTMLElement) clearError(event.target);
+      if (!started) { started = true; track('contact_start'); }
+    });
+    form.addEventListener('change', () => { if (!started) { started = true; track('contact_start'); } });
+    const invalid = (data: Record<string, string>) => {
+      for (const f of fields) if (data[f.key].length > f.max) return [f.key, `${f.label}は${f.max}文字以内で入力してください。`];
+      if (!data.name.trim()) return ['name', 'お名前を入力してください。'];
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(data.email.trim())) return ['email', 'メールアドレスの形式を確認してください。'];
+      if (!data.message.trim()) return ['message', 'ご相談内容を入力してください。'];
     };
-
-    const invalid = (d: Record<string, any>): [string, string] | null => {
-      if (!d.name) return ['name', 'お名前を入力してください'];
-      if (!d.email) return ['email', 'メールアドレスを入力してください'];
-      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email)) return ['email', 'メールアドレスの形式を確認してください'];
-      if (!d.message) return ['message', 'ご相談内容を入力してください'];
-      return null;
-    };
-
-    const mailtoFallback = (d: Record<string, any>, reason: string) => {
-      const lines = ORDER.map((k) => `${LABELS[k]}：${d[k] || '（未入力）'}`);
-      const href = `mailto:${MAIL_TO}?subject=${encodeURIComponent(
-        `【お問い合わせ】${d.kind || 'ご相談'}／${d.name}`
-      )}&body=${encodeURIComponent(lines.join('\n') + '\n')}`;
-      msg.className = 'form-msg err';
-      msg.textContent = '';
-      msg.append(reason + 'メールソフトを開きます。開かない場合は ');
-      const a = document.createElement('a');
-      a.href = href; a.textContent = MAIL_TO;
-      msg.append(a, ' 宛に、入力内容をそのままお送りください。');
-      window.location.href = href;
-    };
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const data = collect();
-      const bad = invalid(data);
-      if (bad) {
-        setMsg(bad[1], 'err');
-        (form.elements.namedItem(bad[0]) as HTMLElement | null)?.focus();
-        return;
+    const showError = (key: string, text: string) => {
+      setMsg(text, 'err');
+      const input = field(key);
+      if (input) {
+        input.setAttribute('aria-invalid', 'true');
+        input.setAttribute('aria-describedby', [input.getAttribute('aria-describedby'), 'cf-msg'].filter(Boolean).join(' '));
+        input.focus();
       }
-      submit.disabled = true;
-      setMsg('送信しています…');
+    };
+    const mailtoFallback = (data: Record<string, string>, reason: string) => {
+      const kind = contactKind(data.kind);
+      const lines = fields.map(f => `${f.key === 'date' ? kind.date : f.key === 'audience' ? kind.audience : f.label}：${f.key === 'topic' ? contactTopic(data.topic, kind.id)?.label || '未定' : data[f.key] || '（未入力）'}`);
+      const mail = form.querySelector<HTMLAnchorElement>('.form-foot a[href^="mailto:"]')!.href;
+      const href = `${mail}?subject=${encodeURIComponent(`【お問い合わせ】${data.kind}／${data.name}`)}&body=${encodeURIComponent(lines.join('\n'))}`;
+      setMsg(reason + '入力内容を保持しています。メールで送る場合は、次のリンクからメールソフトを開いてください。', 'err');
+      const link = document.createElement('a'); link.href = href; link.textContent = '入力内容をメールで送る'; msg.append(' ', link);
+    };
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      fields.forEach(f => clearError(field(f.key)));
+      const data: Record<string, string> = Object.fromEntries(fields.map(f => [f.key, field(f.key).value]));
+      const bad = invalid(data);
+      if (bad) { showError(bad[0], bad[1]); return; }
+      submit.disabled = true; setMsg('送信しています…');
+      const eventContext = tracking();
       try {
-        const r = await fetch('/api/contact', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data),
-        });
-        const body = await r.json();
-        if (r.ok && body?.ok === true) {
-          form.reset();
-          openedAt = Date.now();
-          setMsg('送信しました。2〜3営業日以内にご返信します。', 'ok');
-          (window as any).ozTrack?.('contact_submit', { result: 'ok' });
+        const response = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...data, website: field('website').value, elapsed: Date.now() - openedAt }) });
+        const body = await response.json();
+        if (response.ok && body?.ok === true) {
+          (window as any).ozTrack?.('contact_submit', { ...eventContext, result: 'ok' });
+          const submittedKind = kindField.value;
+          form.reset(); kindField.value = submittedKind; syncKind(); openedAt = Date.now(); started = false;
+          setMsg('送信しました。通常2〜3営業日以内にご返信します。', 'ok');
         } else if (body?.configured === false) {
-          (window as any).ozTrack?.('contact_submit', { result: 'メーラーに切替' });
-          mailtoFallback(data, 'フォーム送信が未設定のため、');
+          track('contact_submit', { result: 'メーラーに切替' }); mailtoFallback(data, 'フォーム送信を利用できませんでした。');
         } else {
-          (window as any).ozTrack?.('contact_submit', { result: 'エラー' });
-          setMsg(body?.error || '送信に失敗しました。時間をおいて再度お試しください。', 'err');
+          track('contact_submit', { result: 'エラー' });
+          const error = body?.error || '送信に失敗しました。入力内容は保持しています。時間をおいて再度お試しください。';
+          if (fields.some(f => f.key === body.field)) showError(body.field, error); else setMsg(error, 'err');
         }
       } catch {
-        (window as any).ozTrack?.('contact_submit', { result: '通信失敗' });
-        mailtoFallback(data, '送信できませんでした。');
-      } finally {
-        submit.disabled = false;
-      }
+        track('contact_submit', { result: '通信失敗' }); mailtoFallback(data, '送信できませんでした。');
+      } finally { submit.disabled = false; }
     });
   }
 </script>
-
 </Base>
+<style>
+  .form-required-note,.field-help{font-size:.875rem;color:var(--fg-mid);margin-bottom:1rem}
+  .field-help{margin-top:.5rem;margin-bottom:0}
+  [aria-invalid='true']{border-color:#e29a8d}
+  .form-field[hidden]{display:none}
+  .form-msg a{display:inline-block;text-decoration:underline;text-underline-offset:4px}
+</style>

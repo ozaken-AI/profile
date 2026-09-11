@@ -1,19 +1,10 @@
 ---
-import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import KeynoteSeries from '../../components/KeynoteSeries.astro';
 import ServiceDetails from '../../components/ServiceDetails.astro';
-import { SITE, MENU, FAQ, SPEAKING_TRACK, TRAINING_PROGRAMS, ORGANIZATION_THEMES, PRIVATE_ENGAGEMENTS, speakingHref } from '../../lib/site';
-import speakingStanding from '../../assets/photos/speaking-standing.jpg';
-import speakingSeated from '../../assets/photos/speaking-seated.jpg';
+import { SITE, MENU, FAQ, SPEAKING_TRACK, TRAINING_PROGRAMS, ORGANIZATION_THEMES, PRIVATE_ENGAGEMENTS, FORMATS, ORGANIZATION_CHALLENGES, ROLES, speakingHref } from '../../lib/site';
 
 const [, training, partner, advisory] = MENU;
-const formats = [
-  { slug: 'keynote', label: '基調講演', purpose: '次の議論へ、視点をひらく', detail: '経営論・組織論・AIエージェントの最新技術トレンド' },
-  { slug: 'training', label: '研修・ワークショップ', purpose: '自分の業務で、使ってみる', detail: '生成AIの基礎・Gemini・Microsoft 365 Copilot' },
-  { slug: 'partner', label: '組織変革・伴走支援', purpose: '個人の活用を、組織の力に', detail: '管理職の対話・業務設計・全社への活用浸透' },
-  { slug: 'advisory', label: '顧問・アドバイザリー', purpose: '経営の判断を、ともに考える', detail: 'AI戦略・投資判断・経営陣の壁打ち' },
-] as const;
 const steps = [
   { n: '01', h: '目的をうかがう', p: '対象者、課題、日程・期間をお知らせください。講演の企画段階や、社内の論点整理からでも構いません。' },
   { n: '02', h: '内容と条件を決める', p: '講演・研修・プロジェクトなど、目的に合う形をご提案。内容・範囲・費用・資料共有の条件をすり合わせます。' },
@@ -35,7 +26,7 @@ const jsonLd = [{
 }))];
 ---
 <Base {title} {description} {jsonLd} ogImage="/ogp-speaking.png"
-  ogImageAlt="小澤健祐（おざけん）｜生成AI・AIエージェントの講演・研修・アドバイザリー" railInitial="依頼">
+  ogImageAlt="小澤健祐（おざけん）｜経営の問いから、組織の実践まで。基調講演・研修・組織変革・顧問" railInitial="依頼">
 
 <section class="phead wrap" data-rail="依頼">
   <div class="phead-glow" aria-hidden="true"></div>
@@ -45,13 +36,13 @@ const jsonLd = [{
   <p class="phead-lede rv rv-d2">経営の意思決定から、現場での実践へ。<br />基調講演、製品別の研修、全社へのAI活用浸透、継続的な助言まで。目的と参加者、組織の状況に合わせて組み立てます。</p>
   <div class="booking-strip rv rv-d2">
     <p>単発の講演・研修から、継続的な支援まで。<br /><b>費用は個別見積もり。企画段階からご相談いただけます。</b></p>
-    <a class="btn" href="/contact/">内容・日程を相談する <span aria-hidden="true">→</span></a>
+    <a class="btn" href="/contact/" data-place="speaking-intro">内容・日程を相談する <span aria-hidden="true">→</span></a>
   </div>
   <nav class="format-nav rv" id="formats" aria-label="依頼内容を選ぶ">
-    {formats.map((format, i) => (
+    {FORMATS.map((format, i) => (
       <a href={speakingHref(format.slug)}>
         <span class="format-number">{String(i + 1).padStart(2, '0')} <span aria-hidden="true">↓</span></span>
-        <strong>{format.label}</strong><span class="format-purpose">{format.purpose}</span><span class="format-detail">{format.detail}</span>
+        <strong>{format.label}</strong><span class="format-purpose">{format.purpose}</span><span class="format-detail">{format.detail}</span><span class="format-outcome">{format.outcome}</span>
       </a>
     ))}
   </nav>
@@ -60,27 +51,36 @@ const jsonLd = [{
   </nav>
 </section>
 
+<nav class="service-jumpbar" aria-label="このページの依頼内容">
+  {FORMATS.map((format) => <a href={speakingHref(format.slug)}>{format.slug === 'partner' ? '組織変革' : format.slug === 'advisory' ? '顧問' : format.slug === 'training' ? '研修' : '基調講演'}</a>)}
+</nav>
 <KeynoteSeries />
 
 <section class="band wrap" id="training" data-rail="研修・ワークショップ">
+  <span id="engagements" class="anchor-alias" aria-hidden="true"></span>
   <span id="topics" class="anchor-alias" aria-hidden="true"></span>
   <p class="label rv">Training &amp; Workshop</p>
   <h2 class="h2 rv">仕事で使える、<br /><span class="phrase">AIの研修と</span><span class="phrase">ワークショップ。</span></h2>
   <p class="lede rv">{training.lede}</p>
   <div class="training-programs">
     {TRAINING_PROGRAMS.map((program, i) => (
-      <article class="training-program rv">
+      <article class="training-program rv" id={program.id}>
         <span class="program-number">{String(i + 1).padStart(2, '0')}</span>
         <div>
           <h3>{program.title}</h3>
           <p class="program-audience">対象：{program.audience}</p>
           <p class="program-lead">{program.lead}</p>
-          <ul>{program.points.map((point) => <li>{point}</li>)}</ul>
+          <details class="program-points"><summary>演習の内容を見る</summary><ul>{program.points.map((point) => <li>{point}</li>)}</ul></details>
+          <a class="program-contact" href={`/contact/?kind=training&topic=${program.id}`} data-place="training-program">この研修を相談する <span aria-hidden="true">→</span></a>
         </div>
       </article>
     ))}
   </div>
   <p class="track-note rv">演習内容は、ご契約のプラン・管理者設定・利用できる機能を事前に確認して決めます。実務データの持ち込み範囲も、社内ルールに合わせて調整します。</p>
+  <aside class="nearby-evidence rv" aria-label="研修の実績">
+    <h3>企業での研修・ワークショップ</h3>
+    <ul>{PRIVATE_ENGAGEMENTS.slice(0, 3).map(e => <li><b>{e.sector}</b><span>{e.title}</span></li>)}</ul>
+  </aside>
   <ServiceDetails item={training} />
 </section>
 
@@ -88,13 +88,23 @@ const jsonLd = [{
   <div class="wrap">
     <p class="label rv">Organization &amp; Adoption</p>
     <h2 class="h2 rv">個人の工夫から、<br />組織の変化へ。</h2>
-    <p class="lede rv">{partner.lede}</p>
+    <p class="lede rv">生成AIを導入した、その先へ。活用の目的、業務の設計、組織の進め方を一緒に見直します。</p>
+    <div class="challenge-list">
+      {ORGANIZATION_CHALLENGES.map(challenge => <article class="rv"><h3>{challenge.title}</h3><p>{challenge.body}</p></article>)}
+    </div>
+    <details class="organization-more rv"><summary>支援で扱う4つの領域</summary>
     <div class="organization-themes">
       {ORGANIZATION_THEMES.map((theme, i) => (
         <article class="rv"><p class="program-number">{String(i + 1).padStart(2, '0')}</p><h3>{theme.title}</h3><p>{theme.body}</p></article>
       ))}
     </div>
+    </details>
     <p class="track-note rv">管理職向けの講演・ワークショップは単発でもご相談いただけます。以下は、継続的な伴走支援の目安です。</p>
+    <aside class="nearby-evidence rv" aria-label="全社推進の実績">
+      <h3>全社への活用浸透に関わる取り組み</h3>
+      <ul>{PRIVATE_ENGAGEMENTS.slice(3).map(e => <li><b>{e.sector}</b><span>{e.title}</span></li>)}</ul>
+      <p>社名を非公開とした実施内容の紹介です。</p>
+    </aside>
     <ServiceDetails item={partner} />
   </div>
 </section>
@@ -103,20 +113,10 @@ const jsonLd = [{
   <p class="label rv">Advisory</p>
   <h2 class="h2 rv">AI戦略を、<br />経営の対話から。</h2>
   <p class="lede rv">{advisory.lede} 技術動向、投資の優先順位、組織のあり方を、経営陣・事業責任者と継続的に議論します。</p>
+  <aside class="nearby-evidence rv" aria-label="公開しているアドバイザーの役職">
+    <h3>公開している役職</h3><ul>{ROLES.filter(r => ['株式会社日本HP', '株式会社Lightblue', '株式会社NTTデータグループ'].includes(r.org)).map(r => <li><b>{r.org}</b><span>{r.title}</span></li>)}</ul><a href="/about/">詳しいプロフィール →</a>
+  </aside>
   <ServiceDetails item={advisory} />
-</section>
-
-<section class="band band--paper" id="engagements" data-rail="企業での実績">
-  <div class="wrap">
-    <p class="label rv">Corporate Engagements</p>
-    <h2 class="h2 rv">企業での研修・推進実績</h2>
-    <p class="lede rv">管理職の合宿、社員向け研修、実践ワークショップ、全社へのAIエージェント活用浸透。社名を非公開とした取り組みの一部をご紹介します。</p>
-    <div class="engagement-list">
-      {PRIVATE_ENGAGEMENTS.map((engagement) => (
-        <article class="engagement rv"><p class="engagement-sector">{engagement.sector}</p><div><p class="engagement-kind">{engagement.kind}</p><h3>{engagement.title}</h3></div></article>
-      ))}
-    </div>
-  </div>
 </section>
 
 <section class="band wrap" id="track" data-rail="登壇・支援先">
@@ -129,13 +129,10 @@ const jsonLd = [{
       {SPEAKING_TRACK.map((group) => <div class="track-g"><h3 class="track-k">{group.label}</h3><ul class="track-l">{group.items.map((item) => <li>{item}</li>)}</ul></div>)}
     </div>
   </details>
-  <div class="pair rv">
-    <div class="photo-frame"><Image src={speakingStanding} alt="基調講演で登壇する小澤健祐" width={2000} widths={[560, 1120, 1600, 2000]} quality={84} sizes="(max-width:600px) 100vw, 46vw" class="shotbox" /></div>
-    <div class="photo-frame"><Image src={speakingSeated} alt="パネルディスカッションに登壇する小澤健祐" width={2000} widths={[560, 1120, 1600, 2000]} quality={84} sizes="(max-width:600px) 100vw, 46vw" class="shotbox" /></div>
-  </div>
+
 </section>
 
-<section class="band wrap" data-rail="依頼の流れ">
+<section class="band wrap" id="process" data-rail="依頼の流れ">
   <p class="label rv">How It Works</p>
   <h2 class="h2 rv">ご相談から実施まで</h2>
   <div class="steps steps--dark stg">
@@ -157,7 +154,7 @@ const jsonLd = [{
   <h2 class="contact-h rv">ご依頼・ご相談</h2>
   <p class="lede rv">目的・対象者・想定人数・日程や期間をお知らせいただけると、可否と概算をお返ししやすくなります。企画が固まっていない段階のご相談も歓迎です。</p>
   <div class="contact-grid stg">
-    <a class="cc" href="/contact/"><span class="cc-k">Form</span><span class="cc-v">お問い合わせフォーム</span><span class="cc-n">2〜3営業日以内に返信します。</span></a>
+    <a class="cc" href="/contact/"><span class="cc-k">Form</span><span class="cc-v">お問い合わせフォーム</span><span class="cc-n">通常2〜3営業日以内に返信します。</span></a>
     <a class="cc" href={`mailto:${SITE.email}`}><span class="cc-k">Mail</span><span class="cc-v">{SITE.email}</span><span class="cc-n">直接メールでも構いません。</span></a>
     <a class="cc" href="/press/"><span class="cc-k">Press Kit</span><span class="cc-v">告知用の素材</span><span class="cc-n">プロフィール文と顔写真はこちら。</span></a>
   </div>
@@ -174,13 +171,13 @@ const jsonLd = [{
   .format-number{display:flex;justify-content:space-between;font-family:var(--f-en);font-size:.78rem;color:var(--fg-mute);margin-bottom:.4rem}
   .format-nav strong{font-size:1rem;font-weight:500}
   .format-purpose{font-family:var(--f-mincho);font-size:.86rem}
-  .format-detail{font-size:.74rem;color:var(--fg-mid);line-height:1.8}
+  .format-detail{font-size:.875rem;color:var(--fg-mid);line-height:1.8}
   .format-nav a:focus-visible,summary:focus-visible{outline:2px solid currentColor;outline-offset:4px}
   .training-programs{margin-top:3rem}
   .training-program{display:grid;grid-template-columns:3rem 1fr;gap:1.4rem;border-top:1px solid var(--rule);padding:2rem 0}
   .training-program h3,.organization-themes h3,.engagement h3{font-family:var(--f-mincho);font-weight:500;line-height:1.65;text-wrap:pretty;font-size:clamp(1.1rem,2.2vw,1.55rem);overflow-wrap:anywhere}
   .program-number{font-family:var(--f-en);font-size:1.3rem;line-height:1.5;color:var(--fg-mute)}
-  .program-audience{font-size:.78rem;color:var(--fg-mid);margin-top:.5rem}
+  .program-audience{font-size:.875rem;color:var(--fg-mid);margin-top:.5rem}
   .program-lead{font-size:.92rem;line-height:2;max-width:55em;margin-top:1rem}
   .training-program ul{font-size:.84rem;color:var(--fg-mid);padding-left:1.2rem;line-height:1.95;margin-top:1rem}
   .organization-themes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 3rem;margin-top:2.5rem}
@@ -200,7 +197,7 @@ const jsonLd = [{
   .anchor-alias{display:block;scroll-margin-top:6rem}
   @media(max-width:1000px){.format-nav{grid-template-columns:repeat(2,minmax(0,1fr))}.format-nav>a:nth-child(3){border-left:0}.format-nav>a:nth-child(n+3){border-top:1px solid var(--rule)}}
   @media(max-width:600px){
-    .format-nav{grid-template-columns:1fr}.format-nav>a{padding:1.2rem 0}.format-nav>a+a{border-left:0;border-top:1px solid var(--rule)}
+    .format-nav{grid-template-columns:repeat(2,minmax(0,1fr))}.format-nav>a{padding:1rem .7rem}.format-nav>a+a{border-left:0}.format-nav>a:nth-child(even){border-left:1px solid var(--rule)}
     .format-number{margin:0}.format-nav strong{font-size:1.1rem}.format-purpose{font-size:.92rem}
     .training-program{grid-template-columns:1fr;gap:.6rem}.organization-themes{grid-template-columns:1fr}
     .engagement{grid-template-columns:1fr;gap:.55rem}.engagement-sector{font-weight:500}.engagement-kind{margin-bottom:.25rem}

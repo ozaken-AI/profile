@@ -4,14 +4,15 @@ import { getNews, formatDate, categoryOf, thumbOf, type NewsItem } from '../../l
 
 export async function getStaticPaths() {
   const items = await getNews();
-  // CMSが未設定・到達不能なら空。ページは生成されないがビルドは通る。
+  // 未設定なら空。設定済みCMSの取得失敗時はgetNewsがthrowし、記事の一斉欠落を防ぐ。
   return items.map((item) => ({ params: { id: item.id }, props: { item } }));
 }
 
 interface Props { item: NewsItem; }
-const { item } = Astro.props;
+const { item }: Props = Astro.props;
 
 const cat = categoryOf(item);
+const inquiryKind = /研修|ワークショップ/.test(item.title) ? 'training' : cat === '登壇' || cat === 'イベント' ? 'keynote' : cat === 'メディア' ? 'media' : 'other';
 const thumb = thumbOf(item);
 // OGPはjpgのほうが確実に展開される。取り込み分（webpの静的ファイル）は既定画像に任せる。
 const ogImage = item.thumbnail?.url ? `${item.thumbnail.url}?fm=jpg&w=1200` : undefined;
@@ -24,8 +25,7 @@ const meta = [
 
 // 抜粋は本文の書き出しから作ってあることが多い。詳細ページで同じ文が二度続かないようにする。
 const lead = item.excerpt?.trim() ?? '';
-const bodyHead = (item.body ?? '').replace(/<[^>]*>/g, '').replace(/&amp;/g, '&').slice(0, 60);
-const showLead = lead.length > 0 && !bodyHead.startsWith(lead.slice(0, 24));
+const showLead = lead.length > 0 && !item.body?.trim();
 
 const title = `${item.title} | 小澤健祐（おざけん）`;
 const description =
@@ -98,8 +98,21 @@ const jsonLd = [
 
     {item.body && <div class="post-body rv rv-d2" set:html={item.body} />}
 
+    <aside class="post-next rv" aria-label="関連するご依頼">
+      <h2>{cat === '登壇' || cat === 'イベント' ? '次の講演・研修を企画する方へ' : '執筆・取材・企業でのAI活用のご相談'}</h2>
+      <p>{cat === '登壇' || cat === 'イベント' ? '経営論・組織論・AIエージェントの最新技術トレンドから、業務で使うための研修まで。目的と参加者に合わせて構成します。' : '執筆・監修、取材・メディア出演から、講演・研修・組織変革まで。ご相談の目的をお知らせください。'}</p>
+      <div><a href="/speaking/">講演・研修・支援内容を見る →</a><a href={`/contact/?kind=${inquiryKind}`} data-place="news-article">ご依頼を相談する →</a></div>
+    </aside>
     <p class="post-back rv rv-d2"><a class="more" href="/news/">お知らせ一覧に戻る <span>→</span></a></p>
   </div>
 </article>
 
 </Base>
+
+<style>
+  .post-next{margin-top:3rem;padding:1.8rem;border:1px solid var(--rule)}
+  h2{font-family:var(--f-mincho);font-size:1.35rem;line-height:1.6;font-weight:500}
+  .post-next p{font-size:.95rem;color:var(--fg-mid);line-height:1.9;margin:.8rem 0 1rem}
+  .post-next div{display:flex;gap:1rem 2rem;flex-wrap:wrap}
+  .post-next a{font-size:.9rem;text-decoration:underline;text-underline-offset:5px;padding:.4rem 0}
+</style>

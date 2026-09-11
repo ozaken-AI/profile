@@ -55,3 +55,49 @@ test('未設定の場合はメーラーへの切替を返す', async () => {
   const response = await submit(valid, {});
   assert.deepEqual(await response.json(), { ok: false, configured: false });
 });
+
+test('長い本文を切り捨てて送らず、上限の本文はそのまま送る', async t => {
+  const sent = [];
+  t.mock.method(globalThis, 'fetch', async (_, options) => {
+    sent.push(JSON.parse(options.body));
+    return new Response('{"id":"test-only"}', { status: 200 });
+  });
+  const over = await submit({ ...valid, message: 'あ'.repeat(8001) });
+  assert.equal(over.status, 400);
+  assert.equal((await over.json()).field, 'message');
+  assert.equal(sent.length, 0);
+  const exact = await submit({ ...valid, message: 'あ'.repeat(8000) });
+  assert.equal(exact.status, 200);
+  assert.ok(sent[0].text.includes('あ'.repeat(8000)));
+});
+
+test('任意欄も上限を超えると外部送信しない', async t => {
+  t.mock.method(globalThis, 'fetch', () => assert.fail('外部送信しない'));
+  for (const [field, max] of [['company', 200], ['tel', 60], ['topic', 100], ['date', 200]]) {
+    const response = await submit({ ...valid, [field]: 'a'.repeat(max + 1) });
+    assert.equal(response.status, 400);
+    assert.equal((await response.json()).field, field);
+  }
+});
+
+test('顧問の受信メールは開催人数ではなく期間と関与範囲で案内する', async t => {
+  let sent;
+  t.mock.method(globalThis, 'fetch', async (_, options) => {
+    sent = JSON.parse(options.body);
+    return new Response('{"id":"test-only"}', { status: 200 });
+  });
+  await submit({ ...valid, kind: 'アドバイザリー・顧問', date: '11月から', audience: '経営陣', topic: 'gemini' });
+  assert.match(sent.text, /開始希望時期・想定期間：11月から/);
+  assert.match(sent.text, /相談する方・関与を希望する範囲：経営陣/);
+  assert.doesNotMatch(sent.text, /Gemini/);
+});
+
+test('研修の選択内容が読みやすい名称でメールに残る', async t => {
+  let sent;
+  t.mock.method(globalThis, 'fetch', async (_, options) => {
+    sent = JSON.parse(options.body);
+    return new Response('{"id":"test-only"}', { status: 200 });
+  });
+  await submit({ ...valid, kind: '社内研修・ワークショップ', topic: 'copilot' });
+  assert.match(sent.text, /Microsoft 365 Copilot活用研修/);
+});

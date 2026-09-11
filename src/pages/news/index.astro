@@ -6,6 +6,7 @@ import { getNews, categoryOf } from '../../lib/microcms';
 const all = await getNews();
 const CATS = ['登壇', 'メディア', 'イベント', 'リリース'] as const;
 const present = CATS.filter((c) => all.some((n) => categoryOf(n) === c));
+const years = [...new Set(all.map(item => item.publishedDate.slice(0, 4)))].sort().reverse();
 
 const title = 'お知らせ・登壇レポート | 小澤健祐（おざけん）';
 const description =
@@ -24,7 +25,7 @@ const description =
 </section>
 
 <section class="band wrap" style="padding-top:0" data-rail="一覧">
-  {present.length > 1 && (
+  {all.length > 0 && (
     <div class="log-toolbar stg" id="filters" role="group" aria-label="カテゴリで絞り込み">
       <button type="button" class="chip" data-cat="all" aria-pressed="true">すべて</button>
       {present.map((c) => (
@@ -34,36 +35,69 @@ const description =
     </div>
   )}
 
+  <noscript><style>.log-toolbar,.news-search{display:none}</style></noscript>
+  {all.length > 0 && <div class="news-search" role="search" aria-label="お知らせを探す">
+    <div class="search-field"><label for="news-query">キーワード</label><input id="news-query" type="search" placeholder="イベント名・テーマなど" autocomplete="off" /></div>
+    <div class="search-field"><label for="news-year">掲載年</label><select id="news-year"><option value="all">すべての年</option>{years.map(year => <option value={year}>{year}年</option>)}</select></div>
+    <button type="button" id="news-reset">条件をリセット</button>
+  </div>}
+  <p id="news-no-results" class="news-no-results" hidden>条件に合うお知らせはありません。キーワードやカテゴリを変えてお試しください。</p>
   <div class="rv rv-d1" id="listRoot" data-total={all.length}>
     <NewsList items={all} />
   </div>
 </section>
 
 <script>
-  /* カテゴリの絞り込み。1ページに全件出しているので、DOMの表示切り替えだけで済む */
   const bar = document.getElementById('filters');
   const root = document.getElementById('listRoot');
   const count = document.getElementById('count');
-  if (bar && root) {
+  const query = document.querySelector<HTMLInputElement>('#news-query');
+  const year = document.querySelector<HTMLSelectElement>('#news-year');
+  if (bar && root && query && year) {
     const rows = Array.from(root.querySelectorAll<HTMLElement>('.news-row'));
-    const total = rows.length;
-    const render = (cat: string) => {
+    const buttons = [...bar.querySelectorAll<HTMLButtonElement>('.chip')];
+    let category = 'all';
+    const render = () => {
+      const needle = query.value.trim().normalize('NFKC').toLocaleLowerCase('ja');
       let shown = 0;
-      rows.forEach((r) => {
-        const hit = cat === 'all' || r.dataset.cat === cat;
-        r.hidden = !hit;
+      rows.forEach(row => {
+        const hit = (category === 'all' || row.dataset.cat === category) && (year.value === 'all' || row.dataset.year === year.value) && (!needle || (row.textContent || '').normalize('NFKC').toLocaleLowerCase('ja').includes(needle));
+        row.hidden = !hit;
         if (hit) shown++;
       });
-      if (count) count.textContent = `${shown} / ${total}`;
+      buttons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.cat === category)));
+      if (count) count.textContent = `${shown} / ${rows.length} 件`;
+      document.getElementById('news-no-results')!.hidden = shown > 0;
     };
-    bar.querySelectorAll<HTMLButtonElement>('.chip').forEach((b) => {
-      b.addEventListener('click', () => {
-        bar.querySelectorAll('.chip').forEach((o) => o.setAttribute('aria-pressed', String(o === b)));
-        render(b.dataset.cat!);
-      });
-    });
-    render('all');
+    const writeUrl = (push: boolean) => {
+      const url = new URL(location.href);
+      for (const [key, value] of [['category', category === 'all' ? '' : category], ['year', year.value === 'all' ? '' : year.value], ['q', query.value.trim()]]) {
+        if (value) url.searchParams.set(key, value); else url.searchParams.delete(key);
+      }
+      if (url.href !== location.href) history[push ? 'pushState' : 'replaceState'](null, '', url);
+      render();
+    };
+    const restore = () => {
+      const params = new URLSearchParams(location.search);
+      category = buttons.some(button => button.dataset.cat === params.get('category')) ? params.get('category')! : 'all';
+      year.value = [...year.options].some(option => option.value === params.get('year')) ? params.get('year')! : 'all';
+      query.value = params.get('q') || '';
+      render();
+    };
+    buttons.forEach(button => button.addEventListener('click', () => { category = button.dataset.cat!; writeUrl(true); }));
+    year.addEventListener('change', () => writeUrl(true));
+    query.addEventListener('input', () => writeUrl(false));
+    document.getElementById('news-reset')?.addEventListener('click', () => { category = 'all'; year.value = 'all'; query.value = ''; writeUrl(true); });
+    window.addEventListener('popstate', restore);
+    restore();
   }
 </script>
-
 </Base>
+<style>
+  .news-search{display:flex;align-items:end;gap:1rem;flex-wrap:wrap;margin:1.4rem 0 2rem}
+  .search-field{display:flex;flex-direction:column;gap:.5rem;font-size:.9rem}
+  .search-field:first-child{flex:1;min-width:180px}
+  input,select{font:inherit;color:var(--fg);background:var(--ink-2);border:1px solid var(--rule);padding:.65rem .8rem;min-height:44px;width:100%}
+  .news-search button{font:inherit;background:none;color:var(--fg-mid);border:0;cursor:pointer;min-height:44px;padding:.5rem;text-decoration:underline;text-underline-offset:4px}
+  .news-no-results{font-size:1rem;color:var(--fg-mid);padding:2rem 0}
+</style>
