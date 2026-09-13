@@ -56,6 +56,12 @@ const identityJsonLd = [
     image: abs(IDENTITY.image), jobTitle: SITE.role.replace(/\u3000/g, ' '),
     description: '生成AI・AIエージェントの講演、研修、執筆と、AI戦略・組織変革の顧問・アドバイザーとしての支援を行う。',
     sameAs: IDENTITY.sameAs,
+    knowsAbout: IDENTITY.knowsAbout,
+    worksFor: {
+      '@type': 'Organization',
+      name: IDENTITY.worksFor.name,
+      url: IDENTITY.worksFor.url,
+    },
   },
 ];
 const jsonLd = [...identityJsonLd, ...pageJsonLd];

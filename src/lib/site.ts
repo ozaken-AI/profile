@@ -39,6 +39,19 @@ export const IDENTITY = {
     'https://content.ozaken.ai/',
     'https://www.udemy.com/user/xiao-ze-jian-you/',
   ],
+  /**
+   * 専門領域。検索エンジンとLLMが「何の人か」を判断する材料になる。
+   * サイトで実際に扱っている範囲だけを挙げ、広げない。
+   */
+  knowsAbout: [
+    '生成AI', 'AIエージェント', 'AI戦略', '組織変革',
+    '企業の生成AI導入', 'AI人材育成',
+  ],
+  /** 代表理事を務める法人。Person と Organization を結びつける。 */
+  worksFor: {
+    name: '一般社団法人AICX協会',
+    url: 'https://aicx.jp/',
+  },
 } as const;
 
 /** 関与している組織。ヒーロー下のティッカーに流す。 */
