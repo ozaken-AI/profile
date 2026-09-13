@@ -375,7 +375,9 @@ section{position:relative}
     -webkit-mask-image:radial-gradient(ellipse 46vw 62vw at 64% 28%,#000 0%,rgba(0,0,0,.92) 46%,transparent 74%);
             mask-image:radial-gradient(ellipse 46vw 62vw at 64% 28%,#000 0%,rgba(0,0,0,.92) 46%,transparent 74%);
   }
-  .hero-actor-img{object-position:26% 0}
+  /* 縦長では画像の細い一片しか映らない。顔が見出しに重ならない位置に寄せる。
+     写真を差し替えたら、390pxで顔の位置と頭の切れを必ず見直すこと。 */
+  .hero-actor-img{object-position:8% 0}
   .spot-dust{
     -webkit-mask-image:radial-gradient(ellipse 65% 40% at 65% 25%,#000 10%,transparent 85%);
             mask-image:radial-gradient(ellipse 65% 40% at 65% 25%,#000 10%,transparent 85%);
