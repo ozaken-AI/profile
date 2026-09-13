@@ -41,33 +41,41 @@ const description =
         <input type="email" id="cf-email" name="email" maxlength={limit('email')} autocomplete="email" required placeholder="you@example.com" />
       </div>
       <div class="form-field">
-        <label for="cf-tel">電話番号</label>
-        <input type="tel" id="cf-tel" name="tel" maxlength={limit('tel')} autocomplete="tel" placeholder="03-0000-0000" />
-      </div>
-      <div class="form-field">
         <label for="cf-kind">ご依頼の種類</label>
         <select id="cf-kind" name="kind">
           {CONTACT_KINDS.map(kind => <option value={kind.label} data-kind={kind.id}>{kind.label}</option>)}
         </select>
-      </div>
-      <div class="form-field" id="topic-field" hidden>
-        <label for="cf-topic" id="topic-label">希望するテーマ（任意）</label>
-        <select id="cf-topic" name="topic" aria-describedby="topic-help"><option value="">まだ決まっていない</option>{CONTACT_TOPICS.map(topic => <option value={topic.id} data-kind={topic.kind}>{topic.label}</option>)}</select>
-        <p class="field-help" id="topic-help">「その他」を選んだ場合は、下の「ご相談内容」にご希望をお書きください。</p>
-      </div>
-      <div class="form-field">
-        <label for="cf-date" id="date-label">希望する時期</label>
-        <input type="text" id="cf-date" name="date" maxlength={limit('date')} placeholder="2026年11月中旬 / 未定" />
-      </div>
-      <div class="form-field wide">
-        <label for="cf-audience" id="audience-label">対象となる方・部門</label>
-        <input type="text" id="cf-audience" name="audience" maxlength={limit('audience')} placeholder="分かる範囲でお知らせください" />
       </div>
       <div class="form-field wide">
         <label for="cf-message">ご相談内容<span class="req">*</span></label>
         <textarea id="cf-message" name="message" maxlength={limit('message')} required aria-describedby="message-help" placeholder={CONTACT_KINDS[0].placeholder}></textarea>
         <p class="field-help" id="message-help">8,000文字以内。分かる範囲で構いません。</p>
       </div>
+
+      {/* 任意項目は畳んでおく。最初に見える数を減らすため。
+          URLで種類やテーマが指定されていたときは、スクリプトが開く。 */}
+      <details class="form-more" id="form-more">
+        <summary>詳しく書く（任意）</summary>
+        <div class="form-grid form-more-grid">
+          <div class="form-field" id="topic-field" hidden>
+            <label for="cf-topic" id="topic-label">希望するテーマ（任意）</label>
+            <select id="cf-topic" name="topic" aria-describedby="topic-help"><option value="">まだ決まっていない</option>{CONTACT_TOPICS.map(topic => <option value={topic.id} data-kind={topic.kind}>{topic.label}</option>)}</select>
+            <p class="field-help" id="topic-help">「その他」を選んだ場合は、上の「ご相談内容」にご希望をお書きください。</p>
+          </div>
+          <div class="form-field">
+            <label for="cf-date" id="date-label">希望する時期</label>
+            <input type="text" id="cf-date" name="date" maxlength={limit('date')} placeholder="2026年11月中旬 / 未定" />
+          </div>
+          <div class="form-field">
+            <label for="cf-tel">電話番号</label>
+            <input type="tel" id="cf-tel" name="tel" maxlength={limit('tel')} autocomplete="tel" placeholder="03-0000-0000" />
+          </div>
+          <div class="form-field wide">
+            <label for="cf-audience" id="audience-label">対象となる方・部門</label>
+            <input type="text" id="cf-audience" name="audience" maxlength={limit('audience')} placeholder="分かる範囲でお知らせください" />
+          </div>
+        </div>
+      </details>
     </div>
 
     <div class="form-hp" aria-hidden="true">
@@ -117,6 +125,8 @@ const description =
     };
     syncKind();
     if (requestedSelection.topic) topicField.value = requestedSelection.topic.id;
+    // テーマを指定して来た人には、その選択が見えていないと不親切なので開いておく。
+    if (requestedSelection.topic) document.getElementById('form-more')?.setAttribute('open', '');
     kindField.addEventListener('change', syncKind);
     const tracking = () => ({ kind: contactKind(kindField.value).id, topic: contactTopic(topicField.value, contactKind(kindField.value).id)?.id || 'unspecified' });
     const track = (name: string, extra: Record<string, string> = {}) => (window as any).ozTrack?.(name, { ...tracking(), ...extra });
@@ -190,4 +200,22 @@ const description =
   [aria-invalid='true']{border-color:#e29a8d}
   .form-field[hidden]{display:none}
   .form-msg a{display:inline-block;text-decoration:underline;text-underline-offset:4px}
+
+  /* 任意項目のまとまり。グリッドの全幅を使う */
+  .form-more{grid-column:1/-1}
+  .form-more summary{
+    cursor:pointer;width:fit-content;
+    font-size:.9rem;color:var(--fg-mid);
+    padding:.35rem 0;list-style:none;
+  }
+  .form-more summary::-webkit-details-marker{display:none}
+  .form-more summary::before{
+    content:'＋';margin-right:.5rem;font-size:.85em;
+    display:inline-block;transition:transform .2s ease;
+  }
+  .form-more[open] summary::before{content:'−'}
+  .form-more summary:hover{color:var(--fg)}
+  .form-more summary:focus-visible{outline:2px solid var(--fg-mid);outline-offset:3px;border-radius:2px}
+  .form-more-grid{margin-top:1.1rem}
+  @media (prefers-reduced-motion:reduce){.form-more summary::before{transition:none}}
 </style>
