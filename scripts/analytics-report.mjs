@@ -109,6 +109,33 @@ async function gaSources() {
   console.log(table(rows, headers));
 }
 
+/**
+ * 生成AIのアシスタント経由で来た人が、どのページに着地したか。
+ *
+ * GA4 は ChatGPT などを "ai-assistant" という媒体に分類する。分類が追いつかない
+ * サービスもあるので、よく使われるドメイン名も併せて拾う。
+ * どのページが引用されたかは直接は分からないが、着地ページがその代わりになる。
+ */
+const AI_SOURCES = /ai-assistant|chatgpt|openai|perplexity|claude\.ai|gemini|copilot|felo|genspark/i;
+
+async function gaAiReferrals() {
+  console.log(`\n■ GA4 — 生成AI経由の着地ページ（直近${DAYS}日）`);
+  const { rows } = await runReport({
+    dimensions: [{ name: 'sessionSourceMedium' }, { name: 'landingPage' }],
+    metrics: [{ name: 'sessions' }, { name: 'totalUsers' }],
+    orderBys: [{ metric: { metricName: 'sessions' }, desc: true }],
+    limit: 200,
+  });
+  const hits = rows.filter((r) => AI_SOURCES.test(r[0]));
+  if (!hits.length) {
+    console.log('  （データなし）');
+    return;
+  }
+  console.log(table(hits, ['参照元', '着地ページ', 'セッション', 'ユーザー']));
+  const total = hits.reduce((a, r) => a + Number(r[2] || 0), 0);
+  console.log(`  合計 ${total} セッション。着地ページが、引用されたページの手がかりになる。`);
+}
+
 async function gaEvents() {
   console.log(`\n■ GA4 — 送信しているイベント（直近${DAYS}日）`);
   const { rows, headers } = await runReport({
@@ -280,6 +307,7 @@ function isoDaysAgo(n) {
 const RUN = {
   pages: gaPages,
   sources: gaSources,
+  ai: gaAiReferrals,
   events: gaEvents,
   'events-detail': async () => {
     await gaEventDetail('contact_cta', 'from', 'お問い合わせへの入口（どのページから）');
@@ -293,6 +321,7 @@ const RUN = {
 RUN.all = async () => {
   await gaPages();
   await gaSources();
+  await gaAiReferrals();
   await gaEvents();
   await RUN['events-detail']();
   await gscQueries();
