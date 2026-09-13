@@ -25,9 +25,15 @@ export const IDENTITY = {
   alternateNames: ['おざけん', 'Kensuke Ozawa'],
   /** 顔写真。プレスキットで配っているものと同じ */
   image: '/press/ozaken-portrait-front.jpg',
-  /** 本人だと分かる他所のページ。到達できないURLは載せない */
+  /**
+   * 本人だと分かる他所のページ。到達できないURLは載せない。
+   * 検索側が同一人物だと判断する材料になるので、実際に運用している
+   * プロフィールは省かずに挙げる。
+   */
   sameAs: [
     'https://x.com/ozaken_AI',
+    'https://www.facebook.com/ozaken4869',
+    'https://www.linkedin.com/in/ozaken4869',
     'https://content.ozaken.ai/',
     'https://www.udemy.com/user/xiao-ze-jian-you/',
   ],
