@@ -1,19 +1,15 @@
 ---
 import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
-import Ticker from '../components/Ticker.astro';
 import NewsList from '../components/NewsList.astro';
 import HeroDust from '../components/HeroDust.astro';
 import SiteEntrance from '../components/SiteEntrance.astro';
 import SpeakingFocus from '../components/SpeakingFocus.astro';
 import { getNews } from '../lib/microcms';
-import { SITE, NUMBERS, ROLES, HERO_ROLES, MENU, STEPS, FAQ, PROFILE } from '../lib/site';
+import { SITE, NUMBERS, ROLES, FORMATS, speakingHref } from '../lib/site';
 
-import panel from '../assets/photos/panel.jpg';
 import venue from '../assets/photos/venue.jpg';
 import portrait from '../assets/photos/portrait.jpg';
-import speakingStanding from '../assets/photos/speaking-standing.jpg';
-import speakingSeated from '../assets/photos/speaking-seated.jpg';
 import heroPhoto from '../assets/photos/speaking-closeup.jpg';
 import lineQr from '../assets/line-qr.svg?raw';
 
@@ -25,9 +21,9 @@ const news = (await getNews(8)).slice(0, 8);
 const STRIP = Array.from({ length: 20 }, (_, i) => i % 10);
 const fmt = (v: number, comma: boolean) => (comma ? v.toLocaleString('en-US') : String(v));
 
-const title = 'おざけん（小澤健祐）｜生成AI・AIエージェントの講演・研修';
+const title = '小澤健祐（おざけん）｜生成AIの講演・研修・顧問';
 const description =
-  '小澤健祐（おざけん）公式サイト。AICX協会代表理事。経営層向けの生成AI・AIエージェント講演から社内研修まで、目的に合わせて構成。2025年の登壇300回超。講演テーマ、公開実績、著書、依頼方法をご案内します。';
+  '小澤健祐（おざけん）の公式サイト。生成AIの講演、Gemini・Microsoft 365 Copilot研修、AI戦略・組織変革の顧問・アドバイザー。経営論・組織論・AIエージェントの最新技術から全社への活用浸透まで。テーマ・実績・相談方法をご案内します。';
 ---
 <Base {title} {description} railInitial="小澤健祐">
 
@@ -53,7 +49,6 @@ const description =
       <div class="hero-eyebrow">
         <p class="hero-name">{SITE.name}</p>
         <p class="hero-primary-role">{SITE.role}</p>
-        <p class="hero-name-en">Kensuke Ozawa — Ozaken</p>
       </div>
 
       <div class="hero-h1wrap">
@@ -65,13 +60,13 @@ const description =
       </div>
 
       <p class="hero-sub">
-        <span>技術のことばを、<b>経営の意思決定</b>に。</span>
-        <span>経営のことばを、<b>現場の手順</b>に。</span>
+        経営論・組織論・AIエージェントの最新技術を、<br />
+        <b>講演から研修、全社への活用浸透まで。</b>
       </p>
 
       <div class="hero-actions">
-        <a class="hero-cta" href="/contact/">講演・研修の相談 <span aria-hidden="true">→</span></a>
-        <a class="hero-link" href="/speaking/">講演テーマ・実績を見る</a>
+        <a class="hero-cta" href="/contact/" data-place="hero">ご依頼・ご相談 <span aria-hidden="true">→</span></a>
+        <a class="hero-link" href="/speaking/">講演・研修・支援内容を見る</a>
       </div>
     </div>
 
@@ -83,12 +78,20 @@ const description =
   </div>
 
   <div class="hero-foot">
-    <div class="scrollcue"><i></i>Scroll</div>
-    <p class="hero-role" id="heroRole" aria-hidden="true">
-      {HERO_ROLES.map((r, i) => (
-        <span class:list={['hero-role-i', { on: i === 0 }]}>{r}</span>
-      ))}
-    </p>
+    <a class="hero-continuation" href="#s-news" aria-label="お知らせへ進む" title="お知らせへ進む">
+      <svg viewBox="0 0 80 52" aria-hidden="true" focusable="false">
+        <path class="continuation-seam continuation-seam--left" d="M6 17H31M31 13V21" />
+        <path class="continuation-seam continuation-seam--right" d="M49 13V21M49 17H74" />
+        <path class="continuation-trace" d="M40 15V42" />
+        <circle class="continuation-origin" cx="40" cy="17" r="1.7" />
+        <circle class="continuation-particle" cx="40" cy="17" r="1.5" />
+        <circle class="continuation-particle continuation-particle--left" cx="40" cy="17" r=".8" />
+        <circle class="continuation-particle continuation-particle--right" cx="40" cy="17" r=".8" />
+      </svg>
+    </a>
+    <nav class="hero-jumps" aria-label="目的に合う依頼内容へ">
+      {FORMATS.map((format) => <a href={speakingHref(format.slug)}>{format.shortLabel}<span aria-hidden="true">↗</span></a>)}
+    </nav>
   </div>
 </section>
 
@@ -132,43 +135,6 @@ const description =
   </div>
 </section>
 
-<!-- ============ SPEAKING ============ -->
-<section class="band wrap" id="s-speaking" data-rail="依頼できること">
-  <p class="label rv">Speaking</p>
-  <h2 class="h2 rv rv-d1">講演・研修・伴走支援・<br />アドバイザリー</h2>
-  <p class="lede rv rv-d2">聞き手が誰で、終わったあと何をしていてほしいか。この2つをうかがえると、どんな形がよさそうかをご提案しやすくなります。</p>
-
-  <div class="menu stg">
-    {MENU.map((m) => (
-      <a class="menu-item" href={`/speaking/${m.slug}/`}>
-        <span class="menu-idx">{m.idx}</span>
-        <h3 class="menu-h">{m.kind}</h3>
-        <p class="menu-sub">{m.title}</p>
-        <p class="menu-spec">{m.spec}</p>
-        <p class="menu-p">{m.body}</p>
-        <p class="menu-for">向いている場：<b>{m.forWhom}</b></p>
-        <span class="menu-go">詳しく <span aria-hidden="true">→</span></span>
-      </a>
-    ))}
-  </div>
-
-  <div class="pair rv rv-d3">
-    <div class="photo-frame">
-      <Image src={speakingStanding} alt="基調講演で登壇する小澤健祐" width={2000} widths={[560, 1120, 1600, 2000]} quality={84} sizes="(max-width:600px) 100vw, 46vw" class="shotbox" />
-    </div>
-    <div class="photo-frame">
-      <Image src={speakingSeated} alt="パネルディスカッションに登壇する小澤健祐" width={2000} widths={[560, 1120, 1600, 2000]} quality={84} sizes="(max-width:600px) 100vw, 46vw" class="shotbox" />
-    </div>
-  </div>
-
-  <p class="track-note rv rv-d3" style="margin-top:2.2rem">
-    AI・人工知能EXPO、日経メッセ、DX総合EXPO、IVS、Startup JAPAN など。
-    <a href="/speaking/#track" style="border-bottom:1px solid var(--rule)">登壇実績</a>もまとめています。
-  </p>
-
-  <a class="more" href="/speaking/">ご依頼について <span>→</span></a>
-</section>
-
 <!-- ============ PROFILE（紙の面） ============ -->
 <section class="band band--paper" id="s-profile" data-rail="人物">
   <div class="wrap">
@@ -176,15 +142,13 @@ const description =
     <div class="profile-grid">
       <p class="profile-vert rv">目指してきたのは、<br />分断をこえること</p>
       <div class="profile-body rv rv-d1">
-        {PROFILE.slice(0, 2).map((t) => <p>{t}</p>)}
+        <p>AI専門メディア「AINOW」編集長を経て、事業会社の経営、企業への助言、AICX協会での活動へ。取材と実践で得た知見を、事業・組織・人材を考えるための視点として届けます。</p>
 
         <div class="shots">
           <div class="photo-frame photo-frame--tall">
             <Image src={portrait} alt="小澤健祐" width={1600} widths={[420, 840, 1200, 1600]} quality={84} sizes="(max-width:600px) 100vw, 30vw" class="shot shot--tall" />
           </div>
-          <div class="photo-frame photo-frame--wide">
-            <Image src={panel} alt="対談に登壇する小澤健祐" width={2200} widths={[600, 1200, 1600, 2200]} quality={84} sizes="(max-width:600px) 100vw, 42vw" class="shot shot--wide" />
-          </div>
+
         </div>
 
         <div class="credits stg">
@@ -199,66 +163,67 @@ const description =
   </div>
 </section>
 
-<Ticker />
-
 <!-- ============ RESOURCES ============ -->
-<section class="band wrap" id="s-resources" data-rail="資料">
+<section class="band wrap" id="s-resources" data-rail="動画と資料">
   <p class="label rv">Resources</p>
-  <h2 class="h2 rv rv-d1">話した内容は、<br />資料としてまとめています。</h2>
+  <h2 class="h2 rv rv-d1">AIの実践を、<br />動画と資料で。</h2>
 
-  <a class="res rv rv-d2" href={SITE.contentSite} target="_blank" rel="noopener noreferrer">
-    <div>
-      <p class="res-domain">content.ozaken.ai</p>
-      <p class="res-p">講演で使った図解や、導入を検討するときの手順をまとめた資料を置いています。社内での共有にお使いください。</p>
-      <div class="res-tags">
-        <span class="res-tag">講演スライド</span>
-        <span class="res-tag">導入の手順書</span>
-        <span class="res-tag">チェックリスト</span>
-        <span class="res-tag">図解</span>
-      </div>
-    </div>
-    <div class="res-go" aria-hidden="true">→</div>
-  </a>
-
-</section>
-
-<!-- ============ PROCESS + FAQ（紙の面） ============ -->
-<section class="band band--paper" id="s-process" data-rail="依頼の流れ">
-  <div class="wrap">
-    <p class="label rv">How it works</p>
-    <h2 class="h2 rv rv-d1">依頼から当日までの流れ</h2>
-
-    <div class="steps stg">
-      {STEPS.map((s) => (
-        <div class="step">
-          <p class="step-n">{s.n}</p>
-          <h3 class="step-h">{s.h}</h3>
-          <p class="step-p">{s.p}</p>
+  <div class="res-grid">
+    <a class="res res--video rv rv-d2" href={SITE.youtube} target="_blank" rel="noopener noreferrer">
+      <p class="res-kicker">
+        <svg class="res-play" width="28" height="20" viewBox="0 0 28 20" aria-hidden="true" focusable="false">
+          <rect width="28" height="20" rx="5" fill="currentColor" />
+          <path d="m11 5 8 5-8 5Z" fill="#fff" />
+        </svg>
+        YouTube
+      </p>
+      <div>
+        <h3 class="res-title">{SITE.youtubeName}</h3>
+        <p class="res-p">生成AIの使い方から企業での活用まで。現場での実践や気づきを、対談と解説でお届けします。</p>
+        <div class="res-tags">
+          <span class="res-tag">AI活用の解説</span>
+          <span class="res-tag">現場レポート</span>
+          <span class="res-tag">AIエージェント</span>
         </div>
-      ))}
-    </div>
+      </div>
+      <div class="res-footer">
+        <span class="res-action">YouTubeで見る</span>
+        <span class="res-go" aria-hidden="true">↗</span>
+      </div>
+    </a>
 
-    <div class="faq stg">
-      {FAQ.map((f) => (
-        <details>
-          <summary>{f.q}</summary>
-          <p>{f.a}</p>
-        </details>
-      ))}
-    </div>
+    <a class="res rv rv-d3" href={SITE.contentSite} target="_blank" rel="noopener noreferrer">
+      <p class="res-kicker">content.ozaken.ai</p>
+      <div>
+        <h3 class="res-title">コンテンツ一覧</h3>
+        <p class="res-p">AIエージェントの活用、業務変革、人材育成などの資料・解説をまとめています。一部を無料でご覧いただけます。</p>
+        <div class="res-tags">
+          <span class="res-tag">AIエージェント</span>
+          <span class="res-tag">業務変革</span>
+          <span class="res-tag">人材育成</span>
+        </div>
+      </div>
+      <div class="res-footer">
+        <span class="res-action">コンテンツ一覧を見る</span>
+        <span class="res-go" aria-hidden="true">↗</span>
+      </div>
+    </a>
   </div>
+
 </section>
 
 <!-- ============ CONTACT ============ -->
 <section class="contact wrap" id="s-contact" data-rail="連絡先">
   <p class="label rv">Contact</p>
   <h2 class="contact-h rv rv-d1">ご依頼・ご相談</h2>
+  <p class="lede rv">費用は個別見積もりです。課題や目的から、関わり方をご相談いただけます。内容や時期が未定でも構いません。</p>
+  <p class="contact-guide rv"><a href="/speaking/#conditions">費用・条件</a><a href="/speaking/#process">ご相談から契約まで</a></p>
 
   <div class="contact-grid stg">
     <a class="cc" href="/contact/">
       <span class="cc-k">Form</span>
       <span class="cc-v">お問い合わせフォーム</span>
-      <span class="cc-n">目的・対象者・想定人数・日程を入れて送信。2〜3営業日以内に返信します。</span>
+      <span class="cc-n">ご相談の目的と、分かる範囲の条件をお知らせください。通常2〜3営業日以内に返信します。</span>
     </a>
     <a class="cc" href={`mailto:${SITE.email}`}>
       <span class="cc-k">Mail</span>
@@ -280,7 +245,7 @@ const description =
 </section>
 
 <!-- ============ 隠しコマンド（LINE） ============
-     ファーストビューを上から順に 名前 → 見出し → SCROLL と3回たたくと開く。
+     ファーストビューを上から順に 名前 → 見出し → 光の合図 と3回たたくと開く。
      PCでは ozaken とタイプしても開く。ナビからは辿れない。面は墨で統一。 -->
 <dialog class="lpanel" id="linePanel" aria-labelledby="lpanelTitle">
   <div class="lpanel-scrim" data-lp-close></div>
@@ -338,23 +303,23 @@ const description =
       setTimeout(() => { copy.textContent = before; }, 1600);
     });
 
-    /* 順番にたたく：名前 → 見出し → SCROLL。間違えたら最初から。6秒あいてもリセット。 */
-    const SEQ = ['#s-hero .hero-eyebrow', '#s-hero .hero-h1wrap', '#s-hero .scrollcue'];
+    /* 順番にたたく：名前 → 見出し → 光の合図。間違えたら最初から。6秒あいてもリセット。 */
+    const SEQ = ['#s-hero .hero-eyebrow', '#s-hero .hero-h1wrap', '#s-hero .hero-continuation'];
     let step = 0;
     let timer = 0;
     const arm = () => { clearTimeout(timer); timer = window.setTimeout(() => { step = 0; }, 6000); };
     SEQ.forEach((sel, i) => {
       const el = document.querySelector(sel);
       if (!el) return;
-      el.style.cursor = 'default';
-      el.addEventListener('click', () => {
+      if (i < SEQ.length - 1) el.style.cursor = 'default';
+      el.addEventListener('click', (event) => {
         if (i !== step) { clearTimeout(timer); step = i === 0 ? 1 : 0; if (step) arm(); return; }
         step += 1;
         // 効いたことが分かるように、朱をひと呼吸だけ差す
         el.classList.remove('secret-hit');
         void el.offsetWidth;
         el.classList.add('secret-hit');
-        if (step === SEQ.length) { clearTimeout(timer); step = 0; open(); } else arm();
+        if (step === SEQ.length) { event.preventDefault(); clearTimeout(timer); step = 0; open(); } else arm();
       });
     });
 

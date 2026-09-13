@@ -2,7 +2,7 @@
 
 このリポジトリは小澤健祐（おざけん）の公式プロフィールサイト `ozaken.ai`。
 会話履歴がないAIも、まず本書と担当作業の運用ガイドを読む。
-最終確認：2026-09-07。新しいユーザー指示・実装・設定に合わせ、文書も更新する。
+最終確認：2026-09-11。新しいユーザー指示・実装・設定に合わせ、文書も更新する。
 
 ## 最初に読むもの
 
@@ -11,11 +11,15 @@
 | 全体像、作業するリポジトリの選択 | [README](README.md)、[運用ガイド](docs/operations.md) |
 | 開発、検証、PR、公開、障害対応 | [運用ガイド](docs/operations.md) |
 | 本人情報、SEO、告知文、写真、ロゴ、OGP | [文章・素材の運用](docs/content-and-assets.md) |
+| 依頼ページの構成、製品別研修、匿名の企業実績 | [統合ページの編集・検証](docs/speaking-page.md) |
+| 情報の重複、3形式の入口、顧問への統合 | [情報構成と互換性](docs/information-structure.md) |
+| 講演シリーズ、主催者向けの講演企画 | [講演の編集・企画](docs/keynote-series.md) |
 | 講演資料、PDF、ワークシート、週次トレンド | [資料作成と別リポジトリへの引き継ぎ](docs/materials.md) |
 | デザイン、開幕演出、粒子、LINE | [デザインと動き](docs/design-and-motion.md) |
 | お知らせの作成・修正 | [投稿手順](docs/news-post.md)、[CMS設定](docs/microcms-setup.md) |
 | フォーム、アクセス解析 | [メール](docs/contact-email.md)、[解析](docs/analytics.md)、[解析API](docs/analytics-api.md) |
 | 判断理由、確認済み・未確認の区別 | [決定事項](docs/decisions.md) |
+| 2026-09-11の監査反映と回帰確認 | [監査反映記録](docs/audit-improvements.md) |
 
 ## 作業の原則
 

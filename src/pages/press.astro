@@ -19,8 +19,6 @@ const logos = [
   { file: '/press/logos/aicx-logo-white.png', vector: '/press/logos/aicx-logo.ai', label: 'AICX協会・ロゴ', spec: '白抜き・横組み', alt: 'AICX協会 ロゴ（白抜き）', bg: 'ink' },
   { file: '/press/logos/aicx-mark-color.png', vector: '/press/logos/aicx-logo.ai', label: 'AICX協会・シンボル', spec: 'カラー', alt: 'AICX協会 シンボルマーク（カラー）', bg: 'paper' },
   { file: '/press/logos/aicx-mark-white.png', vector: '/press/logos/aicx-logo.ai', label: 'AICX協会・シンボル', spec: '白抜き', alt: 'AICX協会 シンボルマーク（白抜き）', bg: 'ink' },
-  { file: '/press/logos/ai-agent-day-2025-logo-black.png', vector: '/press/logos/ai-agent-day-2025-logo.ai', label: 'AI Agent Day 2025', spec: '黒・横組み', alt: 'AI Agent Day 2025 ロゴ（黒）', bg: 'paper' },
-  { file: '/press/logos/ai-agent-day-2025-logo-white.png', vector: '/press/logos/ai-agent-day-2025-logo.ai', label: 'AI Agent Day 2025', spec: '白抜き・横組み', alt: 'AI Agent Day 2025 ロゴ（白抜き）', bg: 'ink' },
 ];
 ---
 <Base {title} {description} railInitial="素材">
@@ -30,8 +28,8 @@ const logos = [
   <p class="label rv">Press Kit</p>
   <h1 class="phead-h1 rv rv-d1">告知に使う素材を<br />まとめています。</h1>
   <p class="phead-lede rv rv-d2">
-    プロフィール文、顔写真、肩書きの正式表記です。
-    告知ページや記事作成の際に、<b style="color:var(--fg)">ご自由にお使いください</b>。
+    プロフィール文、顔写真、肩書きの正式表記です。<br />
+    告知ページや記事作成の際に、<span class="press-use"><b>ご自由にお使いください</b>。</span>
   </p>
 </section>
 
@@ -97,7 +95,7 @@ const logos = [
     <p class="label rv">Logos</p>
     <h2 class="h2 rv rv-d1">ロゴ</h2>
     <p class="lede rv rv-d2">
-      代表理事を務める一般社団法人AICX協会と、主催する「AI Agent Day」のロゴです。
+      代表理事を務める一般社団法人AICX協会のロゴです。
       背景の色に合わせてカラー版・白抜き版をお使いください。ベクターデータ（.ai）が必要な場合はご連絡ください。
     </p>
 
@@ -153,3 +151,7 @@ const logos = [
 </script>
 
 </Base>
+
+<style>
+  .press-use{display:inline-block;color:var(--fg)}
+</style>

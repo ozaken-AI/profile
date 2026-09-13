@@ -13,7 +13,8 @@
   const media = window.matchMedia('(prefers-reduced-motion: reduce)');
   const ctx = canvas?.getContext('2d');
 
-  if (entrance && hero && canvas && ctx && lines.length && !media.matches && !document.hidden && window.scrollY < 80) {
+  const returning = root.dataset.intro === 'return';
+  if (entrance && hero && canvas && ctx && lines.length && !returning && !media.matches && !document.hidden && window.scrollY < 80) {
     const box = hero.getBoundingClientRect();
     const width = box.width, height = box.height;
     const compact = window.innerWidth <= 860;
@@ -106,6 +107,7 @@
       clearTimeout(failsafe);
       events.abort();
       root.dataset.intro = 'done';
+      try { sessionStorage.setItem('ozaken-intro-seen', '1'); } catch {}
       entrance!.remove();
       hero!.classList.add('intro-complete');
     }
@@ -229,7 +231,10 @@
       raf = requestAnimationFrame(draw);
     }
     raf = requestAnimationFrame(draw);
-  } else { root.dataset.intro = 'done'; entrance?.remove(); }
+  } else {
+    root.dataset.intro = 'done'; entrance?.remove();
+    if (returning || media.matches) hero?.classList.add('on', 'intro-complete');
+  }
 </script>
 
 <style is:global>

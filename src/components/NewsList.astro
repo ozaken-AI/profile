@@ -14,6 +14,7 @@ const { items } = Astro.props;
       <a
         class="news-row"
         data-cat={categoryOf(item)}
+        data-year={item.publishedDate.slice(0, 4)}
         href={newsHref(item)}
         target={isExternal(item) ? '_blank' : undefined}
         rel={isExternal(item) ? 'noopener noreferrer' : undefined}
@@ -21,7 +22,7 @@ const { items } = Astro.props;
         <span class="news-date">{formatDate(item.publishedDate)}</span>
         <span class="news-cat">{categoryOf(item)}</span>
         <h3 class="news-ttl">{item.title}</h3>
-        <span class="news-arrow">→</span>
+        <span class="news-arrow" aria-hidden="true">{isExternal(item) ? '↗' : '→'}</span>{isExternal(item) && <span class="a11y">外部サイトを新しいタブで開く</span>}
       </a>
     ))}
   </div>
