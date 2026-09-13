@@ -1,7 +1,9 @@
 ---
+import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import KeynoteSeries from '../../components/KeynoteSeries.astro';
 import ServiceDetails from '../../components/ServiceDetails.astro';
+import speakingMic from '../../assets/photos/speaking-mic.jpg';
 import { SITE, MENU, FAQ, SPEAKING_TRACK, TRAINING_PROGRAMS, ADVISORY_AREAS, PRIVATE_ENGAGEMENTS, FORMATS, ORGANIZATION_CHALLENGES, speakingHref } from '../../lib/site';
 
 const [, training, advisory] = MENU;
@@ -52,6 +54,17 @@ const jsonLd = [{
     <a href="#engagements">研修実績</a><a href="#advisory-evidence">継続支援の実績</a><a href="#track">登壇先の一覧</a><a href="#conditions">費用・条件</a>
   </nav>
 </section>
+
+{/* 依頼を検討する人がいちばん知りたいのは「人前でどう話すのか」。
+    文章だけでは判断できないので、登壇中の一枚をここに置く。 */}
+<figure class="speaking-shot rv">
+  <Image
+    src={speakingMic} alt="登壇してマイクを持ち話す小澤健祐"
+    width={1800} widths={[700, 1100, 1600, 2000]} quality={82}
+    sizes="(max-width:900px) 100vw, min(1100px, 92vw)"
+    loading="lazy" class="speaking-shot-img"
+  />
+</figure>
 
 <nav class="service-jumpbar" aria-label="このページの依頼内容">
   {FORMATS.map((format) => <a href={speakingHref(format.slug)}>{format.shortLabel}</a>)}
@@ -186,6 +199,13 @@ const jsonLd = [{
   .public-track .track{margin:0 0 1.5rem}
   #track .lede a{border-bottom:1px solid var(--rule)}
   .anchor-alias{display:block;scroll-margin-top:6rem}
+  .speaking-shot{margin:0 auto;padding:0 clamp(1.1rem,4vw,2.5rem);max-width:1100px}
+  .speaking-shot-img{
+    width:100%;height:auto;display:block;border-radius:2px;
+    /* 下端を地の色へ溶かし、次のセクションと地続きに見せる */
+    -webkit-mask-image:linear-gradient(#000 72%,transparent 100%);
+            mask-image:linear-gradient(#000 72%,transparent 100%);
+  }
   @media(max-width:760px){.format-nav{grid-template-columns:1fr}.format-nav>a+a{border-left:0;border-top:1px solid var(--rule)}}
   @media(max-width:600px){
     .format-nav>a{padding:1rem .7rem}
