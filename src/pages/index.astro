@@ -21,7 +21,9 @@ const news = (await getNews(8)).slice(0, 8);
 const STRIP = Array.from({ length: 20 }, (_, i) => i % 10);
 const fmt = (v: number, comma: boolean) => (comma ? v.toLocaleString('en-US') : String(v));
 
-const title = '小澤健祐（おざけん）｜生成AIの講演・研修・顧問';
+// Googleは「｜」の後ろに語を並べたタイトルを書き換えることがある。
+// 名前を頭に置き、羅列を作らず、短くして書き換える理由をなくす。
+const title = 'おざけん（小澤健祐）公式サイト';
 const description =
   '小澤健祐（おざけん）の公式サイト。生成AIの講演、Gemini・Microsoft 365 Copilot研修、AI戦略・組織変革の顧問・アドバイザー。経営論・組織論・AIエージェントの最新技術から全社への活用浸透まで。テーマ・実績・相談方法をご案内します。';
 ---
