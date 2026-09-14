@@ -373,8 +373,10 @@ section{position:relative}
   .hero-actor{
     left:0;
     /* 画面いっぱいの高さに cover で収めると、横長写真が拡大されて顔が寄りすぎる。
-       枠の高さを抑えると縮小率が下がり、上半身と会場が入った引きの画になる。 */
-    bottom:auto;height:75svh;
+       枠の高さを抑えると縮小率が下がり、上半身と会場が入った引きの画になる。
+       .hero は min-height なので実際の高さは内容で伸びる。svh など画面基準の
+       単位で指定すると本体とズレるため、親に対する割合で持たせる。 */
+    bottom:auto;height:75%;
     -webkit-mask-image:radial-gradient(ellipse 46vw 62vw at 64% 28%,#000 0%,rgba(0,0,0,.92) 46%,transparent 74%);
             mask-image:radial-gradient(ellipse 46vw 62vw at 64% 28%,#000 0%,rgba(0,0,0,.92) 46%,transparent 74%);
   }
