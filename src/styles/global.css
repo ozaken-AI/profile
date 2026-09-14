@@ -372,12 +372,15 @@ section{position:relative}
   .spot-pool{left:calc(64% - 38vw);width:76vw}
   .hero-actor{
     left:0;
+    /* 画面いっぱいの高さに cover で収めると、横長写真が拡大されて顔が寄りすぎる。
+       枠の高さを抑えると縮小率が下がり、上半身と会場が入った引きの画になる。 */
+    bottom:auto;height:75svh;
     -webkit-mask-image:radial-gradient(ellipse 46vw 62vw at 64% 28%,#000 0%,rgba(0,0,0,.92) 46%,transparent 74%);
             mask-image:radial-gradient(ellipse 46vw 62vw at 64% 28%,#000 0%,rgba(0,0,0,.92) 46%,transparent 74%);
   }
   /* 縦長では画像の細い一片しか映らない。顔が見出しに重ならない位置に寄せる。
      写真を差し替えたら、390pxで顔の位置と頭の切れを必ず見直すこと。 */
-  .hero-actor-img{object-position:8% 0}
+  .hero-actor-img{object-position:14% 0}
   .spot-dust{
     -webkit-mask-image:radial-gradient(ellipse 65% 40% at 65% 25%,#000 10%,transparent 85%);
             mask-image:radial-gradient(ellipse 65% 40% at 65% 25%,#000 10%,transparent 85%);
