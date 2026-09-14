@@ -382,15 +382,15 @@ section{position:relative}
     bottom:auto;height:75%;
     /* 光の中心は顔に合わせる。写真を替えたら人物の位置も変わるので、
        ここと object-position はセットで見直すこと。 */
-    -webkit-mask-image:radial-gradient(ellipse 46vw 62vw at 50% 28%,#000 0%,rgba(0,0,0,.92) 46%,transparent 74%);
-            mask-image:radial-gradient(ellipse 46vw 62vw at 50% 28%,#000 0%,rgba(0,0,0,.92) 46%,transparent 74%);
+    -webkit-mask-image:radial-gradient(ellipse 46vw 62vw at 64% 28%,#000 0%,rgba(0,0,0,.92) 46%,transparent 74%);
+            mask-image:radial-gradient(ellipse 46vw 62vw at 64% 28%,#000 0%,rgba(0,0,0,.92) 46%,transparent 74%);
   }
   /* 縦長では画像の細い一片しか映らない。顔が見出しに重ならない位置に寄せる。
      写真を差し替えたら、390pxで顔の位置と頭の切れを必ず見直すこと。 */
-  .hero-actor-img{object-position:14% 0}
+  .hero-actor-img{object-position:0 0}
   .spot-dust{
-    -webkit-mask-image:radial-gradient(ellipse 65% 40% at 52% 25%,#000 10%,transparent 85%);
-            mask-image:radial-gradient(ellipse 65% 40% at 52% 25%,#000 10%,transparent 85%);
+    -webkit-mask-image:radial-gradient(ellipse 65% 40% at 65% 25%,#000 10%,transparent 85%);
+            mask-image:radial-gradient(ellipse 65% 40% at 65% 25%,#000 10%,transparent 85%);
   }
 }
 
