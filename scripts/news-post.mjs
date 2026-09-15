@@ -159,8 +159,11 @@ const fields = {
 };
 const eventName = input('IN_EVENT');
 const externalUrl = input('IN_URL');
-if (eventName) fields.eventName = eventName;
-if (externalUrl) fields.externalUrl = externalUrl;
+// 空欄なら空で送る。既存の記事を上書きするとき、送らない項目は microCMS 側に
+// 残ってしまう。一度入れた外部リンクを外せず、一覧のリンク先が外部サイトに
+// 向いたままになる事故があったため、フォームの内容をそのまま記事の内容にする。
+fields.eventName = eventName;
+fields.externalUrl = externalUrl;
 
 const url = new URL(`https://${DOMAIN}.microcms.io/api/v1/news/${id}`);
 if (draft) url.searchParams.set('status', 'draft');

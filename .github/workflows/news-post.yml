@@ -30,10 +30,10 @@ on:
         description: '抜粋（空なら本文の書き出しから作ります）'
         required: false
       eventName:
-        description: 'イベント名（登壇のとき。任意）'
+        description: 'イベント名（登壇のとき。任意）。既存の記事を上書きするときは、空にすると消えます'
         required: false
       externalUrl:
-        description: '外部リンク（入れると一覧から直接その記事に飛びます）'
+        description: '外部リンク。他社の記事などを紹介するとき用。入れると一覧のリンク先がその外部サイトになり、サイト内の記事ページは開かれません。自分の登壇報告など、読ませたい本文がある記事では空のままにしてください'
         required: false
       contentId:
         description: '記事ID＝URLの末尾（空なら日付から自動。既にあるIDを入れると上書き）'
